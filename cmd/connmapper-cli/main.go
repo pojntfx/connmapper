@@ -3,7 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"net"
+	"os"
+	"path/filepath"
 
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
@@ -11,9 +14,19 @@ import (
 )
 
 func main() {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		panic(err)
+	}
+
 	dev := flag.String("dev", "eth0", "Network device to get packets from")
+	db := flag.String("db", filepath.Join(home, ".local", "share", "connmapper", "GeoLite2-City.mmdb"), "Path to the GeoLite database to use")
 
 	flag.Parse()
+
+	if _, err := os.Stat(*db); err != nil {
+		log.Fatal("Could not find database at path ", *db)
+	}
 
 	iface, err := net.InterfaceByName(*dev)
 	if err != nil {
