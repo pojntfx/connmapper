@@ -1,0 +1,23 @@
+{
+  "name": "@pojntfx/connmapper-frontend",
+  "version": "0.1.0",
+  "description": "Frontend for Connmapper.",
+  "source": "src/index.html",
+  "scripts": {
+    "build": "parcel build",
+    "start": "parcel"
+  },
+  "keywords": [
+    "connmapper",
+    "libpcap",
+    "golang",
+    "react",
+    "network",
+    "visualization"
+  ],
+  "author": "Felicitas Pojtinger <felicitas@pojtinger.com>",
+  "license": "AGPL-3.0",
+  "devDependencies": {
+    "parcel": "^2.7.0"
+  }
+}
