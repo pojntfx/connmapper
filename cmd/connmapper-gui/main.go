@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"io/fs"
+	"log"
 	"net"
 	"net/http"
 	"net/url"
@@ -81,6 +82,10 @@ func main() {
 	w.SetTitle("Connmapper")
 	w.SetSize(1024, 768, webview.HintNone)
 	w.Navigate(u.String())
+
+	w.Bind("println", func(text string) {
+		log.Println(text)
+	})
 
 	w.Run()
 }
