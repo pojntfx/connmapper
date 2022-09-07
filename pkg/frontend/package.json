@@ -18,6 +18,13 @@
   "author": "Felicitas Pojtinger <felicitas@pojtinger.com>",
   "license": "AGPL-3.0",
   "devDependencies": {
-    "parcel": "^2.7.0"
+    "@types/react": "^18.0.18",
+    "@types/react-dom": "^18.0.6",
+    "parcel": "^2.7.0",
+    "process": "^0.11.10"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   }
 }
