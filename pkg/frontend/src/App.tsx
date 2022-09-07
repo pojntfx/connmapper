@@ -1,5 +1,6 @@
-import React from "react";
+import ReactGlobeGl from "react-globe.gl";
+import "./index.css";
 
 export default () => {
-  return <button onClick={() => println("Hello!")}>Click to call Go</button>;
+  return <ReactGlobeGl />;
 };
