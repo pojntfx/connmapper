@@ -28,6 +28,7 @@
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-globe.gl": "^2.22.3"
+    "react-globe.gl": "^2.22.3",
+    "use-window-size-hook": "^1.1.22"
   }
 }
