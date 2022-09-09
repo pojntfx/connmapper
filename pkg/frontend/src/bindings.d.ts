@@ -1,7 +1,5 @@
 declare function println(val: any): Promise<void>;
 
-declare function getPacket(): Promise<Packet>;
-
 declare interface Packet {
   layerType: string;
   nextLayerType: string;
