@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
+	"fmt"
 	"io/fs"
 	"log"
 	"net"
@@ -20,6 +22,10 @@ import (
 	"github.com/phayes/freeport"
 	"github.com/pojntfx/connmapper/pkg/frontend"
 	"github.com/webview/webview"
+)
+
+const (
+	packetHandlerFunc = `handlePacket`
 )
 
 type Packet struct {
@@ -158,11 +164,6 @@ func main() {
 		log.Println("JS:", val)
 	})
 
-	packets := make(chan Packet)
-	w.Bind("getPacket", func() Packet {
-		return <-packets
-	})
-
 	go func() {
 		source := gopacket.NewPacketSource(handle, handle.LinkType())
 		for packet := range source.Packets() {
@@ -207,7 +208,7 @@ func main() {
 					dstLongitude,
 					dstLatitude := lookupLocation(db, dstIP)
 
-				packets <- Packet{
+				jsonPacket, err := json.Marshal(Packet{
 					LayerType:      layerType,
 					NextLayerType:  nextLayerType,
 					Length:         length,
@@ -221,7 +222,12 @@ func main() {
 					DstCityName:    dstCityName,
 					DstLongitude:   dstLongitude,
 					DstLatitude:    dstLatitude,
+				})
+				if err != nil {
+					panic(err)
 				}
+
+				w.Eval(fmt.Sprintf(`%v(%v)`, packetHandlerFunc, string(jsonPacket)))
 			}
 		}
 	}()
