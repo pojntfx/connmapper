@@ -17,6 +17,8 @@ export default () => {
 
   useEffect(() => {
     (window as any).handlePacket = async (packet: Packet) => {
+      await println(packet);
+
       setPackets((packets) => [
         ...packets,
         {
@@ -30,21 +32,18 @@ export default () => {
     };
   }, []);
 
-  println(packets);
-
   return (
     <ReactGlobeGl
       arcsData={packets}
       arcLabel={(d: any) => (d as Point).name}
-      arcStartLat={(d: any) => (d as Point).coords[0][0]}
-      arcStartLng={(d: any) => (d as Point).coords[0][1]}
-      arcEndLat={(d: any) => (d as Point).coords[1][0]}
-      arcEndLng={(d: any) => (d as Point).coords[1][1]}
+      arcStartLng={(d: any) => (d as Point).coords[0][0]}
+      arcStartLat={(d: any) => (d as Point).coords[0][1]}
+      arcEndLng={(d: any) => (d as Point).coords[1][0]}
+      arcEndLat={(d: any) => (d as Point).coords[1][1]}
       arcDashLength={0.4}
       arcDashGap={0.2}
       arcDashAnimateTime={1500}
       arcsTransitionDuration={0}
-      arcColor={() => [`rgba(255, 255, 255, 0)`, `rgba(255, 255, 255, 255)`]}
       globeImageUrl={earthTexture as string}
       bumpImageUrl={earthElevation as string}
       backgroundImageUrl={universeTexture as string}
