@@ -11,6 +11,13 @@ interface Point {
   coords: number[][];
 }
 
+const getLocalPosition = (): Promise<number[]> =>
+  new Promise((res) =>
+    navigator.geolocation.getCurrentPosition((s) =>
+      res([s.coords.longitude, s.coords.latitude])
+    )
+  );
+
 export default () => {
   const { width, height } = useWindowSize();
   const [packets, setPackets] = useState<Point[]>([]);
@@ -19,13 +26,25 @@ export default () => {
     (window as any).handlePacket = async (packet: Packet) => {
       await println(packet);
 
+      let srcLongitude = packet.srcLongitude;
+      let srcLatitude = packet.srcLatitude;
+      if (srcLongitude === 0 && srcLatitude === 0) {
+        [srcLongitude, srcLongitude] = await getLocalPosition();
+      }
+
+      let dstLongitude = packet.dstLongitude;
+      let dstLatitude = packet.dstLatitude;
+      if (dstLongitude === 0 && dstLatitude === 0) {
+        [dstLongitude, dstLongitude] = await getLocalPosition();
+      }
+
       setPackets((packets) => [
         ...packets,
         {
-          name: `${packet.layerType}/${packet.nextLayerType} ${packet.length}B ${packet.srcIP} (${packet.srcCountryName}, ${packet.srcCityName}, ${packet.srcLongitude}, ${packet.srcLatitude}) -> ${packet.dstIP} (${packet.dstCountryName}, ${packet.dstCityName}, ${packet.dstLongitude}, ${packet.dstLatitude})`,
+          name: `${packet.layerType}/${packet.nextLayerType} ${packet.length}B ${packet.srcIP} (${packet.srcCountryName}, ${packet.srcCityName}, ${srcLongitude}, ${srcLatitude}) -> ${packet.dstIP} (${packet.dstCountryName}, ${packet.dstCityName}, ${dstLongitude}, ${dstLatitude})`,
           coords: [
-            [packet.srcLongitude, packet.srcLatitude],
-            [packet.dstLongitude, packet.dstLatitude],
+            [srcLongitude, srcLatitude],
+            [dstLongitude, dstLatitude],
           ],
         },
       ]);
