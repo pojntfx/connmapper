@@ -21,7 +21,7 @@ import (
 	"github.com/oschwald/geoip2-golang"
 	"github.com/phayes/freeport"
 	"github.com/pojntfx/connmapper/pkg/frontend"
-	"github.com/webview/webview"
+	"github.com/zserge/lorca"
 )
 
 const (
@@ -74,7 +74,6 @@ func main() {
 
 	dev := flag.String("dev", "eth0", "Network device to get packets from")
 	dbFlag := flag.String("db", filepath.Join(home, ".local", "share", "connmapper", "GeoLite2-City.mmdb"), "Path to the GeoLite database to use")
-	debug := flag.Bool("verbose", false, "Enable verbose logging")
 	addr := flag.String("addr", "", "URL to open instead of the embedded webserver")
 
 	flag.Parse()
@@ -153,14 +152,13 @@ func main() {
 		}
 	}
 
-	w := webview.New(*debug)
-	defer w.Destroy()
+	ui, err := lorca.New(u.String(), "", 1024, 768, flag.Args()...)
+	if err != nil {
+		panic(err)
+	}
+	defer ui.Close()
 
-	w.SetTitle("Connmapper")
-	w.SetSize(1024, 768, webview.HintNone)
-	w.Navigate(u.String())
-
-	w.Bind("println", func(val any) {
+	ui.Bind("println", func(val any) {
 		log.Println("JS:", val)
 	})
 
@@ -227,10 +225,10 @@ func main() {
 					panic(err)
 				}
 
-				w.Eval(fmt.Sprintf(`%v(%v)`, packetHandlerFunc, string(jsonPacket)))
+				ui.Eval(fmt.Sprintf(`%v(%v)`, packetHandlerFunc, string(jsonPacket)))
 			}
 		}
 	}()
 
-	w.Run()
+	<-ui.Done()
 }
