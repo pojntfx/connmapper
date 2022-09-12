@@ -93,7 +93,17 @@ func main() {
 		panic(err)
 	}
 
-	handle, err := pcap.OpenLive(*dev, int32(iface.MTU), true, pcap.BlockForever)
+	inactive, err := pcap.NewInactiveHandle(*dev)
+	if err != nil {
+		panic(err)
+	}
+	defer inactive.CleanUp()
+
+	inactive.SetImmediateMode(true)
+	inactive.SetPromisc(true)
+	inactive.SetSnapLen(iface.MTU)
+
+	handle, err := inactive.Activate()
 	if err != nil {
 		panic(err)
 	}
@@ -224,6 +234,8 @@ func main() {
 				if err != nil {
 					panic(err)
 				}
+
+				log.Printf("Got packet %s", jsonPacket)
 
 				ui.Eval(fmt.Sprintf(`%v(%v)`, packetHandlerFunc, string(jsonPacket)))
 			}
