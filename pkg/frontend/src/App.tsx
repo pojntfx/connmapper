@@ -5,8 +5,10 @@ import earthElevation from "three-globe/example/img/earth-topology.png";
 import universeTexture from "three-globe/example/img/night-sky.png";
 import { useWindowSize } from "use-window-size-hook";
 import "./index.css";
+import { v4 } from "uuid";
 
-interface Point {
+interface Arc {
+  id: string;
   name: string;
   coords: number[][];
 }
@@ -20,12 +22,10 @@ const getLocalPosition = (): Promise<number[]> =>
 
 export default () => {
   const { width, height } = useWindowSize();
-  const [packets, setPackets] = useState<Point[]>([]);
+  const [arcs, setArcs] = useState<Arc[]>([]);
 
   useEffect(() => {
     (window as any).handlePacket = async (packet: Packet) => {
-      await println(packet);
-
       let srcLongitude = packet.srcLongitude;
       let srcLatitude = packet.srcLatitude;
       if (srcLongitude === 0 && srcLatitude === 0) {
@@ -44,9 +44,16 @@ export default () => {
         dstLatitude = dst[1];
       }
 
-      setPackets((packets) => [
-        ...packets,
+      const id = v4();
+
+      setInterval(() => {
+        setArcs((arcs) => arcs.filter((a) => a.id !== id));
+      }, 1000);
+
+      setArcs((arcs) => [
+        ...arcs,
         {
+          id,
           name: `${packet.layerType}/${packet.nextLayerType} ${packet.length}B ${packet.srcIP} (${packet.srcCountryName}, ${packet.srcCityName}, ${srcLongitude}, ${srcLatitude}) -> ${packet.dstIP} (${packet.dstCountryName}, ${packet.dstCityName}, ${dstLongitude}, ${dstLatitude})`,
           coords: [
             [srcLongitude, srcLatitude],
@@ -59,12 +66,12 @@ export default () => {
 
   return (
     <ReactGlobeGl
-      arcsData={packets}
-      arcLabel={(d: any) => (d as Point).name}
-      arcStartLng={(d: any) => (d as Point).coords[0][0]}
-      arcStartLat={(d: any) => (d as Point).coords[0][1]}
-      arcEndLng={(d: any) => (d as Point).coords[1][0]}
-      arcEndLat={(d: any) => (d as Point).coords[1][1]}
+      arcsData={arcs}
+      arcLabel={(d: any) => (d as Arc).name}
+      arcStartLng={(d: any) => (d as Arc).coords[0][0]}
+      arcStartLat={(d: any) => (d as Arc).coords[0][1]}
+      arcEndLng={(d: any) => (d as Arc).coords[1][0]}
+      arcEndLat={(d: any) => (d as Arc).coords[1][1]}
       arcDashLength={0.4}
       arcDashGap={0.2}
       arcDashAnimateTime={1500}
