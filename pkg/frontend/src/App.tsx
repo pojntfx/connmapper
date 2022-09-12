@@ -29,13 +29,19 @@ export default () => {
       let srcLongitude = packet.srcLongitude;
       let srcLatitude = packet.srcLatitude;
       if (srcLongitude === 0 && srcLatitude === 0) {
-        [srcLongitude, srcLongitude] = await getLocalPosition();
+        const src = await getLocalPosition();
+
+        srcLongitude = src[0];
+        srcLatitude = src[1];
       }
 
       let dstLongitude = packet.dstLongitude;
       let dstLatitude = packet.dstLatitude;
       if (dstLongitude === 0 && dstLatitude === 0) {
-        [dstLongitude, dstLongitude] = await getLocalPosition();
+        const dst = await getLocalPosition();
+
+        dstLongitude = dst[0];
+        dstLatitude = dst[1];
       }
 
       setPackets((packets) => [
