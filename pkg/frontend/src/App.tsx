@@ -4,8 +4,8 @@ import earthTexture from "three-globe/example/img/earth-night.jpg";
 import earthElevation from "three-globe/example/img/earth-topology.png";
 import universeTexture from "three-globe/example/img/night-sky.png";
 import { useWindowSize } from "use-window-size-hook";
-import "./index.css";
 import { v4 } from "uuid";
+import "./index.css";
 
 interface Arc {
   id: string;
@@ -25,43 +25,57 @@ export default () => {
   const [arcs, setArcs] = useState<Arc[]>([]);
 
   useEffect(() => {
-    (window as any).handlePacket = async (packet: Packet) => {
-      let srcLongitude = packet.srcLongitude;
-      let srcLatitude = packet.srcLatitude;
-      if (srcLongitude === 0 && srcLatitude === 0) {
-        const src = await getLocalPosition();
+    (async () => {
+      const config = await getConfig();
 
-        srcLongitude = src[0];
-        srcLatitude = src[1];
-      }
+      (window as any).handlePacket = async (packet: Packet) => {
+        let srcLongitude = packet.srcLongitude;
+        let srcLatitude = packet.srcLatitude;
+        if (srcLongitude === 0 && srcLatitude === 0) {
+          if (config.localLongitude !== 0 && config.localLatitude !== 0) {
+            srcLongitude = config.localLongitude;
+            srcLatitude = config.localLatitude;
+          } else {
+            const src = await getLocalPosition();
 
-      let dstLongitude = packet.dstLongitude;
-      let dstLatitude = packet.dstLatitude;
-      if (dstLongitude === 0 && dstLatitude === 0) {
-        const dst = await getLocalPosition();
+            srcLongitude = src[1];
+            srcLatitude = src[1];
+          }
+        }
 
-        dstLongitude = dst[0];
-        dstLatitude = dst[1];
-      }
+        let dstLongitude = packet.dstLongitude;
+        let dstLatitude = packet.dstLatitude;
+        if (dstLongitude === 0 && dstLatitude === 0) {
+          if (config.localLongitude !== 0 && config.localLatitude !== 0) {
+            dstLongitude = config.localLongitude;
+            dstLatitude = config.localLatitude;
+          } else {
+            const dst = await getLocalPosition();
 
-      const id = v4();
+            dstLongitude = dst[0];
+            dstLatitude = dst[1];
+          }
+        }
 
-      setInterval(() => {
-        setArcs((arcs) => arcs.filter((a) => a.id !== id));
-      }, 1000);
+        const id = v4();
 
-      setArcs((arcs) => [
-        ...arcs,
-        {
-          id,
-          name: `${packet.layerType}/${packet.nextLayerType} ${packet.length}B ${packet.srcIP} (${packet.srcCountryName}, ${packet.srcCityName}, ${srcLongitude}, ${srcLatitude}) -> ${packet.dstIP} (${packet.dstCountryName}, ${packet.dstCityName}, ${dstLongitude}, ${dstLatitude})`,
-          coords: [
-            [srcLongitude, srcLatitude],
-            [dstLongitude, dstLatitude],
-          ],
-        },
-      ]);
-    };
+        setInterval(() => {
+          setArcs((arcs) => arcs.filter((a) => a.id !== id));
+        }, config.arcDuration);
+
+        setArcs((arcs) => [
+          ...arcs,
+          {
+            id,
+            name: `${packet.layerType}/${packet.nextLayerType} ${packet.length}B ${packet.srcIP} (${packet.srcCountryName}, ${packet.srcCityName}, ${srcLongitude}, ${srcLatitude}) -> ${packet.dstIP} (${packet.dstCountryName}, ${packet.dstCityName}, ${dstLongitude}, ${dstLatitude})`,
+            coords: [
+              [srcLongitude, srcLatitude],
+              [dstLongitude, dstLatitude],
+            ],
+          },
+        ]);
+      };
+    })();
   }, []);
 
   return (
