@@ -15,3 +15,11 @@ declare interface Packet {
   dstLongitude: number;
   dstLatitude: number;
 }
+
+declare interface Configuration {
+  arcDuration: number;
+  localLongitude: number;
+  localLatitude: number;
+}
+
+declare function getConfig(): Promise<Configuration>;

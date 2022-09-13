@@ -14,6 +14,7 @@ import (
 	"path/filepath"
 	"strings"
 	"syscall"
+	"time"
 
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
@@ -42,6 +43,12 @@ type Packet struct {
 	DstCityName    string  `json:"dstCityName"`
 	DstLongitude   float64 `json:"dstLongitude"`
 	DstLatitude    float64 `json:"dstLatitude"`
+}
+
+type Configuration struct {
+	ArcDuration    int     `json:"arcDuration"`
+	LocalLongitude float64 `json:"localLongitude"`
+	LocalLatitude  float64 `json:"localLatitude"`
 }
 
 func lookupLocation(db *geoip2.Reader, ip net.IP) (
@@ -75,6 +82,9 @@ func main() {
 	dev := flag.String("dev", "eth0", "Network device to get packets from")
 	dbFlag := flag.String("db", filepath.Join(home, ".local", "share", "connmapper", "GeoLite2-City.mmdb"), "Path to the GeoLite database to use")
 	addr := flag.String("addr", "", "URL to open instead of the embedded webserver")
+	arcDuration := flag.Duration("arcDuration", time.Millisecond*2000, "Duration to display arcs for")
+	localLongitude := flag.Float64("localLongitude", 0, "Local longitude to assume instead of using the geolocation API")
+	localLatitude := flag.Float64("localLatitude", 0, "Local latitude to assume instead of using the geolocation API")
 
 	flag.Parse()
 
@@ -170,6 +180,14 @@ func main() {
 
 	ui.Bind("println", func(val any) {
 		log.Println("JS:", val)
+	})
+
+	ui.Bind("getConfig", func() *Configuration {
+		return &Configuration{
+			ArcDuration:    int(arcDuration.Milliseconds()),
+			LocalLongitude: *localLongitude,
+			LocalLatitude:  *localLatitude,
+		}
 	})
 
 	go func() {
