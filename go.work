@@ -4,4 +4,5 @@ use (
 	.
 	./cmd/connmapper-cli
 	./cmd/connmapper-gui
+	./cmd/connmapper-ipc
 )
