@@ -13,19 +13,37 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+type exampleStruct struct {
+	Name string `json:"name"`
+}
+
 var (
 	upgrader = websocket.Upgrader{}
 
-	// TODO: Validate that handlers have either one or two return values
+	// TODO: Validate that functions have either one or two return values before adding them to this map
 	functions = map[string]any{
-		"println": func(msg string) {
+		"examplePrintString": func(msg string) {
 			fmt.Println(msg)
 		},
-		"returnError": func() error {
+		"examplePrintStruct": func(input exampleStruct) {
+			fmt.Println(input)
+		},
+		"exampleReturnError": func() error {
 			return errors.New("test error")
 		},
-		"returnHello": func() string {
-			return "Hello from Go"
+		"exampleReturnString": func() string {
+			return "Test string"
+		},
+		"exampleReturnStruct": func() exampleStruct {
+			return exampleStruct{
+				Name: "Alice",
+			}
+		},
+		"exampleReturnStringAndError": func() (string, error) {
+			return "Test string", errors.New("test error")
+		},
+		"exampleReturnStringAndNil": func() (string, error) {
+			return "Test string", nil
 		},
 	}
 
@@ -81,19 +99,15 @@ func main() {
 
 			errs := make(chan error)
 			go func() {
+				defer conn.Close()
+
 				for {
 					var functionRequest []json.RawMessage
 					if err := conn.ReadJSON(&functionRequest); err != nil {
-						if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure, websocket.CloseNoStatusReceived) {
-							errs <- err
-						}
-
-						errs <- nil
+						errs <- err
 
 						return
 					}
-
-					log.Printf("Received function request %v", functionRequest)
 
 					if len(functionRequest) != 3 {
 						errs <- fmt.Errorf("%v", http.StatusUnprocessableEntity)
@@ -121,6 +135,8 @@ func main() {
 
 						return
 					}
+
+					log.Printf("Got request ID %v for function %v with args %v", requestID, functionName, functionArgs)
 
 					rawFunctions, ok := functions[functionName]
 					if !ok {
@@ -178,8 +194,28 @@ func main() {
 								return
 							}
 						}
+					case 2:
+						v, err := json.Marshal(res[0].Interface())
+						if err != nil {
+							errs <- err
+
+							return
+						}
+
+						if res[1].Interface() == nil {
+							if err := conn.WriteJSON([]any{requestID, json.RawMessage(string(v)), ""}); err != nil {
+								errs <- err
+
+								return
+							}
+						} else {
+							if err := conn.WriteJSON([]any{requestID, json.RawMessage(string(v)), res[1].Interface().(error).Error()}); err != nil {
+								errs <- err
+
+								return
+							}
+						}
 					}
-					// TODO: Add support for two return values
 				}
 			}()
 
