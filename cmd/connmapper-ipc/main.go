@@ -7,51 +7,14 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"reflect"
 	"time"
 
-	"github.com/gorilla/websocket"
+	"github.com/pojntfx/connmapper/pkg/ipc"
 )
 
 type exampleStruct struct {
 	Name string `json:"name"`
 }
-
-var (
-	upgrader = websocket.Upgrader{}
-
-	// TODO: Validate that functions have either one or two return values before adding them to this map
-	functions = map[string]any{
-		"examplePrintString": func(msg string) {
-			fmt.Println(msg)
-		},
-		"examplePrintStruct": func(input exampleStruct) {
-			fmt.Println(input)
-		},
-		"exampleReturnError": func() error {
-			return errors.New("test error")
-		},
-		"exampleReturnString": func() string {
-			return "Test string"
-		},
-		"exampleReturnStruct": func() exampleStruct {
-			return exampleStruct{
-				Name: "Alice",
-			}
-		},
-		"exampleReturnStringAndError": func() (string, error) {
-			return "Test string", errors.New("test error")
-		},
-		"exampleReturnStringAndNil": func() (string, error) {
-			return "Test string", nil
-		},
-	}
-
-	errorType = reflect.TypeOf((*error)(nil)).Elem()
-
-	errCannotExposeNonFunction = errors.New("can not expose non function")
-	errInvalidReturn           = errors.New("can only return void, a value or a value and an error")
-)
 
 func main() {
 	laddr := flag.String("laddr", "localhost:1337", "Address for the IPC WebSocket server to listen on")
@@ -59,199 +22,101 @@ func main() {
 
 	flag.Parse()
 
-	for _, function := range functions {
-		v := reflect.ValueOf(function)
-
-		if v.Kind() != reflect.Func {
-			panic(errCannotExposeNonFunction)
-		}
-
-		if n := v.Type().NumOut(); n > 2 || (n == 2 && !v.Type().Out(1).Implements(errorType)) {
-			panic(errInvalidReturn)
-		}
-	}
-
 	log.Printf("Listening on %v", *laddr)
 
 	clients := 0
 
-	http.ListenAndServe(*laddr, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		clients++
+	handler := ipc.NewHandler(*heartbeat, &ipc.Callbacks{
+		OnReceivePong: func() {
+			log.Println("Received pong from client")
+		},
+		OnSendingPing: func() {
+			log.Println("Sending ping to client")
+		},
+		OnFunctionCall: func(requestID, functionName string, functionArgs []json.RawMessage) {
+			log.Printf("Got request ID %v for function %v with args %v", requestID, functionName, functionArgs)
+		},
+	})
 
-		log.Printf("%v clients connected", clients)
+	if err := handler.Bind("examplePrintString", func(msg string) {
+		fmt.Println(msg)
+	},
+	); err != nil {
+		panic(err)
+	}
 
-		defer func() {
-			clients--
+	if err := handler.Bind("examplePrintStruct", func(
+		input exampleStruct,
+	) {
+		fmt.Println(input)
+	},
+	); err != nil {
+		panic(err)
+	}
 
-			if err := recover(); err != nil {
-				w.WriteHeader(http.StatusInternalServerError)
+	if err := handler.Bind("exampleReturnError", func() error {
+		return errors.New("test error")
+	},
+	); err != nil {
+		panic(err)
+	}
 
-				log.Printf("Client disconnected with error: %v", err)
-			}
+	if err := handler.Bind("exampleReturnString", func() string {
+		return "Test string"
+	},
+	); err != nil {
+		panic(err)
+	}
+
+	if err := handler.Bind("exampleReturnStruct", func() exampleStruct {
+		return exampleStruct{
+			Name: "Alice",
+		}
+	},
+	); err != nil {
+		panic(err)
+	}
+
+	if err := handler.Bind("exampleReturnStringAndError", func() (string, error) {
+		return "Test string", errors.New("test error")
+	},
+	); err != nil {
+		panic(err)
+	}
+
+	if err := handler.Bind("exampleReturnStringAndNil", func() (string, error) {
+		return "Test string", nil
+	},
+	); err != nil {
+		panic(err)
+	}
+
+	log.Fatal(
+		http.ListenAndServe(*laddr, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			clients++
 
 			log.Printf("%v clients connected", clients)
-		}()
 
-		switch r.Method {
-		case http.MethodGet:
-			conn, err := upgrader.Upgrade(w, r, nil)
-			if err != nil {
-				panic(err)
-			}
+			defer func() {
+				clients--
 
-			if err := conn.SetReadDeadline(time.Now().Add(*heartbeat)); err != nil {
-				panic(err)
-			}
+				if err := recover(); err != nil {
+					w.WriteHeader(http.StatusInternalServerError)
 
-			conn.SetPongHandler(func(string) error {
-				log.Println("Received pong from client")
-
-				return conn.SetReadDeadline(time.Now().Add(*heartbeat))
-			})
-
-			pings := time.NewTicker(*heartbeat / 2)
-			defer pings.Stop()
-
-			errs := make(chan error)
-			go func() {
-				defer conn.Close()
-
-				for {
-					var functionRequest []json.RawMessage
-					if err := conn.ReadJSON(&functionRequest); err != nil {
-						errs <- err
-
-						return
-					}
-
-					if len(functionRequest) != 3 {
-						errs <- fmt.Errorf("%v", http.StatusUnprocessableEntity)
-
-						return
-					}
-
-					var requestID string
-					if err := json.Unmarshal(functionRequest[0], &requestID); err != nil {
-						errs <- fmt.Errorf("%v", http.StatusUnprocessableEntity)
-
-						return
-					}
-
-					var functionName string
-					if err := json.Unmarshal(functionRequest[1], &functionName); err != nil {
-						errs <- fmt.Errorf("%v", http.StatusUnprocessableEntity)
-
-						return
-					}
-
-					var functionArgs []json.RawMessage
-					if err := json.Unmarshal(functionRequest[2], &functionArgs); err != nil {
-						errs <- fmt.Errorf("%v", http.StatusUnprocessableEntity)
-
-						return
-					}
-
-					log.Printf("Got request ID %v for function %v with args %v", requestID, functionName, functionArgs)
-
-					rawFunctions, ok := functions[functionName]
-					if !ok {
-						errs <- fmt.Errorf("%v", http.StatusNotFound)
-
-						return
-					}
-
-					function := reflect.ValueOf(rawFunctions)
-
-					if len(functionArgs) != function.Type().NumIn() {
-						errs <- fmt.Errorf("%v", http.StatusUnprocessableEntity)
-
-						return
-					}
-
-					args := []reflect.Value{}
-					for i := range functionArgs {
-						arg := reflect.New(function.Type().In(i))
-						if err := json.Unmarshal(functionArgs[i], arg.Interface()); err != nil {
-							errs <- err
-
-							return
-						}
-
-						args = append(args, arg.Elem())
-					}
-
-					res := function.Call(args)
-					switch len(res) {
-					case 0:
-						if err := conn.WriteJSON([]any{requestID, nil, ""}); err != nil {
-							errs <- err
-
-							return
-						}
-					case 1:
-						if res[0].Type().Implements(errorType) {
-							if err := conn.WriteJSON([]any{requestID, nil, res[0].Interface().(error).Error()}); err != nil {
-								errs <- err
-
-								return
-							}
-						} else {
-							v, err := json.Marshal(res[0].Interface())
-							if err != nil {
-								errs <- err
-
-								return
-							}
-
-							if err := conn.WriteJSON([]any{requestID, json.RawMessage(string(v)), ""}); err != nil {
-								errs <- err
-
-								return
-							}
-						}
-					case 2:
-						v, err := json.Marshal(res[0].Interface())
-						if err != nil {
-							errs <- err
-
-							return
-						}
-
-						if res[1].Interface() == nil {
-							if err := conn.WriteJSON([]any{requestID, json.RawMessage(string(v)), ""}); err != nil {
-								errs <- err
-
-								return
-							}
-						} else {
-							if err := conn.WriteJSON([]any{requestID, json.RawMessage(string(v)), res[1].Interface().(error).Error()}); err != nil {
-								errs <- err
-
-								return
-							}
-						}
-					}
+					log.Printf("Client disconnected with error: %v", err)
 				}
+
+				log.Printf("%v clients connected", clients)
 			}()
 
-			for {
-				select {
-				case err := <-errs:
+			switch r.Method {
+			case http.MethodGet:
+				if err := handler.HandlerFunc(w, r); err != nil {
 					panic(err)
-				case <-pings.C:
-					log.Println("Sending ping to client")
-
-					if err := conn.WriteMessage(websocket.PingMessage, nil); err != nil {
-						panic(err)
-					}
-
-					if err := conn.SetWriteDeadline(time.Now().Add(*heartbeat)); err != nil {
-						panic(err)
-					}
 				}
+			default:
+				w.WriteHeader(http.StatusMethodNotAllowed)
 			}
-		default:
-			w.WriteHeader(http.StatusMethodNotAllowed)
-		}
-	}))
+		})),
+	)
 }
