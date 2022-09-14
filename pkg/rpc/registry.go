@@ -1,4 +1,4 @@
-package ipc
+package rpc
 
 import (
 	"encoding/json"
@@ -26,21 +26,21 @@ type Callbacks struct {
 	OnFunctionCall func(requestID, functionName string, functionArgs []json.RawMessage)
 }
 
-type Handler struct {
+type Registry struct {
 	functions map[string]any
 	callbacks *Callbacks
 	heartbeat time.Duration
 }
 
-func NewHandler(heartbeat time.Duration, callbacks *Callbacks) *Handler {
+func NewRegistry(heartbeat time.Duration, callbacks *Callbacks) *Registry {
 	if callbacks == nil {
 		callbacks = &Callbacks{}
 	}
 
-	return &Handler{map[string]any{}, callbacks, heartbeat}
+	return &Registry{map[string]any{}, callbacks, heartbeat}
 }
 
-func (h *Handler) Bind(name string, function any) error {
+func (h *Registry) Bind(functionName string, function any) error {
 	v := reflect.ValueOf(function)
 
 	if v.Kind() != reflect.Func {
@@ -51,12 +51,12 @@ func (h *Handler) Bind(name string, function any) error {
 		return ErrInvalidReturn
 	}
 
-	h.functions[name] = function
+	h.functions[functionName] = function
 
 	return nil
 }
 
-func (h *Handler) HandlerFunc(w http.ResponseWriter, r *http.Request) error {
+func (h *Registry) HandlerFunc(w http.ResponseWriter, r *http.Request) error {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		return err

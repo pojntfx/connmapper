@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/pojntfx/connmapper/pkg/ipc"
+	"github.com/pojntfx/connmapper/pkg/rpc"
 )
 
 type exampleStruct struct {
@@ -26,7 +26,7 @@ func main() {
 
 	clients := 0
 
-	handler := ipc.NewHandler(*heartbeat, &ipc.Callbacks{
+	registry := rpc.NewRegistry(*heartbeat, &rpc.Callbacks{
 		OnReceivePong: func() {
 			log.Println("Received pong from client")
 		},
@@ -38,60 +38,53 @@ func main() {
 		},
 	})
 
-	if err := handler.Bind("examplePrintString", func(msg string) {
+	if err := registry.Bind("examplePrintString", func(msg string) {
 		fmt.Println(msg)
-	},
-	); err != nil {
+	}); err != nil {
 		panic(err)
 	}
 
-	if err := handler.Bind("examplePrintStruct", func(
+	if err := registry.Bind("examplePrintStruct", func(
 		input exampleStruct,
 	) {
 		fmt.Println(input)
-	},
-	); err != nil {
+	}); err != nil {
 		panic(err)
 	}
 
-	if err := handler.Bind("exampleReturnError", func() error {
+	if err := registry.Bind("exampleReturnError", func() error {
 		return errors.New("test error")
-	},
-	); err != nil {
+	}); err != nil {
 		panic(err)
 	}
 
-	if err := handler.Bind("exampleReturnString", func() string {
+	if err := registry.Bind("exampleReturnString", func() string {
 		return "Test string"
-	},
-	); err != nil {
+	}); err != nil {
 		panic(err)
 	}
 
-	if err := handler.Bind("exampleReturnStruct", func() exampleStruct {
+	if err := registry.Bind("exampleReturnStruct", func() exampleStruct {
 		return exampleStruct{
 			Name: "Alice",
 		}
-	},
-	); err != nil {
+	}); err != nil {
 		panic(err)
 	}
 
-	if err := handler.Bind("exampleReturnStringAndError", func() (string, error) {
+	if err := registry.Bind("exampleReturnStringAndError", func() (string, error) {
 		return "Test string", errors.New("test error")
-	},
-	); err != nil {
+	}); err != nil {
 		panic(err)
 	}
 
-	if err := handler.Bind("exampleReturnStringAndNil", func() (string, error) {
+	if err := registry.Bind("exampleReturnStringAndNil", func() (string, error) {
 		return "Test string", nil
-	},
-	); err != nil {
+	}); err != nil {
 		panic(err)
 	}
 
-	log.Fatal(
+	panic(
 		http.ListenAndServe(*laddr, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			clients++
 
@@ -111,7 +104,7 @@ func main() {
 
 			switch r.Method {
 			case http.MethodGet:
-				if err := handler.HandlerFunc(w, r); err != nil {
+				if err := registry.HandlerFunc(w, r); err != nil {
 					panic(err)
 				}
 			default:
