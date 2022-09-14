@@ -11,14 +11,13 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/pojntfx/connmapper/pkg/ipc"
 )
 
 var (
 	upgrader = websocket.Upgrader{}
 
 	// TODO: Validate that handlers have either one or two return values
-	handlers = map[string]any{
+	functions = map[string]any{
 		"println": func(msg string) {
 			fmt.Println(msg)
 		},
@@ -83,7 +82,7 @@ func main() {
 			errs := make(chan error)
 			go func() {
 				for {
-					var functionRequest ipc.FunctionRequest
+					var functionRequest []json.RawMessage
 					if err := conn.ReadJSON(&functionRequest); err != nil {
 						if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure, websocket.CloseNoStatusReceived) {
 							errs <- err
@@ -96,58 +95,87 @@ func main() {
 
 					log.Printf("Received function request %v", functionRequest)
 
-					rawHandler, ok := handlers[functionRequest.Name]
-					if !ok {
-						panic(http.StatusNotFound)
+					if len(functionRequest) != 3 {
+						errs <- fmt.Errorf("%v", http.StatusUnprocessableEntity)
+
+						return
 					}
 
-					handler := reflect.ValueOf(rawHandler)
+					var requestID string
+					if err := json.Unmarshal(functionRequest[0], &requestID); err != nil {
+						errs <- fmt.Errorf("%v", http.StatusUnprocessableEntity)
 
-					if len(functionRequest.Args) != handler.Type().NumIn() {
-						panic(http.StatusUnprocessableEntity)
+						return
+					}
+
+					var functionName string
+					if err := json.Unmarshal(functionRequest[1], &functionName); err != nil {
+						errs <- fmt.Errorf("%v", http.StatusUnprocessableEntity)
+
+						return
+					}
+
+					var functionArgs []json.RawMessage
+					if err := json.Unmarshal(functionRequest[2], &functionArgs); err != nil {
+						errs <- fmt.Errorf("%v", http.StatusUnprocessableEntity)
+
+						return
+					}
+
+					rawFunctions, ok := functions[functionName]
+					if !ok {
+						errs <- fmt.Errorf("%v", http.StatusNotFound)
+
+						return
+					}
+
+					function := reflect.ValueOf(rawFunctions)
+
+					if len(functionArgs) != function.Type().NumIn() {
+						errs <- fmt.Errorf("%v", http.StatusUnprocessableEntity)
+
+						return
 					}
 
 					args := []reflect.Value{}
-					for i := range functionRequest.Args {
-						arg := reflect.New(handler.Type().In(i))
-						if err := json.Unmarshal(functionRequest.Args[i], arg.Interface()); err != nil {
-							panic(err)
+					for i := range functionArgs {
+						arg := reflect.New(function.Type().In(i))
+						if err := json.Unmarshal(functionArgs[i], arg.Interface()); err != nil {
+							errs <- err
+
+							return
 						}
 
 						args = append(args, arg.Elem())
 					}
 
-					res := handler.Call(args)
+					res := function.Call(args)
 					switch len(res) {
 					case 0:
-						if err := conn.WriteJSON(ipc.FunctionResponse{
-							RequestID: functionRequest.RequestID,
-							Value:     nil,
-							Error:     "",
-						}); err != nil {
-							panic(err)
+						if err := conn.WriteJSON([]any{requestID, nil, ""}); err != nil {
+							errs <- err
+
+							return
 						}
 					case 1:
 						if res[0].Type().Implements(errorType) {
-							if err := conn.WriteJSON(ipc.FunctionResponse{
-								RequestID: functionRequest.RequestID,
-								Value:     nil,
-								Error:     res[0].Interface().(error).Error(),
-							}); err != nil {
-								panic(err)
+							if err := conn.WriteJSON([]any{requestID, nil, res[0].Interface().(error).Error()}); err != nil {
+								errs <- err
+
+								return
 							}
 						} else {
 							v, err := json.Marshal(res[0].Interface())
 							if err != nil {
-								panic(err)
+								errs <- err
+
+								return
 							}
 
-							if err := conn.WriteJSON(ipc.FunctionResponse{
-								RequestID: functionRequest.RequestID,
-								Value:     json.RawMessage(string(v)),
-								Error:     "",
-							}); err != nil {
-								panic(err)
+							if err := conn.WriteJSON([]any{requestID, json.RawMessage(string(v)), ""}); err != nil {
+								errs <- err
+
+								return
 							}
 						}
 					}
