@@ -48,6 +48,9 @@ var (
 	}
 
 	errorType = reflect.TypeOf((*error)(nil)).Elem()
+
+	errCannotExposeNonFunction = errors.New("can not expose non function")
+	errInvalidReturn           = errors.New("can only return void, a value or a value and an error")
 )
 
 func main() {
@@ -55,6 +58,18 @@ func main() {
 	heartbeat := flag.Duration("heartbeat", time.Second*10, "Heartbeat interval to keep WebSocket connections alive")
 
 	flag.Parse()
+
+	for _, function := range functions {
+		v := reflect.ValueOf(function)
+
+		if v.Kind() != reflect.Func {
+			panic(errCannotExposeNonFunction)
+		}
+
+		if n := v.Type().NumOut(); n > 2 || (n == 2 && !v.Type().Out(1).Implements(errorType)) {
+			panic(errInvalidReturn)
+		}
+	}
 
 	log.Printf("Listening on %v", *laddr)
 
