@@ -220,3 +220,9 @@ func (h *Registry) HandlerFunc(w http.ResponseWriter, r *http.Request) error {
 		}
 	}
 }
+
+func init() {
+	upgrader.CheckOrigin = func(r *http.Request) bool {
+		return true
+	}
+}
