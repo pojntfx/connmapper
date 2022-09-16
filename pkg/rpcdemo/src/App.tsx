@@ -4,28 +4,49 @@ import "./index.css";
 
 const getEventName = (id: string) => `rpc:${id}`;
 
+const subscribe = (socket: WebSocket, broker: EventTarget) => {
+  socket.addEventListener("message", (e) => {
+    const msg = JSON.parse(e.data) as any[];
+
+    broker.dispatchEvent(
+      new CustomEvent(getEventName(msg[0]), {
+        detail: msg.slice(1),
+      })
+    );
+  });
+};
+
+function call<Args extends any[], Return extends any[]>(
+  socket: WebSocket,
+  broker: EventTarget,
+  name: string,
+  args: Args
+): Promise<Return> {
+  const id = v4();
+
+  socket.send(JSON.stringify([id, name, args]));
+
+  return new Promise<Return>((res) => {
+    const handleResponse = (e: any) => {
+      res((e as CustomEvent).detail);
+
+      broker.removeEventListener(getEventName(id), handleResponse);
+    };
+
+    broker.addEventListener(getEventName(id), handleResponse);
+  });
+}
+
 export default () => {
-  const [webSocket, setWebSocket] = useState<WebSocket>();
+  const [socket, setSocket] = useState<WebSocket>();
 
   useEffect(() => {
     const socket = new WebSocket("ws://localhost:1337");
 
-    setWebSocket(socket);
+    setSocket(socket);
 
     socket.addEventListener("open", () => {
       console.log("Connected to RPC server");
-    });
-
-    socket.addEventListener("message", (e) => {
-      console.log("Dispatching message:", e.data);
-
-      const msg = JSON.parse(e.data) as any[];
-
-      document.dispatchEvent(
-        new CustomEvent(getEventName(msg[0]), {
-          detail: msg.slice(1),
-        })
-      );
     });
 
     socket.addEventListener("error", (e) =>
@@ -35,6 +56,8 @@ export default () => {
     socket.addEventListener("close", () => {
       console.log("Disconnected from RPC server");
     });
+
+    subscribe(socket, document);
   }, []);
 
   return (
@@ -44,30 +67,96 @@ export default () => {
       <div>
         <button
           onClick={async () => {
-            const id = v4();
+            const res = await call(socket!, document, "examplePrintString", [
+              prompt("String to print"),
+            ]);
 
-            webSocket?.send(
-              JSON.stringify([
-                id,
-                "examplePrintString",
-                [prompt("String to print")],
-              ])
-            );
-
-            const rv = await new Promise((res) => {
-              const handleResponse = (e: any) => {
-                res((e as CustomEvent).detail);
-
-                document.removeEventListener(getEventName(id), handleResponse);
-              };
-
-              document.addEventListener(getEventName(id), handleResponse);
-            });
-
-            console.log("Received response from print:", rv);
+            alert(JSON.stringify(res));
           }}
         >
           Print string
+        </button>
+
+        <button
+          onClick={async () => {
+            const res = await call(socket!, document, "examplePrintStruct", [
+              { name: prompt("Name to print") },
+            ]);
+
+            alert(JSON.stringify(res));
+          }}
+        >
+          Print struct
+        </button>
+
+        <button
+          onClick={async () => {
+            const res = await call(socket!, document, "exampleReturnError", []);
+
+            alert(JSON.stringify(res));
+          }}
+        >
+          Return error
+        </button>
+
+        <button
+          onClick={async () => {
+            const res = await call(
+              socket!,
+              document,
+              "exampleReturnString",
+              []
+            );
+
+            alert(JSON.stringify(res));
+          }}
+        >
+          Return string
+        </button>
+
+        <button
+          onClick={async () => {
+            const res = await call(
+              socket!,
+              document,
+              "exampleReturnStruct",
+              []
+            );
+
+            alert(JSON.stringify(res));
+          }}
+        >
+          Return struct
+        </button>
+
+        <button
+          onClick={async () => {
+            const res = await call(
+              socket!,
+              document,
+              "exampleReturnStringAndError",
+              []
+            );
+
+            alert(JSON.stringify(res));
+          }}
+        >
+          Return string and error
+        </button>
+
+        <button
+          onClick={async () => {
+            const res = await call(
+              socket!,
+              document,
+              "exampleReturnStringAndNil",
+              []
+            );
+
+            alert(JSON.stringify(res));
+          }}
+        >
+          Return string and nil
         </button>
       </div>
     </main>
