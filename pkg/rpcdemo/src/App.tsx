@@ -41,7 +41,10 @@ export default () => {
   const [socket, setSocket] = useState<WebSocket>();
 
   useEffect(() => {
-    const socket = new WebSocket("ws://localhost:1337");
+    const socket = new WebSocket(
+      new URLSearchParams(window.location.search).get("socketURL") ||
+        "ws://localhost:1337"
+    );
 
     setSocket(socket);
 
