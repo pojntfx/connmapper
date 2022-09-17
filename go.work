@@ -4,5 +4,6 @@ use (
 	.
 	./cmd/connmapper-cli
 	./cmd/connmapper-gui
+	./cmd/connmapper-hydrapp
 	./cmd/connmapper-rpc
 )
