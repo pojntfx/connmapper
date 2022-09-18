@@ -1,25 +1,13 @@
-declare function println(val: any): Promise<void>;
+declare function examplePrintString(msg: string): Promise<void>;
 
-declare interface Packet {
-  layerType: string;
-  nextLayerType: string;
-  length: number;
-  srcIP: string;
-  srcCountryName: string;
-  srcCityName: string;
-  srcLongitude: number;
-  srcLatitude: number;
-  dstIP: string;
-  dstCountryName: string;
-  dstCityName: string;
-  dstLongitude: number;
-  dstLatitude: number;
-}
+declare function examplePrintStruct(input: { name: string }): Promise<void>;
 
-declare interface Configuration {
-  arcDuration: number;
-  localLongitude: number;
-  localLatitude: number;
-}
+declare function exampleReturnError(): Promise<void>;
 
-declare function getConfig(): Promise<Configuration>;
+declare function exampleReturnString(): Promise<string>;
+
+declare function exampleReturnStruct(): Promise<{ name: string }>;
+
+declare function exampleReturnStringAndError(): Promise<string>;
+
+declare function exampleReturnStringAndNil(): Promise<string>;

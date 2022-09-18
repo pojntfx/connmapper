@@ -1,68 +1,14 @@
-import { useEffect, useState } from "react";
-import { v4 } from "uuid";
-import "./index.css";
+import bind from "./bind";
 
-const getEventName = (id: string) => `rpc:${id}`;
-
-const subscribe = (socket: WebSocket, broker: EventTarget) => {
-  socket.addEventListener("message", (e) => {
-    const msg = JSON.parse(e.data) as any[];
-
-    broker.dispatchEvent(
-      new CustomEvent(getEventName(msg[0]), {
-        detail: msg.slice(1),
-      })
-    );
-  });
-};
-
-function call<Args extends any[], Return extends any[]>(
-  socket: WebSocket,
-  broker: EventTarget,
-  name: string,
-  args: Args
-): Promise<Return> {
-  const id = v4();
-
-  socket.send(JSON.stringify([id, name, args]));
-
-  return new Promise<Return>((res) => {
-    const handleResponse = (e: any) => {
-      res((e as CustomEvent).detail);
-
-      broker.removeEventListener(getEventName(id), handleResponse);
-    };
-
-    broker.addEventListener(getEventName(id), handleResponse);
-  });
-}
+await bind(
+  new WebSocket(
+    new URLSearchParams(window.location.search).get("socketURL") ||
+      "ws://localhost:1337"
+  ),
+  window
+);
 
 export default () => {
-  const [socket, setSocket] = useState<WebSocket>();
-
-  useEffect(() => {
-    const socket = new WebSocket(
-      new URLSearchParams(window.location.search).get("socketURL") ||
-        "ws://localhost:1337"
-    );
-
-    setSocket(socket);
-
-    socket.addEventListener("open", () => {
-      console.log("Connected to RPC server");
-    });
-
-    socket.addEventListener("error", (e) =>
-      console.error("Got error from RPC server:", e)
-    );
-
-    socket.addEventListener("close", () => {
-      console.log("Disconnected from RPC server");
-    });
-
-    subscribe(socket, document);
-  }, []);
-
   return (
     <main>
       <h1>Connmapper RPC Demo</h1>
@@ -70,11 +16,7 @@ export default () => {
       <div>
         <button
           onClick={async () => {
-            const res = await call(socket!, document, "examplePrintString", [
-              prompt("String to print"),
-            ]);
-
-            alert(JSON.stringify(res));
+            await examplePrintString(prompt("String to print")!);
           }}
         >
           Print string
@@ -82,11 +24,9 @@ export default () => {
 
         <button
           onClick={async () => {
-            const res = await call(socket!, document, "examplePrintStruct", [
-              { name: prompt("Name to print") },
-            ]);
-
-            alert(JSON.stringify(res));
+            await examplePrintStruct({
+              name: prompt("Name to print")!,
+            });
           }}
         >
           Print struct
@@ -94,9 +34,11 @@ export default () => {
 
         <button
           onClick={async () => {
-            const res = await call(socket!, document, "exampleReturnError", []);
-
-            alert(JSON.stringify(res));
+            try {
+              await exampleReturnError();
+            } catch (e) {
+              alert(JSON.stringify(e));
+            }
           }}
         >
           Return error
@@ -104,12 +46,7 @@ export default () => {
 
         <button
           onClick={async () => {
-            const res = await call(
-              socket!,
-              document,
-              "exampleReturnString",
-              []
-            );
+            const res = await exampleReturnString();
 
             alert(JSON.stringify(res));
           }}
@@ -119,12 +56,7 @@ export default () => {
 
         <button
           onClick={async () => {
-            const res = await call(
-              socket!,
-              document,
-              "exampleReturnStruct",
-              []
-            );
+            const res = await exampleReturnStruct();
 
             alert(JSON.stringify(res));
           }}
@@ -134,14 +66,11 @@ export default () => {
 
         <button
           onClick={async () => {
-            const res = await call(
-              socket!,
-              document,
-              "exampleReturnStringAndError",
-              []
-            );
-
-            alert(JSON.stringify(res));
+            try {
+              await exampleReturnStringAndError();
+            } catch (e) {
+              alert(JSON.stringify(e));
+            }
           }}
         >
           Return string and error
@@ -149,12 +78,7 @@ export default () => {
 
         <button
           onClick={async () => {
-            const res = await call(
-              socket!,
-              document,
-              "exampleReturnStringAndNil",
-              []
-            );
+            const res = await exampleReturnStringAndNil();
 
             alert(JSON.stringify(res));
           }}
