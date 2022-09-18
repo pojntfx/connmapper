@@ -1,8 +1,10 @@
 import { v4 } from "uuid";
 
-export default (socket: WebSocket, broker: EventTarget) =>
+const bind = (getSocket: () => WebSocket, broker: EventTarget) =>
   new Promise<void>((res, rej) => {
     const getEventName = (id: string) => `rpc:${id}`;
+
+    const socket = getSocket();
 
     socket.addEventListener("open", () => {
       console.log("Connected to RPC server");
@@ -16,8 +18,10 @@ export default (socket: WebSocket, broker: EventTarget) =>
       rej(e);
     });
 
-    socket.addEventListener("close", () => {
-      console.log("Disconnected from RPC server");
+    socket.addEventListener("close", async () => {
+      console.log("Disconnected from RPC server, reconnecting");
+
+      await bind(getSocket, broker);
     });
 
     let firstMessage = true;
@@ -65,3 +69,5 @@ export default (socket: WebSocket, broker: EventTarget) =>
       );
     });
   });
+
+export default bind;

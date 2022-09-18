@@ -1,10 +1,11 @@
 import bind from "./bind";
 
 await bind(
-  new WebSocket(
-    new URLSearchParams(window.location.search).get("socketURL") ||
-      "ws://localhost:1337"
-  ),
+  () =>
+    new WebSocket(
+      new URLSearchParams(window.location.search).get("socketURL") ||
+        "ws://localhost:1337"
+    ),
   window
 );
 
