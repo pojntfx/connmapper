@@ -81,6 +81,17 @@ func (h *Registry) HandlerFunc(w http.ResponseWriter, r *http.Request) error {
 	go func() {
 		defer conn.Close()
 
+		functionNames := []string{}
+		for functionName := range h.functions {
+			functionNames = append(functionNames, functionName)
+		}
+
+		if err := conn.WriteJSON(functionNames); err != nil {
+			errs <- err
+
+			return
+		}
+
 		for {
 			var functionRequest []json.RawMessage
 			if err := conn.ReadJSON(&functionRequest); err != nil {
