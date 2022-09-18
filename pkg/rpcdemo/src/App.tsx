@@ -86,6 +86,26 @@ export default () => {
         >
           Return string and nil
         </button>
+
+        <button
+          onClick={async () => {
+            if (Notification.permission !== "granted") {
+              await Notification.requestPermission();
+            }
+
+            while (true) {
+              const res = await exampleNotification();
+
+              if (res === "") {
+                break;
+              }
+
+              new Notification(res);
+            }
+          }}
+        >
+          Get three notifications
+        </button>
       </div>
     </main>
   );

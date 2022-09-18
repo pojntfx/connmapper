@@ -11,3 +11,5 @@ declare function exampleReturnStruct(): Promise<{ name: string }>;
 declare function exampleReturnStringAndError(): Promise<string>;
 
 declare function exampleReturnStringAndNil(): Promise<string>;
+
+declare function exampleNotification(): Promise<string>;
