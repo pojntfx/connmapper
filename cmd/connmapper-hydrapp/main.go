@@ -95,6 +95,39 @@ func main() {
 		panic(err)
 	}
 
+	var notificationChan chan string
+	if err := registry.Bind("exampleNotification", func() (string, error) {
+		if notificationChan == nil {
+			notificationChan = make(chan string)
+
+			ticker := time.NewTicker(time.Second * 2)
+			i := 0
+			go func() {
+				for {
+					<-ticker.C
+
+					if i >= 3 {
+						notificationChan <- ""
+
+						ticker.Stop()
+
+						notificationChan = nil
+
+						return
+					}
+
+					notificationChan <- "Go server time: " + time.Now().Format(time.RFC3339)
+
+					i++
+				}
+			}()
+		}
+
+		return <-notificationChan, nil
+	}); err != nil {
+		panic(err)
+	}
+
 	var backendListener net.Listener
 	if strings.TrimSpace(*baddr) != "" {
 		var err error
