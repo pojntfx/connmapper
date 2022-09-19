@@ -2,6 +2,7 @@ go 1.18
 
 use (
 	.
+	./cmd/connmapper-browser
 	./cmd/connmapper-cli
 	./cmd/connmapper-gui
 	./cmd/connmapper-hydrapp
