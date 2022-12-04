@@ -50,7 +50,7 @@ rpm:
     trailer: 1.fc37
     distro: fedora-37
     architecture: amd64
-    packages: []
+    packages:
       - name: libpcap-devel
         version: "1.10.1"
 apk:
