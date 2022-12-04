@@ -1,100 +1,126 @@
 import { useEffect, useState } from "react";
-import ReactGlobeGl from "react-globe.gl";
-import earthTexture from "three-globe/example/img/earth-night.jpg";
-import earthElevation from "three-globe/example/img/earth-topology.png";
-import universeTexture from "three-globe/example/img/night-sky.png";
-import { useWindowSize } from "use-window-size-hook";
-import { v4 } from "uuid";
-import "./index.css";
+import { bind } from "@pojntfx/dudirekta";
 
-interface Arc {
-  id: string;
-  name: string;
-  coords: number[][];
+interface ITracedPacket {
+  layerType: string;
+  nextLayerType: string;
+  length: number;
+
+  srcIP: string;
+  srcCountryName: string;
+  srcCityName: string;
+  srcLongitude: number;
+  srcLatitude: number;
+
+  dstIP: string;
+  dstCountryName: string;
+  dstCityName: string;
+  dstLongitude: number;
+  dstLatitude: number;
 }
 
-const getLocalPosition = (): Promise<number[]> =>
-  new Promise((res) =>
-    navigator.geolocation.getCurrentPosition((s) =>
-      res([s.coords.longitude, s.coords.latitude])
-    )
-  );
-
 export default () => {
-  const { width, height } = useWindowSize();
-  const [arcs, setArcs] = useState<Arc[]>([]);
+  const [remote, setRemote] = useState({
+    ListDevices: async (): Promise<string[]> => [],
+    ListenOnDevice: async (name: string) => {},
+  });
+
+  const [packets, setPackets] = useState<ITracedPacket[]>([]);
 
   useEffect(() => {
-    (async () => {
-      const config = await getConfig();
-
-      (window as any).handlePacket = async (packet: Packet) => {
-        let srcLongitude = packet.srcLongitude;
-        let srcLatitude = packet.srcLatitude;
-        if (srcLongitude === 0 && srcLatitude === 0) {
-          if (config.localLongitude !== 0 && config.localLatitude !== 0) {
-            srcLongitude = config.localLongitude;
-            srcLatitude = config.localLatitude;
-          } else {
-            const src = await getLocalPosition();
-
-            srcLongitude = src[1];
-            srcLatitude = src[1];
-          }
-        }
-
-        let dstLongitude = packet.dstLongitude;
-        let dstLatitude = packet.dstLatitude;
-        if (dstLongitude === 0 && dstLatitude === 0) {
-          if (config.localLongitude !== 0 && config.localLatitude !== 0) {
-            dstLongitude = config.localLongitude;
-            dstLatitude = config.localLatitude;
-          } else {
-            const dst = await getLocalPosition();
-
-            dstLongitude = dst[0];
-            dstLatitude = dst[1];
-          }
-        }
-
-        const id = v4();
-
-        setInterval(() => {
-          setArcs((arcs) => arcs.filter((a) => a.id !== id));
-        }, config.arcDuration);
-
-        setArcs((arcs) => [
-          ...arcs,
-          {
-            id,
-            name: `${packet.layerType}/${packet.nextLayerType} ${packet.length}B ${packet.srcIP} (${packet.srcCountryName}, ${packet.srcCityName}, ${srcLongitude}, ${srcLatitude}) -> ${packet.dstIP} (${packet.dstCountryName}, ${packet.dstCityName}, ${dstLongitude}, ${dstLatitude})`,
-            coords: [
-              [srcLongitude, srcLatitude],
-              [dstLongitude, dstLatitude],
-            ],
-          },
-        ]);
-      };
-    })();
+    bind(
+      () =>
+        new WebSocket(
+          new URLSearchParams(window.location.search).get("socketURL") ||
+            "ws://localhost:1337"
+        ),
+      {
+        HandleTracedPacket: async (packet: ITracedPacket) => {
+          setPackets((oldPackets) => [packet, ...oldPackets].slice(0, 100));
+        },
+      },
+      remote,
+      setRemote
+    );
   }, []);
 
+  const [devices, setDevices] = useState<string[]>([]);
+
   return (
-    <ReactGlobeGl
-      arcsData={arcs}
-      arcLabel={(d: any) => (d as Arc).name}
-      arcStartLng={(d: any) => (d as Arc).coords[0][0]}
-      arcStartLat={(d: any) => (d as Arc).coords[0][1]}
-      arcEndLng={(d: any) => (d as Arc).coords[1][0]}
-      arcEndLat={(d: any) => (d as Arc).coords[1][1]}
-      arcDashLength={0.4}
-      arcDashGap={0.2}
-      arcDashAnimateTime={1500}
-      arcsTransitionDuration={0}
-      globeImageUrl={earthTexture as string}
-      bumpImageUrl={earthElevation as string}
-      backgroundImageUrl={universeTexture as string}
-      width={width}
-      height={height}
-    />
+    <main>
+      <h1>Connmapper</h1>
+
+      {packets.length <= 0 ? (
+        <>
+          <button
+            onClick={async () => {
+              const devices = await remote.ListDevices();
+
+              setDevices(devices);
+            }}
+          >
+            List devices
+          </button>
+
+          <ul>
+            {devices.map((d) => (
+              <li>
+                <div>{d}</div>
+
+                <div>
+                  <button onClick={() => remote.ListenOnDevice(d)}>
+                    Listen on device
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </>
+      ) : (
+        <table>
+          <caption>System internet traffic</caption>
+          <thead>
+            <tr>
+              <th>Layer Type</th>
+              <th>Next Layer Type</th>
+              <th>Length</th>
+
+              <th>Source IP</th>
+              <th>Source country</th>
+              <th>Source city</th>
+              <th>Source longitude</th>
+              <th>Source latitude</th>
+
+              <th>Destination IP</th>
+              <th>Destination country</th>
+              <th>Destination city</th>
+              <th>Destination longitude</th>
+              <th>Destination latitude</th>
+            </tr>
+          </thead>
+          <tbody>
+            {packets.map((p) => (
+              <tr>
+                <td>{p.layerType}</td>
+                <td>{p.nextLayerType}</td>
+                <td>{p.length}</td>
+
+                <td>{p.srcIP}</td>
+                <td>{p.srcCountryName}</td>
+                <td>{p.srcCityName}</td>
+                <td>{p.srcLongitude}</td>
+                <td>{p.srcLatitude}</td>
+
+                <td>{p.dstIP}</td>
+                <td>{p.dstCountryName}</td>
+                <td>{p.dstCityName}</td>
+                <td>{p.dstLongitude}</td>
+                <td>{p.dstLatitude}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </main>
   );
 };
