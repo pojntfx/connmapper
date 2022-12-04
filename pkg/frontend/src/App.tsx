@@ -1,16 +1,15 @@
 import { bind } from "@pojntfx/dudirekta";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import ReactGlobeGl from "react-globe.gl";
 import earthTexture from "three-globe/example/img/earth-night.jpg";
 import earthElevation from "three-globe/example/img/earth-topology.png";
 import universeTexture from "three-globe/example/img/night-sky.png";
 import { useWindowSize } from "usehooks-ts";
-import { v4 } from "uuid";
+import "./main.css";
 
-interface ITracedPacket {
+interface ITracedConnection {
   layerType: string;
   nextLayerType: string;
-  length: number;
 
   srcIP: string;
   srcCountryName: string;
@@ -23,58 +22,62 @@ interface ITracedPacket {
   dstCityName: string;
   dstLongitude: number;
   dstLatitude: number;
-
-  firstSeen: number;
-  lastSeen: number;
 }
 
-enum SortingType {
-  FIRST_SEEN = 1,
-  LAST_SEEN = 2,
-  LAYER_TYPE = 3,
-  NEXT_LAYER_TYPE = 4,
-  LENGTH = 5,
-  SRC_COUNTRY = 6,
-  DST_COUNTRY = 7,
-}
-
-interface Arc {
+interface IArc {
   id: string;
   name: string;
   coords: number[][];
 }
 
+const getTracedConnectionID = (connection: ITracedConnection) =>
+  connection.layerType +
+  "-" +
+  connection.nextLayerType +
+  "-" +
+  connection.srcIP +
+  "-" +
+  connection.dstIP +
+  "-";
+
 export default () => {
   const [remote, setRemote] = useState({
     ListDevices: async (): Promise<string[]> => [],
-    ListenOnDevice: async (name: string) => {},
+    TraceDevice: async (name: string) => {},
+    GetConnections: async (): Promise<ITracedConnection[]> => [],
   });
 
-  const [packets, setPackets] = useState<ITracedPacket[]>([]);
-  const [knownHosts, setKnownHosts] = useState<ITracedPacket[]>([]);
   const [ready, setReady] = useState(false);
-  const currentLocation = useRef<GeolocationCoordinates>();
+  const [currentLocation, setCurrentLocation] =
+    useState<GeolocationCoordinates>();
+
+  const addLocalLocation = useCallback(
+    (packet: ITracedConnection) => {
+      if (!packet.srcLatitude && !packet.srcLongitude && currentLocation) {
+        packet.srcLatitude = currentLocation.latitude;
+        packet.srcLongitude = currentLocation.longitude;
+      }
+
+      if (!packet.dstLatitude && !packet.dstLongitude && currentLocation) {
+        packet.dstLatitude = currentLocation.latitude;
+        packet.dstLongitude = currentLocation.longitude;
+      }
+    },
+    [currentLocation]
+  );
 
   useEffect(() => {
-    const addLocalLocation = (packet: ITracedPacket) => {
-      if (
-        !packet.srcLatitude &&
-        !packet.srcLongitude &&
-        currentLocation.current
-      ) {
-        packet.srcLatitude = currentLocation.current.latitude;
-        packet.srcLongitude = currentLocation.current.longitude;
-      }
+    (async () => {
+      try {
+        const pos = await new Promise<GeolocationPosition>((res, rej) =>
+          navigator.geolocation.getCurrentPosition(res, rej)
+        );
 
-      if (
-        !packet.dstLatitude &&
-        !packet.dstLongitude &&
-        currentLocation.current
-      ) {
-        packet.dstLatitude = currentLocation.current.latitude;
-        packet.dstLongitude = currentLocation.current.longitude;
+        setCurrentLocation(pos.coords);
+      } catch (e) {
+        alert((e as Error).message);
       }
-    };
+    })();
 
     bind(
       () =>
@@ -82,108 +85,13 @@ export default () => {
           new URLSearchParams(window.location.search).get("socketURL") ||
             "ws://localhost:1337"
         ),
-      {
-        HandleTracedPacket: async (newPackets: ITracedPacket[]) => {
-          newPackets.forEach((newPacket) => {
-            setPackets((oldPackets) => {
-              addLocalLocation(newPacket);
-
-              setArcs((arcs) => {
-                if (
-                  arcs.find(
-                    (arc) =>
-                      arc.coords[0][0] === newPacket.srcLongitude &&
-                      arc.coords[0][1] === newPacket.srcLatitude &&
-                      arc.coords[1][0] === newPacket.dstLongitude &&
-                      arc.coords[1][1] === newPacket.dstLatitude
-                  )
-                ) {
-                  return arcs;
-                }
-
-                const id = v4();
-
-                setInterval(() => {
-                  setArcs((arcs) => arcs.filter((a) => a.id !== id));
-                }, 10000);
-
-                return [
-                  ...arcs,
-                  {
-                    id,
-                    name: `${newPacket.layerType}/${newPacket.nextLayerType} ${newPacket.srcIP} (${newPacket.srcCountryName}, ${newPacket.srcCityName}, ${newPacket.srcLongitude}, ${newPacket.srcLatitude}) → ${newPacket.dstIP} (${newPacket.dstCountryName}, ${newPacket.dstCityName}, ${newPacket.dstLongitude}, ${newPacket.dstLatitude})`,
-                    coords: [
-                      [newPacket.srcLongitude, newPacket.srcLatitude],
-                      [newPacket.dstLongitude, newPacket.dstLatitude],
-                    ],
-                  },
-                ];
-              });
-
-              return [newPacket, ...oldPackets]
-                .filter((p) =>
-                  JSON.stringify(Object.values(p))
-                    .toLowerCase()
-                    .includes(systemInternetTrafficFilter.current.toLowerCase())
-                )
-                .slice(0, systemInternetTrafficLimit.current);
-            });
-
-            setKnownHosts((oldPackets) => {
-              addLocalLocation(newPacket);
-
-              const knownHostIndex = oldPackets.findIndex(
-                (oldPacket) =>
-                  oldPacket.layerType == newPacket.layerType &&
-                  oldPacket.nextLayerType == newPacket.nextLayerType &&
-                  oldPacket.srcIP == newPacket.srcIP &&
-                  oldPacket.dstIP == newPacket.dstIP
-              );
-
-              if (knownHostIndex === -1) {
-                return [
-                  {
-                    ...newPacket,
-                    firstSeen: newPacket.firstSeen,
-                    lastSeen: newPacket.lastSeen,
-                  },
-                  ...oldPackets,
-                ];
-              }
-
-              return oldPackets.map((oldPacket, i) => {
-                if (i === knownHostIndex) {
-                  return {
-                    ...oldPacket,
-                    length: oldPacket.length + newPacket.length,
-                    lastSeen: newPacket.lastSeen,
-                  };
-                }
-
-                return oldPacket;
-              });
-            });
-          });
-        },
-      },
+      {},
       remote,
       setRemote,
       {
         onOpen: () => setReady(true),
       }
     );
-
-    (async () => {
-      try {
-        const pos = await new Promise<GeolocationPosition>((res, rej) =>
-          navigator.geolocation.getCurrentPosition(res, rej)
-        );
-
-        currentLocation.current = pos.coords;
-      } catch (e) {
-        alert((e as Error).message);
-      }
-    })();
   }, []);
 
   const [devices, setDevices] = useState<string[]>([]);
@@ -201,278 +109,62 @@ export default () => {
   const [selectedDevice, setSelectedDevice] = useState("");
   const [tracing, setTracing] = useState(false);
 
-  const [sortingType, setSortingType] = useState<SortingType>(
-    SortingType.FIRST_SEEN
-  );
+  const [arcs, setArcs] = useState<IArc[]>([]);
 
-  const [knownHostsLimit, setKnownHostsLimit] = useState(25);
-  const [knownHostsFilter, setKnownHostsFilter] = useState("");
+  useEffect(() => {
+    if (tracing) {
+      setInterval(async () => {
+        setArcs(
+          (await remote.GetConnections()).map((conn) => {
+            addLocalLocation(conn);
 
-  const systemInternetTrafficLimit = useRef(25);
-  const systemInternetTrafficFilter = useRef("");
+            return {
+              id: getTracedConnectionID(conn),
+              coords: [
+                [conn.srcLongitude, conn.srcLatitude],
+                [conn.dstLongitude, conn.dstLatitude],
+              ],
+              name: `${conn.layerType}/${conn.nextLayerType} ${conn.srcIP} (${
+                conn.srcCountryName || "Your country"
+              }, ${conn.srcCityName || "your city"}, ${conn.srcLongitude}, ${
+                conn.srcLatitude
+              }) → ${conn.dstIP} (${conn.dstCountryName || "Your country"}, ${
+                conn.dstCityName || "your city"
+              }, ${conn.dstLongitude}, ${conn.dstLatitude})`,
+            };
+          })
+        );
+      }, 1000);
+    }
+  }, [tracing]);
 
   const { width, height } = useWindowSize();
-  const [arcs, setArcs] = useState<Arc[]>([]);
 
   return (
     <main>
-      <h1>Connmapper</h1>
-
       {ready ? (
         tracing ? (
-          <>
-            <section id="internet-traffic-visualization">
-              <a href="#internet-traffic-visualization">
-                <h2>Internet Traffic Visualization</h2>
-              </a>
-
-              <ReactGlobeGl
-                arcsData={arcs}
-                arcLabel={(d: any) => (d as Arc).name}
-                arcStartLng={(d: any) => (d as Arc).coords[0][0]}
-                arcStartLat={(d: any) => (d as Arc).coords[0][1]}
-                arcEndLng={(d: any) => (d as Arc).coords[1][0]}
-                arcEndLat={(d: any) => (d as Arc).coords[1][1]}
-                arcDashLength={0.4}
-                arcDashGap={0.2}
-                arcDashAnimateTime={1500}
-                arcsTransitionDuration={0}
-                globeImageUrl={earthTexture as string}
-                bumpImageUrl={earthElevation as string}
-                backgroundImageUrl={universeTexture as string}
-                width={width - 200}
-                height={height * (2 / 3)}
-              />
-            </section>
-
-            <section id="unique-hosts">
-              <a href="#unique-hosts">
-                <h2>Unique Hosts</h2>
-              </a>
-
-              <label htmlFor="unique-hosts-limit">Limit</label>
-              <input
-                name="unique-hosts-limit"
-                id="unique-hosts-limit"
-                type="number"
-                value={knownHostsLimit}
-                onChange={(e) => setKnownHostsLimit(parseInt(e.target.value))}
-              />
-
-              <label htmlFor="unique-hosts-filter">Filter</label>
-              <input
-                name="unique-hosts-filter"
-                id="unique-hosts-filter"
-                type="text"
-                value={knownHostsFilter}
-                onChange={(e) => setKnownHostsFilter(e.target.value)}
-              />
-
-              <table>
-                <thead>
-                  <tr>
-                    <th>
-                      First seen <br />
-                      <button
-                        onClick={() => setSortingType(SortingType.FIRST_SEEN)}
-                      >
-                        Sort
-                      </button>
-                    </th>
-                    <th>
-                      Last seen <br />
-                      <button
-                        onClick={() => setSortingType(SortingType.LAST_SEEN)}
-                      >
-                        Sort
-                      </button>
-                    </th>
-
-                    <th>
-                      Layer Type <br />
-                      <button
-                        onClick={() => setSortingType(SortingType.LAYER_TYPE)}
-                      >
-                        Sort
-                      </button>
-                    </th>
-                    <th>
-                      Next Layer Type <br />
-                      <button
-                        onClick={() =>
-                          setSortingType(SortingType.NEXT_LAYER_TYPE)
-                        }
-                      >
-                        Sort
-                      </button>
-                    </th>
-                    <th>
-                      Length <br />
-                      <button
-                        onClick={() => setSortingType(SortingType.LENGTH)}
-                      >
-                        Sort
-                      </button>
-                    </th>
-
-                    <th>Source IP</th>
-                    <th>
-                      Source country <br />
-                      <button
-                        onClick={() => setSortingType(SortingType.SRC_COUNTRY)}
-                      >
-                        Sort
-                      </button>
-                    </th>
-                    <th>Source city</th>
-                    <th>Source longitude</th>
-                    <th>Source latitude</th>
-
-                    <th>Destination IP</th>
-                    <th>
-                      Destination country
-                      <br />
-                      <button
-                        onClick={() => setSortingType(SortingType.DST_COUNTRY)}
-                      >
-                        Sort
-                      </button>
-                    </th>
-                    <th>Destination city</th>
-                    <th>Destination longitude</th>
-                    <th>Destination latitude</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {knownHosts
-                    .filter((p) =>
-                      JSON.stringify(Object.values(p))
-                        .toLowerCase()
-                        .includes(knownHostsFilter.toLowerCase())
-                    )
-                    .sort((a, b) => {
-                      switch (sortingType) {
-                        case SortingType.LAST_SEEN:
-                          return b.lastSeen - a.lastSeen;
-                        case SortingType.LAYER_TYPE:
-                          return b.layerType.localeCompare(a.layerType);
-                        case SortingType.NEXT_LAYER_TYPE:
-                          return b.nextLayerType.localeCompare(a.nextLayerType);
-                        case SortingType.LENGTH:
-                          return b.length - a.length;
-                        case SortingType.SRC_COUNTRY:
-                          return b.srcCountryName.localeCompare(
-                            a.srcCountryName
-                          );
-                        case SortingType.DST_COUNTRY:
-                          return b.dstCountryName.localeCompare(
-                            a.dstCountryName
-                          );
-                        default:
-                          return b.firstSeen - a.firstSeen;
-                      }
-                    })
-                    .slice(0, knownHostsLimit)
-                    .map((p, i) => (
-                      <tr key={i}>
-                        <td>{new Date(p.firstSeen).toLocaleTimeString()}</td>
-                        <td>{new Date(p.lastSeen).toLocaleTimeString()}</td>
-
-                        <td>{p.layerType}</td>
-                        <td>{p.nextLayerType}</td>
-                        <td>{p.length}</td>
-
-                        <td>{p.srcIP}</td>
-                        <td>{p.srcCountryName}</td>
-                        <td>{p.srcCityName}</td>
-                        <td>{p.srcLongitude}</td>
-                        <td>{p.srcLatitude}</td>
-
-                        <td>{p.dstIP}</td>
-                        <td>{p.dstCountryName}</td>
-                        <td>{p.dstCityName}</td>
-                        <td>{p.dstLongitude}</td>
-                        <td>{p.dstLatitude}</td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </section>
-
-            <section id="system-internet-traffic">
-              <a href="#system-internet-traffic">
-                <h2>System Internet Traffic</h2>
-              </a>
-
-              <label htmlFor="systems-internet-traffic-limit">Limit</label>
-              <input
-                name="systems-internet-traffic-limit"
-                id="systems-internet-traffic-limit"
-                type="number"
-                value={systemInternetTrafficLimit.current}
-                onChange={(e) =>
-                  (systemInternetTrafficLimit.current = parseInt(
-                    e.target.value
-                  ))
-                }
-              />
-
-              <label htmlFor="systems-internet-traffic-filter">Filter</label>
-              <input
-                name="systems-internet-traffic-filter"
-                id="systems-internet-traffic-filter"
-                type="text"
-                onChange={(e) =>
-                  (systemInternetTrafficFilter.current = e.target.value)
-                }
-              />
-
-              <table>
-                <thead>
-                  <tr>
-                    <th>Layer Type</th>
-                    <th>Next Layer Type</th>
-                    <th>Length</th>
-
-                    <th>Source IP</th>
-                    <th>Source country</th>
-                    <th>Source city</th>
-                    <th>Source longitude</th>
-                    <th>Source latitude</th>
-
-                    <th>Destination IP</th>
-                    <th>Destination country</th>
-                    <th>Destination city</th>
-                    <th>Destination longitude</th>
-                    <th>Destination latitude</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {packets.map((p, i) => (
-                    <tr key={i}>
-                      <td>{p.layerType}</td>
-                      <td>{p.nextLayerType}</td>
-                      <td>{p.length}</td>
-
-                      <td>{p.srcIP}</td>
-                      <td>{p.srcCountryName}</td>
-                      <td>{p.srcCityName}</td>
-                      <td>{p.srcLongitude}</td>
-                      <td>{p.srcLatitude}</td>
-
-                      <td>{p.dstIP}</td>
-                      <td>{p.dstCountryName}</td>
-                      <td>{p.dstCityName}</td>
-                      <td>{p.dstLongitude}</td>
-                      <td>{p.dstLatitude}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </section>
-          </>
+          <ReactGlobeGl
+            arcsData={arcs}
+            arcLabel={(d: any) => (d as IArc).name}
+            arcStartLng={(d: any) => (d as IArc).coords[0][0]}
+            arcStartLat={(d: any) => (d as IArc).coords[0][1]}
+            arcEndLng={(d: any) => (d as IArc).coords[1][0]}
+            arcEndLat={(d: any) => (d as IArc).coords[1][1]}
+            arcDashLength={0.4}
+            arcDashGap={0.2}
+            arcDashAnimateTime={1000}
+            arcsTransitionDuration={100}
+            globeImageUrl={earthTexture as string}
+            bumpImageUrl={earthElevation as string}
+            backgroundImageUrl={universeTexture as string}
+            width={width}
+            height={height}
+          />
         ) : (
           <>
+            <h1>Connmapper</h1>
+
             <select onChange={(e) => setSelectedDevice(e.target.value)}>
               {devices.map((d, i) => (
                 <option value={d} key={i}>
@@ -485,7 +177,7 @@ export default () => {
               onClick={() => {
                 (async () => {
                   try {
-                    await remote.ListenOnDevice(selectedDevice || devices[0]);
+                    await remote.TraceDevice(selectedDevice || devices[0]);
 
                     setTracing(true);
                   } catch (e) {

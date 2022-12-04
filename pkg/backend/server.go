@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/google/gopacket"
@@ -42,10 +43,9 @@ func lookupLocation(db *geoip2.Reader, ip net.IP) (
 	return
 }
 
-type tracedPacket struct {
+type tracedConnection struct {
 	LayerType     string `json:"layerType"`
 	NextLayerType string `json:"nextLayerType"`
-	Length        int    `json:"length"`
 
 	SrcIP          string  `json:"srcIP"`
 	SrcCountryName string  `json:"srcCountryName"`
@@ -58,13 +58,18 @@ type tracedPacket struct {
 	DstCityName    string  `json:"dstCityName"`
 	DstLongitude   float64 `json:"dstLongitude"`
 	DstLatitude    float64 `json:"dstLatitude"`
+}
 
-	FirstSeen int64 `json:"firstSeen"`
-	LastSeen  int64 `json:"lastSeen"`
+func getTracedConnectionID(connection tracedConnection) string {
+	return connection.LayerType + "-" +
+		connection.NextLayerType + "-" +
+		connection.SrcIP + "-" +
+		connection.DstIP + "-"
 }
 
 type local struct {
-	Peers func() map[string]remote
+	connections     map[string]tracedConnection
+	connectionsLock sync.Mutex
 }
 
 func (l *local) ListDevices(ctx context.Context) ([]string, error) {
@@ -81,7 +86,7 @@ func (l *local) ListDevices(ctx context.Context) ([]string, error) {
 	return devices, nil
 }
 
-func (l *local) ListenOnDevice(ctx context.Context, name string) error {
+func (l *local) TraceDevice(ctx context.Context, name string) error {
 	// TODO: Add API for setting DB path
 	home, err := os.UserHomeDir()
 	if err != nil {
@@ -116,14 +121,11 @@ func (l *local) ListenOnDevice(ctx context.Context, name string) error {
 			_ = db.Close()
 		}()
 
-		packets := []tracedPacket{}
-		nextSync := time.Now().Add(time.Second)
 		for packet := range source.Packets() {
 			layerType := ""
 			nextLayerType := ""
 			var srcIP net.IP
 			var dstIP net.IP
-			length := uint16(0)
 
 			if ipv4 := packet.Layer(layers.LayerTypeIPv4); ipv4 != nil {
 				layer, ok := ipv4.(*layers.IPv4)
@@ -135,7 +137,6 @@ func (l *local) ListenOnDevice(ctx context.Context, name string) error {
 				nextLayerType = layer.NextLayerType().String()
 				srcIP = layer.SrcIP
 				dstIP = layer.DstIP
-				length = layer.Length
 			} else if ipv6 := packet.Layer(layers.LayerTypeIPv6); ipv6 != nil {
 				layer, ok := ipv6.(*layers.IPv6)
 				if !ok {
@@ -146,7 +147,6 @@ func (l *local) ListenOnDevice(ctx context.Context, name string) error {
 				nextLayerType = layer.NextLayerType().String()
 				srcIP = layer.SrcIP
 				dstIP = layer.DstIP
-				length = layer.Length
 			}
 
 			if srcIP != nil && dstIP != nil {
@@ -160,39 +160,45 @@ func (l *local) ListenOnDevice(ctx context.Context, name string) error {
 					dstLongitude,
 					dstLatitude := lookupLocation(db, dstIP)
 
-				now := time.Now().UnixMilli()
-				packets = append(packets, tracedPacket{
+				connection := tracedConnection{
 					layerType,
 					nextLayerType,
-					int(length),
+
 					srcIP.String(),
 					srcCountryName,
 					srcCityName,
 					srcLongitude,
 					srcLatitude,
+
 					dstIP.String(),
 					dstCountryName,
 					dstCityName,
 					dstLongitude,
 					dstLatitude,
-					now,
-					now,
-				})
-
-				if time.Now().After(nextSync) && len(packets) > 1 && strings.TrimSpace(dstCountryName) != "" {
-					for peerID, peer := range l.Peers() {
-						if peerID == rpc.GetRemoteID(ctx) {
-							if err := peer.HandleTracedPacket(ctx, packets); err != nil {
-								log.Println("Could not send traced packet to peer, continuing:", err)
-
-								continue
-							}
-						}
-					}
-
-					packets = []tracedPacket{}
-					nextSync = time.Now().Add(time.Second)
 				}
+
+				l.connectionsLock.Lock()
+
+				// TODO: Add API for maximum connections to store
+				if len(l.connections) > 1000000 {
+					l.connections = map[string]tracedConnection{}
+				}
+
+				id := getTracedConnectionID(connection)
+
+				_, ok := l.connections[id]
+				if !ok {
+					l.connections[id] = connection
+
+					time.AfterFunc(time.Second*10, func() {
+						l.connectionsLock.Lock()
+
+						delete(l.connections, id)
+
+						l.connectionsLock.Unlock()
+					})
+				}
+				l.connectionsLock.Unlock()
 			}
 		}
 	}()
@@ -200,24 +206,34 @@ func (l *local) ListenOnDevice(ctx context.Context, name string) error {
 	return nil
 }
 
-type remote struct {
-	HandleTracedPacket func(ctx context.Context, packets []tracedPacket) error
+func (l *local) GetConnections(ctx context.Context) ([]tracedConnection, error) {
+	l.connectionsLock.Lock()
+	defer l.connectionsLock.Unlock()
+
+	connections := []tracedConnection{}
+	for _, connection := range l.connections {
+		connections = append(connections, connection)
+	}
+
+	return connections, nil
 }
+
+type remote struct{}
 
 func StartServer(ctx context.Context, addr string, heartbeat time.Duration, localhostize bool) (string, func() error, error) {
 	if strings.TrimSpace(addr) == "" {
 		addr = ":0"
 	}
 
-	l := &local{}
 	registry := rpc.NewRegistry(
-		l,
+		&local{
+			connections: map[string]tracedConnection{},
+		},
 		remote{},
 
 		time.Second*10,
 		ctx,
 	)
-	l.Peers = registry.Peers
 
 	listener, err := net.Listen("tcp", addr)
 	if err != nil {
