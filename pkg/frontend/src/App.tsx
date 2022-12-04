@@ -63,10 +63,13 @@ export default () => {
                 newPacket.srcLongitude = currentLocation.current.longitude;
               }
 
-              return [newPacket, ...oldPackets].slice(
-                0,
-                systemInternetTrafficLimit.current
-              );
+              return [newPacket, ...oldPackets]
+                .filter((p) =>
+                  JSON.stringify(Object.values(p))
+                    .toLowerCase()
+                    .includes(systemInternetTrafficFilter.current.toLowerCase())
+                )
+                .slice(0, systemInternetTrafficLimit.current);
             });
 
             setKnownHosts((oldPackets) => {
@@ -152,8 +155,11 @@ export default () => {
     SortingType.FIRST_SEEN
   );
 
-  const [knownHostsLimit, setKnownHostsLimit] = useState(50);
-  const systemInternetTrafficLimit = useRef(50);
+  const [knownHostsLimit, setKnownHostsLimit] = useState(25);
+  const [knownHostsFilter, setKnownHostsFilter] = useState("");
+
+  const systemInternetTrafficLimit = useRef(25);
+  const systemInternetTrafficFilter = useRef("");
 
   return (
     <main>
@@ -177,6 +183,16 @@ export default () => {
                   (systemInternetTrafficLimit.current = parseInt(
                     e.target.value
                   ))
+                }
+              />
+
+              <label htmlFor="systems-internet-traffic-filter">Filter</label>
+              <input
+                name="systems-internet-traffic-filter"
+                id="systems-internet-traffic-filter"
+                type="text"
+                onChange={(e) =>
+                  (systemInternetTrafficFilter.current = e.target.value)
                 }
               />
 
@@ -236,6 +252,15 @@ export default () => {
                 type="number"
                 value={knownHostsLimit}
                 onChange={(e) => setKnownHostsLimit(parseInt(e.target.value))}
+              />
+
+              <label htmlFor="unique-hosts-filter">Filter</label>
+              <input
+                name="unique-hosts-filter"
+                id="unique-hosts-filter"
+                type="text"
+                value={knownHostsFilter}
+                onChange={(e) => setKnownHostsFilter(e.target.value)}
               />
 
               <table>
@@ -315,6 +340,11 @@ export default () => {
                 </thead>
                 <tbody>
                   {knownHosts
+                    .filter((p) =>
+                      JSON.stringify(Object.values(p))
+                        .toLowerCase()
+                        .includes(knownHostsFilter.toLowerCase())
+                    )
                     .sort((a, b) => {
                       switch (sortingType) {
                         case SortingType.LAST_SEEN:
