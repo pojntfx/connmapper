@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { bind } from "@pojntfx/dudirekta";
 
 interface ITracedPacket {
@@ -27,6 +27,7 @@ export default () => {
 
   const [packets, setPackets] = useState<ITracedPacket[]>([]);
   const [ready, setReady] = useState(false);
+  const currentLocation = useRef<GeolocationCoordinates>();
 
   useEffect(() => {
     bind(
@@ -37,7 +38,18 @@ export default () => {
         ),
       {
         HandleTracedPacket: async (packet: ITracedPacket) => {
-          setPackets((oldPackets) => [packet, ...oldPackets].slice(0, 100));
+          setPackets((oldPackets) => {
+            if (
+              !packet.srcLatitude &&
+              !packet.srcLongitude &&
+              currentLocation.current
+            ) {
+              packet.srcLatitude = currentLocation.current.latitude;
+              packet.srcLongitude = currentLocation.current.longitude;
+            }
+
+            return [packet, ...oldPackets].slice(0, 50);
+          });
         },
       },
       remote,
@@ -46,22 +58,34 @@ export default () => {
         onOpen: () => setReady(true),
       }
     );
+
+    (async () => {
+      try {
+        const pos = await new Promise<GeolocationPosition>((res, rej) =>
+          navigator.geolocation.getCurrentPosition(res, rej)
+        );
+
+        currentLocation.current = pos.coords;
+      } catch (e) {
+        alert((e as Error).message);
+      }
+    })();
   }, []);
 
   const [devices, setDevices] = useState<string[]>([]);
 
   useEffect(() => {
-    (async () => {
-      if (ready) {
+    if (ready) {
+      (async () => {
         const devices = await remote.ListDevices();
 
         setDevices(devices);
-      }
-    })();
+      })();
+    }
   }, [ready]);
 
-  const [tracing, setTracing] = useState(false);
   const [selectedDevice, setSelectedDevice] = useState("");
+  const [tracing, setTracing] = useState(false);
 
   return (
     <main>
@@ -128,13 +152,11 @@ export default () => {
               (async () => {
                 try {
                   await remote.ListenOnDevice(selectedDevice || devices[0]);
+
+                  setTracing(true);
                 } catch (e) {
                   alert((e as Error).message);
-
-                  return;
                 }
-
-                setTracing(true);
               })();
             }}
           >
