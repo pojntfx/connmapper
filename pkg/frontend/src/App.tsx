@@ -19,6 +19,21 @@ interface ITracedPacket {
   dstLatitude: number;
 }
 
+interface ITracedPacketWithTimestamp extends ITracedPacket {
+  firstSeen: number;
+  lastSeen: number;
+}
+
+enum SortingType {
+  FIRST_SEEN = 1,
+  LAST_SEEN = 2,
+  LAYER_TYPE = 3,
+  NEXT_LAYER_TYPE = 4,
+  LENGTH = 5,
+  SRC_COUNTRY = 6,
+  DST_COUNTRY = 7,
+}
+
 export default () => {
   const [remote, setRemote] = useState({
     ListDevices: async (): Promise<string[]> => [],
@@ -26,6 +41,9 @@ export default () => {
   });
 
   const [packets, setPackets] = useState<ITracedPacket[]>([]);
+  const [knownHosts, setKnownHosts] = useState<ITracedPacketWithTimestamp[]>(
+    []
+  );
   const [ready, setReady] = useState(false);
   const currentLocation = useRef<GeolocationCoordinates>();
 
@@ -37,18 +55,60 @@ export default () => {
             "ws://localhost:1337"
         ),
       {
-        HandleTracedPacket: async (packet: ITracedPacket) => {
+        HandleTracedPacket: async (newPacket: ITracedPacket) => {
           setPackets((oldPackets) => {
             if (
-              !packet.srcLatitude &&
-              !packet.srcLongitude &&
+              !newPacket.srcLatitude &&
+              !newPacket.srcLongitude &&
               currentLocation.current
             ) {
-              packet.srcLatitude = currentLocation.current.latitude;
-              packet.srcLongitude = currentLocation.current.longitude;
+              newPacket.srcLatitude = currentLocation.current.latitude;
+              newPacket.srcLongitude = currentLocation.current.longitude;
             }
 
-            return [packet, ...oldPackets].slice(0, 50);
+            return [newPacket, ...oldPackets].slice(0, 50);
+          });
+
+          setKnownHosts((oldPackets) => {
+            if (
+              !newPacket.srcLatitude &&
+              !newPacket.srcLongitude &&
+              currentLocation.current
+            ) {
+              newPacket.srcLatitude = currentLocation.current.latitude;
+              newPacket.srcLongitude = currentLocation.current.longitude;
+            }
+
+            const knownHostIndex = oldPackets.findIndex(
+              (oldPacket) =>
+                oldPacket.layerType == newPacket.layerType &&
+                oldPacket.nextLayerType == newPacket.nextLayerType &&
+                oldPacket.srcIP == newPacket.srcIP &&
+                oldPacket.dstIP == newPacket.dstIP
+            );
+
+            if (knownHostIndex === -1) {
+              return [
+                {
+                  ...newPacket,
+                  firstSeen: Date.now(),
+                  lastSeen: Date.now(),
+                },
+                ...oldPackets,
+              ];
+            }
+
+            return oldPackets.map((oldPacket, i) => {
+              if (i === knownHostIndex) {
+                return {
+                  ...oldPacket,
+                  length: oldPacket.length + newPacket.length,
+                  lastSeen: Date.now(),
+                };
+              }
+
+              return oldPacket;
+            });
           });
         },
       },
@@ -87,82 +147,225 @@ export default () => {
   const [selectedDevice, setSelectedDevice] = useState("");
   const [tracing, setTracing] = useState(false);
 
+  const [sortingType, setSortingType] = useState<SortingType>(
+    SortingType.FIRST_SEEN
+  );
+
   return (
     <main>
       <h1>Connmapper</h1>
 
-      {!ready && <div>Loading ...</div>}
+      {ready ? (
+        tracing ? (
+          <>
+            <section id="system-internet-traffic">
+              <a href="#system-internet-traffic">
+                <h2>System Internet Traffic</h2>
+              </a>
 
-      {tracing ? (
-        <table>
-          <caption>System internet traffic</caption>
-          <thead>
-            <tr>
-              <th>Layer Type</th>
-              <th>Next Layer Type</th>
-              <th>Length</th>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Layer Type</th>
+                    <th>Next Layer Type</th>
+                    <th>Length</th>
 
-              <th>Source IP</th>
-              <th>Source country</th>
-              <th>Source city</th>
-              <th>Source longitude</th>
-              <th>Source latitude</th>
+                    <th>Source IP</th>
+                    <th>Source country</th>
+                    <th>Source city</th>
+                    <th>Source longitude</th>
+                    <th>Source latitude</th>
 
-              <th>Destination IP</th>
-              <th>Destination country</th>
-              <th>Destination city</th>
-              <th>Destination longitude</th>
-              <th>Destination latitude</th>
-            </tr>
-          </thead>
-          <tbody>
-            {packets.map((p, i) => (
-              <tr key={i}>
-                <td>{p.layerType}</td>
-                <td>{p.nextLayerType}</td>
-                <td>{p.length}</td>
+                    <th>Destination IP</th>
+                    <th>Destination country</th>
+                    <th>Destination city</th>
+                    <th>Destination longitude</th>
+                    <th>Destination latitude</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {packets.map((p, i) => (
+                    <tr key={i}>
+                      <td>{p.layerType}</td>
+                      <td>{p.nextLayerType}</td>
+                      <td>{p.length}</td>
 
-                <td>{p.srcIP}</td>
-                <td>{p.srcCountryName}</td>
-                <td>{p.srcCityName}</td>
-                <td>{p.srcLongitude}</td>
-                <td>{p.srcLatitude}</td>
+                      <td>{p.srcIP}</td>
+                      <td>{p.srcCountryName}</td>
+                      <td>{p.srcCityName}</td>
+                      <td>{p.srcLongitude}</td>
+                      <td>{p.srcLatitude}</td>
 
-                <td>{p.dstIP}</td>
-                <td>{p.dstCountryName}</td>
-                <td>{p.dstCityName}</td>
-                <td>{p.dstLongitude}</td>
-                <td>{p.dstLatitude}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                      <td>{p.dstIP}</td>
+                      <td>{p.dstCountryName}</td>
+                      <td>{p.dstCityName}</td>
+                      <td>{p.dstLongitude}</td>
+                      <td>{p.dstLatitude}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </section>
+
+            <section id="known-hosts">
+              <a href="#known-hosts">
+                <h2>Known Hosts</h2>
+              </a>
+
+              <table>
+                <thead>
+                  <tr>
+                    <th>
+                      First seen <br />
+                      <button
+                        onClick={() => setSortingType(SortingType.FIRST_SEEN)}
+                      >
+                        Sort
+                      </button>
+                    </th>
+                    <th>
+                      Last seen <br />
+                      <button
+                        onClick={() => setSortingType(SortingType.LAST_SEEN)}
+                      >
+                        Sort
+                      </button>
+                    </th>
+
+                    <th>
+                      Layer Type <br />
+                      <button
+                        onClick={() => setSortingType(SortingType.LAYER_TYPE)}
+                      >
+                        Sort
+                      </button>
+                    </th>
+                    <th>
+                      Next Layer Type <br />
+                      <button
+                        onClick={() =>
+                          setSortingType(SortingType.NEXT_LAYER_TYPE)
+                        }
+                      >
+                        Sort
+                      </button>
+                    </th>
+                    <th>
+                      Length <br />
+                      <button
+                        onClick={() => setSortingType(SortingType.LENGTH)}
+                      >
+                        Sort
+                      </button>
+                    </th>
+
+                    <th>Source IP</th>
+                    <th>
+                      Source country <br />
+                      <button
+                        onClick={() => setSortingType(SortingType.SRC_COUNTRY)}
+                      >
+                        Sort
+                      </button>
+                    </th>
+                    <th>Source city</th>
+                    <th>Source longitude</th>
+                    <th>Source latitude</th>
+
+                    <th>Destination IP</th>
+                    <th>
+                      Destination country
+                      <br />
+                      <button
+                        onClick={() => setSortingType(SortingType.DST_COUNTRY)}
+                      >
+                        Sort
+                      </button>
+                    </th>
+                    <th>Destination city</th>
+                    <th>Destination longitude</th>
+                    <th>Destination latitude</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {knownHosts
+                    .sort((a, b) => {
+                      switch (sortingType) {
+                        case SortingType.LAST_SEEN:
+                          return b.lastSeen - a.lastSeen;
+                        case SortingType.LAYER_TYPE:
+                          return b.layerType.localeCompare(a.layerType);
+                        case SortingType.NEXT_LAYER_TYPE:
+                          return b.nextLayerType.localeCompare(a.nextLayerType);
+                        case SortingType.LENGTH:
+                          return b.length - a.length;
+                        case SortingType.SRC_COUNTRY:
+                          return b.srcCountryName.localeCompare(
+                            a.srcCountryName
+                          );
+                        case SortingType.DST_COUNTRY:
+                          return b.dstCountryName.localeCompare(
+                            a.dstCountryName
+                          );
+                        default:
+                          return b.firstSeen - a.firstSeen;
+                      }
+                    })
+                    .map((p, i) => (
+                      <tr key={i}>
+                        <td>{p.firstSeen}</td>
+                        <td>{p.lastSeen}</td>
+
+                        <td>{p.layerType}</td>
+                        <td>{p.nextLayerType}</td>
+                        <td>{p.length}</td>
+
+                        <td>{p.srcIP}</td>
+                        <td>{p.srcCountryName}</td>
+                        <td>{p.srcCityName}</td>
+                        <td>{p.srcLongitude}</td>
+                        <td>{p.srcLatitude}</td>
+
+                        <td>{p.dstIP}</td>
+                        <td>{p.dstCountryName}</td>
+                        <td>{p.dstCityName}</td>
+                        <td>{p.dstLongitude}</td>
+                        <td>{p.dstLatitude}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </section>
+          </>
+        ) : (
+          <>
+            <select onChange={(e) => setSelectedDevice(e.target.value)}>
+              {devices.map((d, i) => (
+                <option value={d} key={i}>
+                  {d}
+                </option>
+              ))}
+            </select>
+
+            <button
+              onClick={() => {
+                (async () => {
+                  try {
+                    await remote.ListenOnDevice(selectedDevice || devices[0]);
+
+                    setTracing(true);
+                  } catch (e) {
+                    alert((e as Error).message);
+                  }
+                })();
+              }}
+            >
+              Trace traffic on device
+            </button>
+          </>
+        )
       ) : (
-        <>
-          <select onChange={(e) => setSelectedDevice(e.target.value)}>
-            {devices.map((d, i) => (
-              <option value={d} key={i}>
-                {d}
-              </option>
-            ))}
-          </select>
-
-          <button
-            onClick={() => {
-              (async () => {
-                try {
-                  await remote.ListenOnDevice(selectedDevice || devices[0]);
-
-                  setTracing(true);
-                } catch (e) {
-                  alert((e as Error).message);
-                }
-              })();
-            }}
-          >
-            Trace traffic on device
-          </button>
-        </>
+        "Loading ..."
       )}
     </main>
   );
