@@ -44,6 +44,26 @@ export default () => {
   const currentLocation = useRef<GeolocationCoordinates>();
 
   useEffect(() => {
+    const addLocalLocation = (packet: ITracedPacket) => {
+      if (
+        !packet.srcLatitude &&
+        !packet.srcLongitude &&
+        currentLocation.current
+      ) {
+        packet.srcLatitude = currentLocation.current.latitude;
+        packet.srcLongitude = currentLocation.current.longitude;
+      }
+
+      if (
+        !packet.dstLatitude &&
+        !packet.dstLongitude &&
+        currentLocation.current
+      ) {
+        packet.dstLatitude = currentLocation.current.latitude;
+        packet.dstLongitude = currentLocation.current.longitude;
+      }
+    };
+
     bind(
       () =>
         new WebSocket(
@@ -54,14 +74,7 @@ export default () => {
         HandleTracedPacket: async (newPackets: ITracedPacket[]) => {
           newPackets.forEach((newPacket) => {
             setPackets((oldPackets) => {
-              if (
-                !newPacket.srcLatitude &&
-                !newPacket.srcLongitude &&
-                currentLocation.current
-              ) {
-                newPacket.srcLatitude = currentLocation.current.latitude;
-                newPacket.srcLongitude = currentLocation.current.longitude;
-              }
+              addLocalLocation(newPacket);
 
               return [newPacket, ...oldPackets]
                 .filter((p) =>
@@ -73,14 +86,7 @@ export default () => {
             });
 
             setKnownHosts((oldPackets) => {
-              if (
-                !newPacket.srcLatitude &&
-                !newPacket.srcLongitude &&
-                currentLocation.current
-              ) {
-                newPacket.srcLatitude = currentLocation.current.latitude;
-                newPacket.srcLongitude = currentLocation.current.longitude;
-              }
+              addLocalLocation(newPacket);
 
               const knownHostIndex = oldPackets.findIndex(
                 (oldPacket) =>
