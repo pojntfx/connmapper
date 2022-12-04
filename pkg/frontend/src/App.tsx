@@ -1,9 +1,9 @@
 import { bind } from "@pojntfx/dudirekta";
 import { useCallback, useEffect, useRef, useState } from "react";
 import ReactGlobeGl from "react-globe.gl";
-import earthTexture from "three-globe/example/img/earth-night.jpg";
-import earthElevation from "three-globe/example/img/earth-topology.png";
-import universeTexture from "three-globe/example/img/night-sky.png";
+import earthTexture from "./8k_earth_nightmap.jpg";
+import earthElevation from "./8k_earth_normal_map.png";
+import universeTexture from "./8k_stars_milky_way.jpg";
 import { useWindowSize } from "usehooks-ts";
 import "./main.css";
 
@@ -133,10 +133,10 @@ export default () => {
               id: getTracedConnectionID(conn),
               label: `${conn.layerType}/${conn.nextLayerType} ${conn.srcIP} (${
                 conn.srcCountryName || "Your country"
-              }, ${conn.srcCityName || "your city"}, ${conn.srcLongitude}, ${
+              }, ${conn.srcCityName || "unknown city"}, ${conn.srcLongitude}, ${
                 conn.srcLatitude
               }) → ${conn.dstIP} (${conn.dstCountryName || "Your country"}, ${
-                conn.dstCityName || "your city"
+                conn.dstCityName || "unknown city"
               }, ${conn.dstLongitude}, ${conn.dstLatitude})`,
               coords: [
                 [conn.srcLongitude, conn.srcLatitude],
