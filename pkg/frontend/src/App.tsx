@@ -28,6 +28,7 @@ interface IArc {
   id: string;
   label: string;
   coords: number[][];
+  incoming: boolean;
 }
 
 const getTracedConnectionID = (connection: ITracedConnection) =>
@@ -141,6 +142,7 @@ export default () => {
                 [conn.srcLongitude, conn.srcLatitude],
                 [conn.dstLongitude, conn.dstLatitude],
               ],
+              incoming: conn.srcCountryName ? true : false,
             };
           })
         );
@@ -165,6 +167,10 @@ export default () => {
             arcDashGap={0.1}
             arcDashAnimateTime={10000}
             arcsTransitionDuration={500}
+            arcStroke={() => 0.25}
+            arcColor={(d: any) =>
+              (d as IArc).incoming ? "#A30000" : "#ACE12E"
+            }
             globeImageUrl={earthTexture as string}
             bumpImageUrl={earthElevation as string}
             backgroundImageUrl={universeTexture as string}
