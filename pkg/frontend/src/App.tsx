@@ -26,7 +26,7 @@ interface ITracedConnection {
 
 interface IArc {
   id: string;
-  name: string;
+  label: string;
   coords: number[][];
 }
 
@@ -114,23 +114,33 @@ export default () => {
   useEffect(() => {
     if (tracing) {
       setInterval(async () => {
-        setArcs(
-          (await remote.GetConnections()).map((conn) => {
+        const conns = await remote.GetConnections();
+
+        setArcs((oldArcs) =>
+          conns.map((conn) => {
+            const oldArc = oldArcs.find(
+              (arc) => arc.id === getTracedConnectionID(conn)
+            );
+
+            if (oldArc) {
+              return oldArc;
+            }
+
             addLocalLocation(conn);
 
             return {
               id: getTracedConnectionID(conn),
-              coords: [
-                [conn.srcLongitude, conn.srcLatitude],
-                [conn.dstLongitude, conn.dstLatitude],
-              ],
-              name: `${conn.layerType}/${conn.nextLayerType} ${conn.srcIP} (${
+              label: `${conn.layerType}/${conn.nextLayerType} ${conn.srcIP} (${
                 conn.srcCountryName || "Your country"
               }, ${conn.srcCityName || "your city"}, ${conn.srcLongitude}, ${
                 conn.srcLatitude
               }) → ${conn.dstIP} (${conn.dstCountryName || "Your country"}, ${
                 conn.dstCityName || "your city"
               }, ${conn.dstLongitude}, ${conn.dstLatitude})`,
+              coords: [
+                [conn.srcLongitude, conn.srcLatitude],
+                [conn.dstLongitude, conn.dstLatitude],
+              ],
             };
           })
         );
@@ -146,15 +156,15 @@ export default () => {
         tracing ? (
           <ReactGlobeGl
             arcsData={arcs}
-            arcLabel={(d: any) => (d as IArc).name}
+            arcLabel={(d: any) => (d as IArc).label}
             arcStartLng={(d: any) => (d as IArc).coords[0][0]}
             arcStartLat={(d: any) => (d as IArc).coords[0][1]}
             arcEndLng={(d: any) => (d as IArc).coords[1][0]}
             arcEndLat={(d: any) => (d as IArc).coords[1][1]}
-            arcDashLength={0.4}
-            arcDashGap={0.2}
-            arcDashAnimateTime={1000}
-            arcsTransitionDuration={100}
+            arcDashLength={0.05}
+            arcDashGap={0.1}
+            arcDashAnimateTime={10000}
+            arcsTransitionDuration={500}
             globeImageUrl={earthTexture as string}
             bumpImageUrl={earthElevation as string}
             backgroundImageUrl={universeTexture as string}
