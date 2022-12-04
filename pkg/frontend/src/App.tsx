@@ -1,5 +1,11 @@
-import { useEffect, useRef, useState } from "react";
 import { bind } from "@pojntfx/dudirekta";
+import { useEffect, useRef, useState } from "react";
+import ReactGlobeGl from "react-globe.gl";
+import earthTexture from "three-globe/example/img/earth-night.jpg";
+import earthElevation from "three-globe/example/img/earth-topology.png";
+import universeTexture from "three-globe/example/img/night-sky.png";
+import { useWindowSize } from "usehooks-ts";
+import { v4 } from "uuid";
 
 interface ITracedPacket {
   layerType: string;
@@ -30,6 +36,12 @@ enum SortingType {
   LENGTH = 5,
   SRC_COUNTRY = 6,
   DST_COUNTRY = 7,
+}
+
+interface Arc {
+  id: string;
+  name: string;
+  coords: number[][];
 }
 
 export default () => {
@@ -75,6 +87,38 @@ export default () => {
           newPackets.forEach((newPacket) => {
             setPackets((oldPackets) => {
               addLocalLocation(newPacket);
+
+              setArcs((arcs) => {
+                if (
+                  arcs.find(
+                    (arc) =>
+                      arc.coords[0][0] === newPacket.srcLongitude &&
+                      arc.coords[0][1] === newPacket.srcLatitude &&
+                      arc.coords[1][0] === newPacket.dstLongitude &&
+                      arc.coords[1][1] === newPacket.dstLatitude
+                  )
+                ) {
+                  return arcs;
+                }
+
+                const id = v4();
+
+                setInterval(() => {
+                  setArcs((arcs) => arcs.filter((a) => a.id !== id));
+                }, 10000);
+
+                return [
+                  ...arcs,
+                  {
+                    id,
+                    name: `${newPacket.layerType}/${newPacket.nextLayerType} ${newPacket.srcIP} (${newPacket.srcCountryName}, ${newPacket.srcCityName}, ${newPacket.srcLongitude}, ${newPacket.srcLatitude}) → ${newPacket.dstIP} (${newPacket.dstCountryName}, ${newPacket.dstCityName}, ${newPacket.dstLongitude}, ${newPacket.dstLatitude})`,
+                    coords: [
+                      [newPacket.srcLongitude, newPacket.srcLatitude],
+                      [newPacket.dstLongitude, newPacket.dstLatitude],
+                    ],
+                  },
+                ];
+              });
 
               return [newPacket, ...oldPackets]
                 .filter((p) =>
@@ -167,6 +211,9 @@ export default () => {
   const systemInternetTrafficLimit = useRef(25);
   const systemInternetTrafficFilter = useRef("");
 
+  const { width, height } = useWindowSize();
+  const [arcs, setArcs] = useState<Arc[]>([]);
+
   return (
     <main>
       <h1>Connmapper</h1>
@@ -174,76 +221,28 @@ export default () => {
       {ready ? (
         tracing ? (
           <>
-            <section id="system-internet-traffic">
-              <a href="#system-internet-traffic">
-                <h2>System Internet Traffic</h2>
+            <section id="internet-traffic-visualization">
+              <a href="#internet-traffic-visualization">
+                <h2>Internet Traffic Visualization</h2>
               </a>
 
-              <label htmlFor="systems-internet-traffic-limit">Limit</label>
-              <input
-                name="systems-internet-traffic-limit"
-                id="systems-internet-traffic-limit"
-                type="number"
-                value={systemInternetTrafficLimit.current}
-                onChange={(e) =>
-                  (systemInternetTrafficLimit.current = parseInt(
-                    e.target.value
-                  ))
-                }
+              <ReactGlobeGl
+                arcsData={arcs}
+                arcLabel={(d: any) => (d as Arc).name}
+                arcStartLng={(d: any) => (d as Arc).coords[0][0]}
+                arcStartLat={(d: any) => (d as Arc).coords[0][1]}
+                arcEndLng={(d: any) => (d as Arc).coords[1][0]}
+                arcEndLat={(d: any) => (d as Arc).coords[1][1]}
+                arcDashLength={0.4}
+                arcDashGap={0.2}
+                arcDashAnimateTime={1500}
+                arcsTransitionDuration={0}
+                globeImageUrl={earthTexture as string}
+                bumpImageUrl={earthElevation as string}
+                backgroundImageUrl={universeTexture as string}
+                width={width - 200}
+                height={height * (2 / 3)}
               />
-
-              <label htmlFor="systems-internet-traffic-filter">Filter</label>
-              <input
-                name="systems-internet-traffic-filter"
-                id="systems-internet-traffic-filter"
-                type="text"
-                onChange={(e) =>
-                  (systemInternetTrafficFilter.current = e.target.value)
-                }
-              />
-
-              <table>
-                <thead>
-                  <tr>
-                    <th>Layer Type</th>
-                    <th>Next Layer Type</th>
-                    <th>Length</th>
-
-                    <th>Source IP</th>
-                    <th>Source country</th>
-                    <th>Source city</th>
-                    <th>Source longitude</th>
-                    <th>Source latitude</th>
-
-                    <th>Destination IP</th>
-                    <th>Destination country</th>
-                    <th>Destination city</th>
-                    <th>Destination longitude</th>
-                    <th>Destination latitude</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {packets.map((p, i) => (
-                    <tr key={i}>
-                      <td>{p.layerType}</td>
-                      <td>{p.nextLayerType}</td>
-                      <td>{p.length}</td>
-
-                      <td>{p.srcIP}</td>
-                      <td>{p.srcCountryName}</td>
-                      <td>{p.srcCityName}</td>
-                      <td>{p.srcLongitude}</td>
-                      <td>{p.srcLatitude}</td>
-
-                      <td>{p.dstIP}</td>
-                      <td>{p.dstCountryName}</td>
-                      <td>{p.dstCityName}</td>
-                      <td>{p.dstLongitude}</td>
-                      <td>{p.dstLatitude}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
             </section>
 
             <section id="unique-hosts">
@@ -396,6 +395,78 @@ export default () => {
                         <td>{p.dstLatitude}</td>
                       </tr>
                     ))}
+                </tbody>
+              </table>
+            </section>
+
+            <section id="system-internet-traffic">
+              <a href="#system-internet-traffic">
+                <h2>System Internet Traffic</h2>
+              </a>
+
+              <label htmlFor="systems-internet-traffic-limit">Limit</label>
+              <input
+                name="systems-internet-traffic-limit"
+                id="systems-internet-traffic-limit"
+                type="number"
+                value={systemInternetTrafficLimit.current}
+                onChange={(e) =>
+                  (systemInternetTrafficLimit.current = parseInt(
+                    e.target.value
+                  ))
+                }
+              />
+
+              <label htmlFor="systems-internet-traffic-filter">Filter</label>
+              <input
+                name="systems-internet-traffic-filter"
+                id="systems-internet-traffic-filter"
+                type="text"
+                onChange={(e) =>
+                  (systemInternetTrafficFilter.current = e.target.value)
+                }
+              />
+
+              <table>
+                <thead>
+                  <tr>
+                    <th>Layer Type</th>
+                    <th>Next Layer Type</th>
+                    <th>Length</th>
+
+                    <th>Source IP</th>
+                    <th>Source country</th>
+                    <th>Source city</th>
+                    <th>Source longitude</th>
+                    <th>Source latitude</th>
+
+                    <th>Destination IP</th>
+                    <th>Destination country</th>
+                    <th>Destination city</th>
+                    <th>Destination longitude</th>
+                    <th>Destination latitude</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {packets.map((p, i) => (
+                    <tr key={i}>
+                      <td>{p.layerType}</td>
+                      <td>{p.nextLayerType}</td>
+                      <td>{p.length}</td>
+
+                      <td>{p.srcIP}</td>
+                      <td>{p.srcCountryName}</td>
+                      <td>{p.srcCityName}</td>
+                      <td>{p.srcLongitude}</td>
+                      <td>{p.srcLatitude}</td>
+
+                      <td>{p.dstIP}</td>
+                      <td>{p.dstCountryName}</td>
+                      <td>{p.dstCityName}</td>
+                      <td>{p.dstLongitude}</td>
+                      <td>{p.dstLatitude}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </section>
