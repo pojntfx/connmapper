@@ -70,6 +70,9 @@ func getTracedConnectionID(connection tracedConnection) string {
 type local struct {
 	connections     map[string]tracedConnection
 	connectionsLock sync.Mutex
+
+	tracingDevices     map[string]struct{}
+	tracingDevicesLock sync.Mutex
 }
 
 func (l *local) ListDevices(ctx context.Context) ([]string, error) {
@@ -87,6 +90,14 @@ func (l *local) ListDevices(ctx context.Context) ([]string, error) {
 }
 
 func (l *local) TraceDevice(ctx context.Context, name string) error {
+	l.tracingDevicesLock.Lock()
+	defer l.tracingDevicesLock.Unlock()
+
+	_, ok := l.tracingDevices[name]
+	if ok {
+		return nil
+	}
+
 	// TODO: Add API for setting DB path
 	home, err := os.UserHomeDir()
 	if err != nil {
@@ -119,6 +130,10 @@ func (l *local) TraceDevice(ctx context.Context, name string) error {
 		defer func() {
 			handle.Close()
 			_ = db.Close()
+
+			l.tracingDevicesLock.Lock()
+			delete(l.tracingDevices, name)
+			l.tracingDevicesLock.Unlock()
 		}()
 
 		for packet := range source.Packets() {
@@ -203,6 +218,8 @@ func (l *local) TraceDevice(ctx context.Context, name string) error {
 		}
 	}()
 
+	l.tracingDevices[name] = struct{}{}
+
 	return nil
 }
 
@@ -227,7 +244,8 @@ func StartServer(ctx context.Context, addr string, heartbeat time.Duration, loca
 
 	registry := rpc.NewRegistry(
 		&local{
-			connections: map[string]tracedConnection{},
+			connections:    map[string]tracedConnection{},
+			tracingDevices: map[string]struct{}{},
 		},
 		remote{},
 
