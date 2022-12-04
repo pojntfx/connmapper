@@ -58,6 +58,9 @@ type tracedPacket struct {
 	DstCityName    string  `json:"dstCityName"`
 	DstLongitude   float64 `json:"dstLongitude"`
 	DstLatitude    float64 `json:"dstLatitude"`
+
+	FirstSeen int64 `json:"firstSeen"`
+	LastSeen  int64 `json:"lastSeen"`
 }
 
 type local struct {
@@ -113,6 +116,8 @@ func (l *local) ListenOnDevice(ctx context.Context, name string) error {
 			_ = db.Close()
 		}()
 
+		packets := []tracedPacket{}
+		nextSync := time.Now().Add(time.Second)
 		for packet := range source.Packets() {
 			layerType := ""
 			nextLayerType := ""
@@ -155,30 +160,38 @@ func (l *local) ListenOnDevice(ctx context.Context, name string) error {
 					dstLongitude,
 					dstLatitude := lookupLocation(db, dstIP)
 
-				if strings.TrimSpace(dstCountryName) != "" {
+				now := time.Now().UnixMilli()
+				packets = append(packets, tracedPacket{
+					layerType,
+					nextLayerType,
+					int(length),
+					srcIP.String(),
+					srcCountryName,
+					srcCityName,
+					srcLongitude,
+					srcLatitude,
+					dstIP.String(),
+					dstCountryName,
+					dstCityName,
+					dstLongitude,
+					dstLatitude,
+					now,
+					now,
+				})
+
+				if time.Now().After(nextSync) && len(packets) > 1 && strings.TrimSpace(dstCountryName) != "" {
 					for peerID, peer := range l.Peers() {
 						if peerID == rpc.GetRemoteID(ctx) {
-							if err := peer.HandleTracedPacket(ctx, tracedPacket{
-								layerType,
-								nextLayerType,
-								int(length),
-								srcIP.String(),
-								srcCountryName,
-								srcCityName,
-								srcLongitude,
-								srcLatitude,
-								dstIP.String(),
-								dstCountryName,
-								dstCityName,
-								dstLongitude,
-								dstLatitude,
-							}); err != nil {
+							if err := peer.HandleTracedPacket(ctx, packets); err != nil {
 								log.Println("Could not send traced packet to peer, continuing:", err)
 
 								continue
 							}
 						}
 					}
+
+					packets = []tracedPacket{}
+					nextSync = time.Now().Add(time.Second)
 				}
 			}
 		}
@@ -188,7 +201,7 @@ func (l *local) ListenOnDevice(ctx context.Context, name string) error {
 }
 
 type remote struct {
-	HandleTracedPacket func(ctx context.Context, packet tracedPacket) error
+	HandleTracedPacket func(ctx context.Context, packets []tracedPacket) error
 }
 
 func StartServer(ctx context.Context, addr string, heartbeat time.Duration, localhostize bool) (string, func() error, error) {
