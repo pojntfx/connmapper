@@ -17,9 +17,7 @@ interface ITracedPacket {
   dstCityName: string;
   dstLongitude: number;
   dstLatitude: number;
-}
 
-interface ITracedPacketWithTimestamp extends ITracedPacket {
   firstSeen: number;
   lastSeen: number;
 }
@@ -41,9 +39,7 @@ export default () => {
   });
 
   const [packets, setPackets] = useState<ITracedPacket[]>([]);
-  const [knownHosts, setKnownHosts] = useState<ITracedPacketWithTimestamp[]>(
-    []
-  );
+  const [knownHosts, setKnownHosts] = useState<ITracedPacket[]>([]);
   const [ready, setReady] = useState(false);
   const currentLocation = useRef<GeolocationCoordinates>();
 
@@ -55,59 +51,64 @@ export default () => {
             "ws://localhost:1337"
         ),
       {
-        HandleTracedPacket: async (newPacket: ITracedPacket) => {
-          setPackets((oldPackets) => {
-            if (
-              !newPacket.srcLatitude &&
-              !newPacket.srcLongitude &&
-              currentLocation.current
-            ) {
-              newPacket.srcLatitude = currentLocation.current.latitude;
-              newPacket.srcLongitude = currentLocation.current.longitude;
-            }
-
-            return [newPacket, ...oldPackets].slice(0, 50);
-          });
-
-          setKnownHosts((oldPackets) => {
-            if (
-              !newPacket.srcLatitude &&
-              !newPacket.srcLongitude &&
-              currentLocation.current
-            ) {
-              newPacket.srcLatitude = currentLocation.current.latitude;
-              newPacket.srcLongitude = currentLocation.current.longitude;
-            }
-
-            const knownHostIndex = oldPackets.findIndex(
-              (oldPacket) =>
-                oldPacket.layerType == newPacket.layerType &&
-                oldPacket.nextLayerType == newPacket.nextLayerType &&
-                oldPacket.srcIP == newPacket.srcIP &&
-                oldPacket.dstIP == newPacket.dstIP
-            );
-
-            if (knownHostIndex === -1) {
-              return [
-                {
-                  ...newPacket,
-                  firstSeen: Date.now(),
-                  lastSeen: Date.now(),
-                },
-                ...oldPackets,
-              ];
-            }
-
-            return oldPackets.map((oldPacket, i) => {
-              if (i === knownHostIndex) {
-                return {
-                  ...oldPacket,
-                  length: oldPacket.length + newPacket.length,
-                  lastSeen: Date.now(),
-                };
+        HandleTracedPacket: async (newPackets: ITracedPacket[]) => {
+          newPackets.forEach((newPacket) => {
+            setPackets((oldPackets) => {
+              if (
+                !newPacket.srcLatitude &&
+                !newPacket.srcLongitude &&
+                currentLocation.current
+              ) {
+                newPacket.srcLatitude = currentLocation.current.latitude;
+                newPacket.srcLongitude = currentLocation.current.longitude;
               }
 
-              return oldPacket;
+              return [newPacket, ...oldPackets].slice(
+                0,
+                systemInternetTrafficLimit.current
+              );
+            });
+
+            setKnownHosts((oldPackets) => {
+              if (
+                !newPacket.srcLatitude &&
+                !newPacket.srcLongitude &&
+                currentLocation.current
+              ) {
+                newPacket.srcLatitude = currentLocation.current.latitude;
+                newPacket.srcLongitude = currentLocation.current.longitude;
+              }
+
+              const knownHostIndex = oldPackets.findIndex(
+                (oldPacket) =>
+                  oldPacket.layerType == newPacket.layerType &&
+                  oldPacket.nextLayerType == newPacket.nextLayerType &&
+                  oldPacket.srcIP == newPacket.srcIP &&
+                  oldPacket.dstIP == newPacket.dstIP
+              );
+
+              if (knownHostIndex === -1) {
+                return [
+                  {
+                    ...newPacket,
+                    firstSeen: newPacket.firstSeen,
+                    lastSeen: newPacket.lastSeen,
+                  },
+                  ...oldPackets,
+                ];
+              }
+
+              return oldPackets.map((oldPacket, i) => {
+                if (i === knownHostIndex) {
+                  return {
+                    ...oldPacket,
+                    length: oldPacket.length + newPacket.length,
+                    lastSeen: newPacket.lastSeen,
+                  };
+                }
+
+                return oldPacket;
+              });
             });
           });
         },
@@ -151,6 +152,9 @@ export default () => {
     SortingType.FIRST_SEEN
   );
 
+  const [knownHostsLimit, setKnownHostsLimit] = useState(50);
+  const systemInternetTrafficLimit = useRef(50);
+
   return (
     <main>
       <h1>Connmapper</h1>
@@ -162,6 +166,19 @@ export default () => {
               <a href="#system-internet-traffic">
                 <h2>System Internet Traffic</h2>
               </a>
+
+              <label htmlFor="systems-internet-traffic-limit">Limit</label>
+              <input
+                name="systems-internet-traffic-limit"
+                id="systems-internet-traffic-limit"
+                type="number"
+                value={systemInternetTrafficLimit.current}
+                onChange={(e) =>
+                  (systemInternetTrafficLimit.current = parseInt(
+                    e.target.value
+                  ))
+                }
+              />
 
               <table>
                 <thead>
@@ -207,10 +224,19 @@ export default () => {
               </table>
             </section>
 
-            <section id="known-hosts">
-              <a href="#known-hosts">
-                <h2>Known Hosts</h2>
+            <section id="unique-hosts">
+              <a href="#unique-hosts">
+                <h2>Unique Hosts</h2>
               </a>
+
+              <label htmlFor="unique-hosts-limit">Limit</label>
+              <input
+                name="unique-hosts-limit"
+                id="unique-hosts-limit"
+                type="number"
+                value={knownHostsLimit}
+                onChange={(e) => setKnownHostsLimit(parseInt(e.target.value))}
+              />
 
               <table>
                 <thead>
@@ -311,10 +337,11 @@ export default () => {
                           return b.firstSeen - a.firstSeen;
                       }
                     })
+                    .slice(0, knownHostsLimit)
                     .map((p, i) => (
                       <tr key={i}>
-                        <td>{p.firstSeen}</td>
-                        <td>{p.lastSeen}</td>
+                        <td>{new Date(p.firstSeen).toLocaleTimeString()}</td>
+                        <td>{new Date(p.lastSeen).toLocaleTimeString()}</td>
 
                         <td>{p.layerType}</td>
                         <td>{p.nextLayerType}</td>
