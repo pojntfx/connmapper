@@ -1,36 +1,27 @@
 {
-  "name": "@pojntfx/connmapper-frontend",
-  "version": "0.1.0",
-  "description": "Frontend for Connmapper.",
+  "name": "com.pojtinger.felicitas.connmapper",
+  "version": "0.0.1",
+  "description": "Visualize your system's internet connections on a world map.",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
+    "dev": "parcel index.html --dist-dir out",
+    "build": "tsc && parcel build index.html --dist-dir out"
   },
-  "keywords": [
-    "connmapper",
-    "libpcap",
-    "golang",
-    "react",
-    "network",
-    "visualization"
-  ],
+  "keywords": [],
   "author": "Felicitas Pojtinger <felicitas@pojtinger.com>",
-  "license": "AGPL-3.0",
+  "license": "AGPL-3.0-or-later",
   "devDependencies": {
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
     "@types/uuid": "^8.3.4",
-    "@vitejs/plugin-react": "^2.1.0",
+    "parcel": "^2.7.0",
+    "process": "^0.11.10",
     "typescript": "^4.6.4",
-    "vite": "^3.1.0"
+    "@pojntfx/dudirekta": "^0.2.0"
   },
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-globe.gl": "^2.22.3",
-    "use-window-size-hook": "^1.1.22",
     "uuid": "^9.0.0"
   }
 }
