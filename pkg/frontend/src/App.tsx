@@ -26,6 +26,7 @@ export default () => {
   });
 
   const [packets, setPackets] = useState<ITracedPacket[]>([]);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     bind(
@@ -40,43 +41,35 @@ export default () => {
         },
       },
       remote,
-      setRemote
+      setRemote,
+      {
+        onOpen: () => setReady(true),
+      }
     );
   }, []);
 
   const [devices, setDevices] = useState<string[]>([]);
 
+  useEffect(() => {
+    (async () => {
+      if (ready) {
+        const devices = await remote.ListDevices();
+
+        setDevices(devices);
+      }
+    })();
+  }, [ready]);
+
+  const [tracing, setTracing] = useState(false);
+  const [selectedDevice, setSelectedDevice] = useState("");
+
   return (
     <main>
       <h1>Connmapper</h1>
 
-      {packets.length <= 0 ? (
-        <>
-          <button
-            onClick={async () => {
-              const devices = await remote.ListDevices();
+      {!ready && <div>Loading ...</div>}
 
-              setDevices(devices);
-            }}
-          >
-            List devices
-          </button>
-
-          <ul>
-            {devices.map((d) => (
-              <li>
-                <div>{d}</div>
-
-                <div>
-                  <button onClick={() => remote.ListenOnDevice(d)}>
-                    Listen on device
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </>
-      ) : (
+      {tracing ? (
         <table>
           <caption>System internet traffic</caption>
           <thead>
@@ -99,8 +92,8 @@ export default () => {
             </tr>
           </thead>
           <tbody>
-            {packets.map((p) => (
-              <tr>
+            {packets.map((p, i) => (
+              <tr key={i}>
                 <td>{p.layerType}</td>
                 <td>{p.nextLayerType}</td>
                 <td>{p.length}</td>
@@ -120,6 +113,34 @@ export default () => {
             ))}
           </tbody>
         </table>
+      ) : (
+        <>
+          <select onChange={(e) => setSelectedDevice(e.target.value)}>
+            {devices.map((d, i) => (
+              <option value={d} key={i}>
+                {d}
+              </option>
+            ))}
+          </select>
+
+          <button
+            onClick={() => {
+              (async () => {
+                try {
+                  await remote.ListenOnDevice(selectedDevice || devices[0]);
+                } catch (e) {
+                  alert((e as Error).message);
+
+                  return;
+                }
+
+                setTracing(true);
+              })();
+            }}
+          >
+            Trace traffic on device
+          </button>
+        </>
       )}
     </main>
   );
