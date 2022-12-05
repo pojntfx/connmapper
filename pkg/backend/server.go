@@ -58,6 +58,8 @@ type tracedConnection struct {
 	DstCityName    string  `json:"dstCityName"`
 	DstLongitude   float64 `json:"dstLongitude"`
 	DstLatitude    float64 `json:"dstLatitude"`
+
+	timer *time.Timer
 }
 
 func getTracedConnectionID(connection tracedConnection) string {
@@ -190,6 +192,8 @@ func (l *local) TraceDevice(ctx context.Context, name string) error {
 					dstCityName,
 					dstLongitude,
 					dstLatitude,
+
+					nil,
 				}
 
 				l.connectionsLock.Lock()
@@ -201,17 +205,19 @@ func (l *local) TraceDevice(ctx context.Context, name string) error {
 
 				id := getTracedConnectionID(connection)
 
-				_, ok := l.connections[id]
+				candidate, ok := l.connections[id]
 				if !ok {
-					l.connections[id] = connection
-
-					time.AfterFunc(time.Second*10, func() {
+					connection.timer = time.AfterFunc(time.Second*10, func() {
 						l.connectionsLock.Lock()
 
 						delete(l.connections, id)
 
 						l.connectionsLock.Unlock()
 					})
+
+					l.connections[id] = connection
+				} else {
+					candidate.timer.Reset(time.Second * 10)
 				}
 				l.connectionsLock.Unlock()
 			}
