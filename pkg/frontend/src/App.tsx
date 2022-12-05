@@ -6,6 +6,7 @@ import earthElevation from "./8k_earth_normal_map.png";
 import universeTexture from "./8k_stars_milky_way.jpg";
 import { useWindowSize } from "usehooks-ts";
 import "./main.css";
+import { Title } from "@patternfly/react-core";
 
 interface ITracedConnection {
   layerType: string;
@@ -41,7 +42,7 @@ const getTracedConnectionID = (connection: ITracedConnection) =>
   connection.dstIP +
   "-";
 
-export default () => {
+const App = () => {
   const [remote, setRemote] = useState({
     ListDevices: async (): Promise<string[]> => [],
     TraceDevice: async (name: string) => {},
@@ -179,7 +180,7 @@ export default () => {
           />
         ) : (
           <>
-            <h1>Connmapper</h1>
+            <Title headingLevel="h1">Connmapper</Title>
 
             <select onChange={(e) => setSelectedDevice(e.target.value)}>
               {devices.map((d, i) => (
@@ -212,3 +213,5 @@ export default () => {
     </main>
   );
 };
+
+export default App;
