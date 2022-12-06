@@ -1,12 +1,20 @@
+import {
+  Button,
+  Flex,
+  FlexItem,
+  Select,
+  SelectOption,
+  SelectVariant,
+  Title,
+} from "@patternfly/react-core";
 import { bind } from "@pojntfx/dudirekta";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ReactGlobeGl from "react-globe.gl";
+import { useWindowSize } from "usehooks-ts";
 import earthTexture from "./8k_earth_nightmap.jpg";
 import earthElevation from "./8k_earth_normal_map.png";
 import universeTexture from "./8k_stars_milky_way.jpg";
-import { useWindowSize } from "usehooks-ts";
-import "./main.css";
-import { Title } from "@patternfly/react-core";
+import "./main.scss";
 
 interface ITracedConnection {
   layerType: string;
@@ -108,6 +116,7 @@ const App = () => {
     }
   }, [ready]);
 
+  const [deviceSelectorIsOpen, setDeviceSelectorIsOpen] = useState(false);
   const [selectedDevice, setSelectedDevice] = useState("");
   const [tracing, setTracing] = useState(false);
 
@@ -153,64 +162,84 @@ const App = () => {
 
   const { width, height } = useWindowSize();
 
-  return (
-    <main>
-      {ready ? (
-        tracing ? (
-          <ReactGlobeGl
-            arcsData={arcs}
-            arcLabel={(d: any) => (d as IArc).label}
-            arcStartLng={(d: any) => (d as IArc).coords[0][0]}
-            arcStartLat={(d: any) => (d as IArc).coords[0][1]}
-            arcEndLng={(d: any) => (d as IArc).coords[1][0]}
-            arcEndLat={(d: any) => (d as IArc).coords[1][1]}
-            arcDashLength={0.05}
-            arcDashGap={0.1}
-            arcDashAnimateTime={10000}
-            arcsTransitionDuration={500}
-            arcStroke={() => 0.25}
-            arcColor={(d: any) =>
-              (d as IArc).incoming ? "#A30000" : "#ACE12E"
-            }
-            globeImageUrl={earthTexture as string}
-            bumpImageUrl={earthElevation as string}
-            backgroundImageUrl={universeTexture as string}
-            width={width}
-            height={height}
-          />
-        ) : (
-          <>
-            <Title headingLevel="h1">Connmapper</Title>
+  return ready ? (
+    tracing ? (
+      <ReactGlobeGl
+        arcsData={arcs}
+        arcLabel={(d: any) => (d as IArc).label}
+        arcStartLng={(d: any) => (d as IArc).coords[0][0]}
+        arcStartLat={(d: any) => (d as IArc).coords[0][1]}
+        arcEndLng={(d: any) => (d as IArc).coords[1][0]}
+        arcEndLat={(d: any) => (d as IArc).coords[1][1]}
+        arcDashLength={0.05}
+        arcDashGap={0.1}
+        arcDashAnimateTime={10000}
+        arcsTransitionDuration={500}
+        arcStroke={() => 0.25}
+        arcColor={(d: any) => ((d as IArc).incoming ? "#A30000" : "#ACE12E")}
+        globeImageUrl={earthTexture as string}
+        bumpImageUrl={earthElevation as string}
+        backgroundImageUrl={universeTexture as string}
+        width={width}
+        height={height}
+      />
+    ) : (
+      <Flex
+        className="pf-u-p-lg pf-u-h-100"
+        spaceItems={{ default: "spaceItemsMd" }}
+        direction={{ default: "column" }}
+        justifyContent={{ default: "justifyContentCenter" }}
+        alignItems={{ default: "alignItemsCenter" }}
+      >
+        <FlexItem>
+          <Title headingLevel="h1">Connmapper</Title>
+        </FlexItem>
 
-            <select onChange={(e) => setSelectedDevice(e.target.value)}>
-              {devices.map((d, i) => (
-                <option value={d} key={i}>
-                  {d}
-                </option>
-              ))}
-            </select>
+        <FlexItem>
+          <Flex direction={{ default: "row" }}>
+            <FlexItem>
+              <Select
+                variant={SelectVariant.single}
+                isOpen={deviceSelectorIsOpen}
+                onToggle={(isOpen) => setDeviceSelectorIsOpen(isOpen)}
+                selections={selectedDevice}
+                onSelect={(_, selection) => {
+                  setSelectedDevice(selection.toString());
+                  setDeviceSelectorIsOpen(false);
+                }}
+              >
+                {devices.map((d, i) => (
+                  <SelectOption value={d} key={i}>
+                    {d}
+                  </SelectOption>
+                ))}
+              </Select>
+            </FlexItem>
 
-            <button
-              onClick={() => {
-                (async () => {
-                  try {
-                    await remote.TraceDevice(selectedDevice || devices[0]);
+            <FlexItem>
+              <Button
+                variant="primary"
+                onClick={() => {
+                  (async () => {
+                    try {
+                      await remote.TraceDevice(selectedDevice || devices[0]);
 
-                    setTracing(true);
-                  } catch (e) {
-                    alert((e as Error).message);
-                  }
-                })();
-              }}
-            >
-              Trace traffic on device
-            </button>
-          </>
-        )
-      ) : (
-        "Loading ..."
-      )}
-    </main>
+                      setTracing(true);
+                    } catch (e) {
+                      alert((e as Error).message);
+                    }
+                  })();
+                }}
+              >
+                Trace device
+              </Button>
+            </FlexItem>
+          </Flex>
+        </FlexItem>
+      </Flex>
+    )
+  ) : (
+    <span>"Loading ..."</span>
   );
 };
 
