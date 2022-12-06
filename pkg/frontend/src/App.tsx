@@ -95,7 +95,21 @@ const App = () => {
           new URLSearchParams(window.location.search).get("socketURL") ||
             "ws://localhost:1337"
         ),
-      {},
+      {
+        GetEscalationPermission: (restart: boolean) => {
+          if (restart) {
+            // eslint-disable-next-line no-restricted-globals
+            return confirm(
+              "Connmapper requires admin privileges to capture packets. We'll ask you to authorize this in the next step, then restart the application."
+            );
+          }
+
+          // eslint-disable-next-line no-restricted-globals
+          return confirm(
+            "Connmapper requires admin privileges to capture packets. We'll ask you to authorize this in the next step."
+          );
+        },
+      },
       remote,
       setRemote,
       {

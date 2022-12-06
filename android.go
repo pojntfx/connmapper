@@ -20,7 +20,7 @@ import (
 
 //export Java_com_pojtinger_felicitas_connmapper_MainActivity_LaunchBackend
 func Java_com_pojtinger_felicitas_connmapper_MainActivity_LaunchBackend(env *C.JNIEnv, activity C.jobject) C.jstring {
-	backendURL, _, err := backend.StartServer(context.Background(), "", time.Second*10, false)
+	backendURL, _, err := backend.StartServer(context.Background(), "", time.Second*10, false, nil)
 	if err != nil {
 		log.Fatalln("could not start backend:", err)
 	}

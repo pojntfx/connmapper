@@ -39,12 +39,13 @@ jobs:
           #   exclude: apk|deb|dmg|msi|rpm|binaries|tests
           #   tag: main
           #   dst: out/*
-          - id: hydrapp-msi.com.pojtinger.felicitas.connmapper
-            src: .
-            pkg: .
-            exclude: apk|deb|flatpak|dmg|rpm|binaries|tests
-            tag: main
-            dst: out/*
+          # Disable MSI due to build freeze
+          # - id: hydrapp-msi.com.pojtinger.felicitas.connmapper
+          #   src: .
+          #   pkg: .
+          #   exclude: apk|deb|flatpak|dmg|rpm|binaries|tests
+          #   tag: main
+          #   dst: out/*
           - id: hydrapp-rpm.com.pojtinger.felicitas.connmapper
             src: .
             pkg: .

@@ -10,10 +10,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/pojntfx/hydrapp/hydrapp-utils/pkg/config"
 	"github.com/pojntfx/connmapper/pkg/backend"
 	"github.com/pojntfx/connmapper/pkg/frontend"
 	"github.com/pojntfx/hydrapp/hydrapp-utils/pkg/browser"
+	"github.com/pojntfx/hydrapp/hydrapp-utils/pkg/config"
 	_ "github.com/pojntfx/hydrapp/hydrapp-utils/pkg/fixes"
 	"github.com/pojntfx/hydrapp/hydrapp-utils/pkg/update"
 	"github.com/pojntfx/hydrapp/hydrapp-utils/pkg/utils"
@@ -44,7 +44,7 @@ func main() {
 	)
 
 	// Start the backend
-	backendURL, stopBackend, err := backend.StartServer(ctx, os.Getenv(utils.EnvBackendLaddr), time.Second*10, true)
+	backendURL, stopBackend, err := backend.StartServer(ctx, os.Getenv(utils.EnvBackendLaddr), time.Second*10, true, browserState)
 	if err != nil {
 		utils.HandlePanic(cfg.App.Name, "could not start backend", err)
 	}
