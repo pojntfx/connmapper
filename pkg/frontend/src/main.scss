@@ -14,4 +14,22 @@ body {
 
 #root {
   height: 100%;
+
+  &::before {
+    content: "";
+    background: url(bg.webp);
+    background-position: 50%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    filter: blur(7.5px);
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    transform: scale(1.1);
+  }
+}
+
+.pf-x-c-title {
+  z-index: 1;
+  color: var(--pf-global--Color--light-100);
 }

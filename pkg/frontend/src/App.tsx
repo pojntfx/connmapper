@@ -205,7 +205,7 @@ const App = () => {
         justifyContent={{ default: "justifyContentCenter" }}
         alignItems={{ default: "alignItemsCenter" }}
       >
-        <FlexItem>
+        <FlexItem className="pf-x-c-title">
           <Title headingLevel="h1">Connmapper</Title>
         </FlexItem>
 
