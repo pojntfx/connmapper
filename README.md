@@ -10,7 +10,7 @@ Visualize your system's internet connections on a world map.
 
 ## Installation
 
-See [INSTALLATION.html](https://pojntfx.github.io/connmapper/connmapper/docs/INSTALLATION.html).
+See [INSTALLATION.html](https://pojntfx.github.io/connmapper/docs/main/INSTALLATION.html).
 
 ## Reference
 

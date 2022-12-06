@@ -6,7 +6,7 @@ app:
   license: AGPL-3.0-or-later
   homepage: https://github.com/pojntfx/connmapper
   git: https://github.com/pojntfx/connmapper.git
-  baseurl: https://pojntfx.github.io/connmapper/connmapper
+  baseurl: https://pojntfx.github.io/connmapper/
 go:
   main: .
   flags: ""
