@@ -1,6 +1,6 @@
 [hydrapp-repo]
 name=Hydrapp YUM repo
-baseurl=https://pojntfx.github.io/connmapper/connmapperrpm/fedora/37/x86_64/main
+baseurl=https://pojntfx.github.io/connmapper/rpm/fedora/37/x86_64/main
 enabled=1
 gpgcheck=1
-gpgkey=https://pojntfx.github.io/connmapper/connmapperrpm/fedora/37/x86_64/main/repodata/repo.asc
+gpgkey=https://pojntfx.github.io/connmapper/rpm/fedora/37/x86_64/main/repodata/repo.asc
