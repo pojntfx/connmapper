@@ -2,12 +2,14 @@ package backend
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
 	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"sync"
 	"time"
@@ -16,8 +18,10 @@ import (
 	"github.com/google/gopacket/layers"
 	"github.com/google/gopacket/pcap"
 	"github.com/oschwald/geoip2-golang"
+	"github.com/pojntfx/connmapper/pkg/utils"
 	"github.com/pojntfx/dudirekta/pkg/rpc"
-	"github.com/pojntfx/hydrapp/hydrapp-utils/pkg/utils"
+	"github.com/pojntfx/hydrapp/hydrapp-utils/pkg/update"
+	uutils "github.com/pojntfx/hydrapp/hydrapp-utils/pkg/utils"
 	"nhooyr.io/websocket"
 )
 
@@ -75,6 +79,10 @@ type local struct {
 
 	tracingDevices     map[string]struct{}
 	tracingDevicesLock sync.Mutex
+
+	browserState *update.BrowserState
+
+	Peers func() map[string]remote
 }
 
 func (l *local) ListDevices(ctx context.Context) ([]string, error) {
@@ -124,7 +132,58 @@ func (l *local) TraceDevice(ctx context.Context, name string) error {
 
 	handle, err := pcap.OpenLive(name, int32(iface.MTU), true, pcap.BlockForever)
 	if err != nil {
-		return err
+		if strings.HasSuffix(err.Error(), "(socket: Operation not permitted)") {
+			for peerID, peer := range l.Peers() {
+				if peerID == rpc.GetRemoteID(ctx) {
+					confirm, nerr := peer.GetEscalationPermission(ctx, false)
+					if nerr != nil {
+						return nerr
+					}
+
+					if !confirm {
+						return err
+					}
+				}
+			}
+
+			bin, err := os.Executable()
+			if err != nil {
+				return err
+			}
+
+			switch runtime.GOOS {
+			case "linux":
+				if err := utils.RunElevatedCommand(fmt.Sprintf("setcap cap_net_raw,cap_net_admin=eip %v", bin)); err != nil {
+					return err
+				}
+
+				if err := uutils.ForkExec(
+					bin,
+					os.Args,
+				); err != nil {
+					return err
+				}
+			default:
+				if err := utils.RunElevatedCommand(fmt.Sprintf("%v %v", bin, strings.Join(os.Args, " "))); err != nil {
+					return err
+				}
+
+				if err := uutils.ForkExec(
+					bin,
+					os.Args,
+				); err != nil {
+					return err
+				}
+			}
+
+			if err := utils.KillBrowser(l.browserState); err != nil {
+				return err
+			}
+
+			os.Exit(0)
+		} else {
+			return err
+		}
 	}
 
 	source := gopacket.NewPacketSource(handle, handle.LinkType())
@@ -241,23 +300,28 @@ func (l *local) GetConnections(ctx context.Context) ([]tracedConnection, error) 
 	return connections, nil
 }
 
-type remote struct{}
+type remote struct {
+	GetEscalationPermission func(ctx context.Context, restart bool) (bool, error)
+}
 
-func StartServer(ctx context.Context, addr string, heartbeat time.Duration, localhostize bool) (string, func() error, error) {
+func StartServer(ctx context.Context, addr string, heartbeat time.Duration, localhostize bool, browserState *update.BrowserState) (string, func() error, error) {
 	if strings.TrimSpace(addr) == "" {
 		addr = ":0"
 	}
 
+	l := &local{
+		connections:    map[string]tracedConnection{},
+		tracingDevices: map[string]struct{}{},
+		browserState:   browserState,
+	}
 	registry := rpc.NewRegistry(
-		&local{
-			connections:    map[string]tracedConnection{},
-			tracingDevices: map[string]struct{}{},
-		},
+		l,
 		remote{},
 
 		time.Second*10,
 		ctx,
 	)
+	l.Peers = registry.Peers
 
 	listener, err := net.Listen("tcp", addr)
 	if err != nil {
@@ -338,7 +402,7 @@ func StartServer(ctx context.Context, addr string, heartbeat time.Duration, loca
 	}
 
 	if localhostize {
-		return utils.Localhostize(url.String()), listener.Close, nil
+		return uutils.Localhostize(url.String()), listener.Close, nil
 	}
 
 	return url.String(), listener.Close, nil
