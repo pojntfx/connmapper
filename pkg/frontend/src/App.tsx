@@ -2,11 +2,22 @@ import {
   Button,
   Flex,
   FlexItem,
+  Modal,
+  ModalVariant,
   Select,
   SelectOption,
   SelectVariant,
   Title,
 } from "@patternfly/react-core";
+import { TableIcon } from "@patternfly/react-icons";
+import {
+  TableComposable,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+} from "@patternfly/react-table";
 import { bind } from "@pojntfx/dudirekta";
 import { useCallback, useEffect, useState } from "react";
 import ReactGlobeGl from "react-globe.gl";
@@ -31,6 +42,11 @@ interface ITracedConnection {
   dstCityName: string;
   dstLongitude: number;
   dstLatitude: number;
+}
+
+interface ITracedConnectionDetails extends ITracedConnection {
+  timestamp: number;
+  length: number;
 }
 
 interface IArc {
@@ -136,6 +152,30 @@ const App = () => {
 
   const [arcs, setArcs] = useState<IArc[]>([]);
 
+  const [realtimePackets, setRealtimePackets] = useState<
+    ITracedConnectionDetails[]
+  >([
+    {
+      timestamp: Date.now(),
+
+      layerType: "IPv4",
+      nextLayerType: "TCP",
+      length: 496,
+
+      srcIP: "1.1.1.1",
+      srcCountryName: "Germany",
+      srcCityName: "Stuttgart",
+      srcLatitude: 1.3939,
+      srcLongitude: 2.93939,
+
+      dstIP: "8.8.8.8",
+      dstCountryName: "",
+      dstCityName: "",
+      dstLatitude: 3.1933,
+      dstLongitude: 20.949,
+    },
+  ]);
+
   useEffect(() => {
     if (tracing) {
       setInterval(async () => {
@@ -156,12 +196,14 @@ const App = () => {
             return {
               id: getTracedConnectionID(conn),
               label: `${conn.layerType}/${conn.nextLayerType} ${conn.srcIP} (${
-                conn.srcCountryName || "Your country"
+                conn.srcCountryName || "Unknown country"
               }, ${conn.srcCityName || "unknown city"}, ${conn.srcLongitude}, ${
                 conn.srcLatitude
-              }) → ${conn.dstIP} (${conn.dstCountryName || "Your country"}, ${
-                conn.dstCityName || "unknown city"
-              }, ${conn.dstLongitude}, ${conn.dstLatitude})`,
+              }) → ${conn.dstIP} (${
+                conn.dstCountryName || "Unknown country"
+              }, ${conn.dstCityName || "unknown city"}, ${conn.dstLongitude}, ${
+                conn.dstLatitude
+              })`,
               coords: [
                 [conn.srcLongitude, conn.srcLatitude],
                 [conn.dstLongitude, conn.dstLatitude],
@@ -176,27 +218,102 @@ const App = () => {
 
   const { width, height } = useWindowSize();
 
+  const [isInspectorOpen, setIsInspectorOpen] = useState(false);
+
   return ready ? (
     tracing ? (
-      <ReactGlobeGl
-        arcsData={arcs}
-        arcLabel={(d: any) => (d as IArc).label}
-        arcStartLng={(d: any) => (d as IArc).coords[0][0]}
-        arcStartLat={(d: any) => (d as IArc).coords[0][1]}
-        arcEndLng={(d: any) => (d as IArc).coords[1][0]}
-        arcEndLat={(d: any) => (d as IArc).coords[1][1]}
-        arcDashLength={0.05}
-        arcDashGap={0.1}
-        arcDashAnimateTime={10000}
-        arcsTransitionDuration={500}
-        arcStroke={() => 0.25}
-        arcColor={(d: any) => ((d as IArc).incoming ? "#A30000" : "#ACE12E")}
-        globeImageUrl={earthTexture as string}
-        bumpImageUrl={earthElevation as string}
-        backgroundImageUrl={universeTexture as string}
-        width={width}
-        height={height}
-      />
+      <>
+        <ReactGlobeGl
+          arcsData={arcs}
+          arcLabel={(d: any) => (d as IArc).label}
+          arcStartLng={(d: any) => (d as IArc).coords[0][0]}
+          arcStartLat={(d: any) => (d as IArc).coords[0][1]}
+          arcEndLng={(d: any) => (d as IArc).coords[1][0]}
+          arcEndLat={(d: any) => (d as IArc).coords[1][1]}
+          arcDashLength={0.05}
+          arcDashGap={0.1}
+          arcDashAnimateTime={10000}
+          arcsTransitionDuration={500}
+          arcStroke={() => 0.25}
+          arcColor={(d: any) => ((d as IArc).incoming ? "#A30000" : "#ACE12E")}
+          globeImageUrl={earthTexture as string}
+          bumpImageUrl={earthElevation as string}
+          backgroundImageUrl={universeTexture as string}
+          width={width}
+          height={height}
+        />
+
+        <Button
+          variant="primary"
+          icon={<TableIcon />}
+          className="pf-x-button--cta"
+          onClick={() => setIsInspectorOpen(true)}
+        >
+          {" "}
+          Inspect Traffic
+        </Button>
+
+        <Modal
+          variant={ModalVariant.large}
+          title="Traffic Inspector"
+          isOpen={isInspectorOpen}
+          onClose={() => setIsInspectorOpen(false)}
+        >
+          <TableComposable
+            aria-label="Simple table"
+            variant="compact"
+            borders={false}
+            isStriped
+          >
+            <Thead noWrap>
+              <Tr>
+                <Th>Timestamp</Th>
+
+                <Th>Layer</Th>
+                <Th>Next Layer</Th>
+                <Th>Length</Th>
+
+                <Th>Src IP</Th>
+                <Th>Src Location</Th>
+                <Th>Src Coordinates</Th>
+
+                <Th>Dst IP</Th>
+                <Th>Dst Location</Th>
+                <Th>Dst Coordinates</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {realtimePackets.map((packet, i) => (
+                <Tr isHoverable key={i}>
+                  <Td>{packet.timestamp}</Td>
+
+                  <Td>{packet.layerType}</Td>
+                  <Td>{packet.nextLayerType}</Td>
+                  <Td>{packet.length}</Td>
+
+                  <Td>{packet.srcIP}</Td>
+                  <Td>
+                    {packet.srcCityName || "Unknown city"},{" "}
+                    {packet.srcCountryName || "unknown country"}
+                  </Td>
+                  <Td>
+                    {packet.srcLatitude}, {packet.srcLongitude}
+                  </Td>
+
+                  <Td>{packet.dstIP}</Td>
+                  <Td>
+                    {packet.dstCityName || "Unknown city"},{" "}
+                    {packet.dstCountryName || "unknown country"}
+                  </Td>
+                  <Td>
+                    {packet.dstLatitude}, {packet.dstLongitude}
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </TableComposable>
+        </Modal>
+      </>
     ) : (
       <Flex
         className="pf-u-p-lg pf-u-h-100"
