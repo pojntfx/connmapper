@@ -39,3 +39,17 @@ body {
   right: 1rem;
   top: 1rem;
 }
+
+.pf-x-u-blur {
+  backdrop-filter: blur(7.5px);
+  -webkit-backdrop-filter: blur(7.5px);
+}
+
+.pf-c-backdrop {
+  @extend .pf-x-u-blur;
+}
+
+.pf-c-modal-box--fullscreen {
+  width: 100%;
+  height: 100%;
+}

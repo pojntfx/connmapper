@@ -48,6 +48,9 @@ func lookupLocation(db *geoip2.Reader, ip net.IP) (
 }
 
 type tracedConnection struct {
+	Timestamp int64 `json:"timestamp"`
+	Length    int   `json:"length"`
+
 	LayerType     string `json:"layerType"`
 	NextLayerType string `json:"nextLayerType"`
 
@@ -81,6 +84,9 @@ type local struct {
 	tracingDevicesLock sync.Mutex
 
 	browserState *update.BrowserState
+
+	packetCache      []tracedConnection
+	packetsCacheLock sync.Mutex
 
 	Peers func() map[string]remote
 }
@@ -237,6 +243,9 @@ func (l *local) TraceDevice(ctx context.Context, name string) error {
 					dstLatitude := lookupLocation(db, dstIP)
 
 				connection := tracedConnection{
+					time.Now().UnixMilli(),
+					packet.Metadata().Length,
+
 					layerType,
 					nextLayerType,
 
@@ -254,6 +263,10 @@ func (l *local) TraceDevice(ctx context.Context, name string) error {
 
 					nil,
 				}
+
+				l.packetsCacheLock.Lock()
+				l.packetCache = append([]tracedConnection{connection}, l.packetCache...)
+				l.packetsCacheLock.Unlock()
 
 				l.connectionsLock.Lock()
 
@@ -279,6 +292,11 @@ func (l *local) TraceDevice(ctx context.Context, name string) error {
 					candidate.timer.Reset(time.Second * 10)
 				}
 				l.connectionsLock.Unlock()
+
+				// TODO: Add API for maximum packets to store to store
+				if len(l.packetCache) > 100 {
+					l.packetCache = l.packetCache[:100]
+				}
 			}
 		}
 	}()
@@ -300,8 +318,16 @@ func (l *local) GetConnections(ctx context.Context) ([]tracedConnection, error) 
 	return connections, nil
 }
 
+func (l *local) GetPackets(ctx context.Context) ([]tracedConnection, error) {
+	l.packetsCacheLock.Lock()
+	defer l.packetsCacheLock.Unlock()
+
+	return l.packetCache, nil
+}
+
 type remote struct {
 	GetEscalationPermission func(ctx context.Context, restart bool) (bool, error)
+	SetRealtimePackets      func(ctx context.Context, packets []tracedConnection) error
 }
 
 func StartServer(ctx context.Context, addr string, heartbeat time.Duration, localhostize bool, browserState *update.BrowserState) (string, func() error, error) {
@@ -313,6 +339,7 @@ func StartServer(ctx context.Context, addr string, heartbeat time.Duration, loca
 		connections:    map[string]tracedConnection{},
 		tracingDevices: map[string]struct{}{},
 		browserState:   browserState,
+		packetCache:    []tracedConnection{},
 	}
 	registry := rpc.NewRegistry(
 		l,
