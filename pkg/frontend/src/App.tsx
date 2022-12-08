@@ -69,8 +69,9 @@ const getTracedConnectionID = (connection: ITracedConnection) =>
 const App = () => {
   const [remote, setRemote] = useState({
     ListDevices: async (): Promise<string[]> => [],
-    TraceDevice: async (name: string) => {},
+    TraceDevice: async (name: string): Promise<void> => {},
     GetConnections: async (): Promise<ITracedConnection[]> => [],
+    GetPackets: async (): Promise<ITracedConnectionDetails[]> => [],
   });
 
   const [ready, setReady] = useState(false);
@@ -152,33 +153,9 @@ const App = () => {
 
   const [arcs, setArcs] = useState<IArc[]>([]);
 
-  const [realtimePackets, setRealtimePackets] = useState<
-    ITracedConnectionDetails[]
-  >([
-    {
-      timestamp: Date.now(),
-
-      layerType: "IPv4",
-      nextLayerType: "TCP",
-      length: 496,
-
-      srcIP: "1.1.1.1",
-      srcCountryName: "Germany",
-      srcCityName: "Stuttgart",
-      srcLatitude: 1.3939,
-      srcLongitude: 2.93939,
-
-      dstIP: "8.8.8.8",
-      dstCountryName: "",
-      dstCityName: "",
-      dstLatitude: 3.1933,
-      dstLongitude: 20.949,
-    },
-  ]);
-
   useEffect(() => {
     if (tracing) {
-      setInterval(async () => {
+      const interval = setInterval(async () => {
         const conns = await remote.GetConnections();
 
         setArcs((oldArcs) =>
@@ -213,6 +190,8 @@ const App = () => {
           })
         );
       }, 1000);
+
+      return () => clearInterval(interval);
     }
   }, [tracing]);
 
@@ -258,60 +237,12 @@ const App = () => {
           title="Traffic Inspector"
           isOpen={isInspectorOpen}
           onClose={() => setIsInspectorOpen(false)}
+          className="pf-c-modal-box--fullscreen"
         >
-          <TableComposable
-            aria-label="Simple table"
-            variant="compact"
-            borders={false}
-            isStriped
-          >
-            <Thead noWrap>
-              <Tr>
-                <Th>Timestamp</Th>
-
-                <Th>Layer</Th>
-                <Th>Next Layer</Th>
-                <Th>Length</Th>
-
-                <Th>Src IP</Th>
-                <Th>Src Location</Th>
-                <Th>Src Coordinates</Th>
-
-                <Th>Dst IP</Th>
-                <Th>Dst Location</Th>
-                <Th>Dst Coordinates</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {realtimePackets.map((packet, i) => (
-                <Tr isHoverable key={i}>
-                  <Td>{packet.timestamp}</Td>
-
-                  <Td>{packet.layerType}</Td>
-                  <Td>{packet.nextLayerType}</Td>
-                  <Td>{packet.length}</Td>
-
-                  <Td>{packet.srcIP}</Td>
-                  <Td>
-                    {packet.srcCityName || "Unknown city"},{" "}
-                    {packet.srcCountryName || "unknown country"}
-                  </Td>
-                  <Td>
-                    {packet.srcLatitude}, {packet.srcLongitude}
-                  </Td>
-
-                  <Td>{packet.dstIP}</Td>
-                  <Td>
-                    {packet.dstCityName || "Unknown city"},{" "}
-                    {packet.dstCountryName || "unknown country"}
-                  </Td>
-                  <Td>
-                    {packet.dstLatitude}, {packet.dstLongitude}
-                  </Td>
-                </Tr>
-              ))}
-            </Tbody>
-          </TableComposable>
+          <RealtimeTrafficTable
+            getPackets={remote.GetPackets}
+            addLocalLocation={addLocalLocation}
+          />
         </Modal>
       </>
     ) : (
@@ -371,6 +302,93 @@ const App = () => {
     )
   ) : (
     <span>"Loading ..."</span>
+  );
+};
+
+interface IRealtimeTrafficTableProps {
+  getPackets: () => Promise<ITracedConnectionDetails[]>;
+  addLocalLocation: (packet: ITracedConnection) => void;
+}
+
+const RealtimeTrafficTable: React.FC<IRealtimeTrafficTableProps> = ({
+  getPackets,
+  addLocalLocation,
+}) => {
+  const [realtimePackets, setRealtimePackets] = useState<
+    ITracedConnectionDetails[]
+  >([]);
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const packets = await getPackets();
+
+      setRealtimePackets(
+        packets.map((p) => {
+          addLocalLocation(p);
+
+          return p;
+        })
+      );
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <TableComposable
+      aria-label="Simple table"
+      variant="compact"
+      borders={false}
+      isStriped
+      isStickyHeader
+    >
+      <Thead noWrap>
+        <Tr>
+          <Th>Timestamp</Th>
+
+          <Th>Layer</Th>
+          <Th>Next Layer</Th>
+          <Th>Length</Th>
+
+          <Th>Src IP</Th>
+          <Th>Src Location</Th>
+          <Th>Src Coordinates</Th>
+
+          <Th>Dst IP</Th>
+          <Th>Dst Location</Th>
+          <Th>Dst Coordinates</Th>
+        </Tr>
+      </Thead>
+      <Tbody>
+        {realtimePackets.map((packet, i) => (
+          <Tr isHoverable key={i}>
+            <Td>{packet.timestamp}</Td>
+
+            <Td>{packet.layerType}</Td>
+            <Td>{packet.nextLayerType}</Td>
+            <Td>{packet.length}</Td>
+
+            <Td>{packet.srcIP}</Td>
+            <Td>
+              {packet.srcCityName || "Unknown city"},{" "}
+              {packet.srcCountryName || "unknown country"}
+            </Td>
+            <Td>
+              {packet.srcLatitude}, {packet.srcLongitude}
+            </Td>
+
+            <Td>{packet.dstIP}</Td>
+            <Td>
+              {packet.dstCityName || "Unknown city"},{" "}
+              {packet.dstCountryName || "unknown country"}
+            </Td>
+            <Td>
+              {packet.dstLatitude}, {packet.dstLongitude}
+            </Td>
+          </Tr>
+        ))}
+      </Tbody>
+    </TableComposable>
   );
 };
 
