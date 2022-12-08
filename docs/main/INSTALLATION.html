@@ -235,12 +235,12 @@ flatpak install -y &#39;com.pojtinger.felicitas.connmapper.main&#39;</code></pre
 <h2 data-number="1.6"><span class="header-section-number">1.6</span> Fedora 37 on <code>amd64</code></h2>
 <p>To install the prebuilt binary package, run the following:</p>
 <pre class="shell"><code>pkexec sudo bash - &lt;&lt;&#39;EOT&#39;
-dnf config-manager --add-repo &#39;https://pojntfx.github.io/connmapper/rpm/fedora/37/x86_64/fedora/37/main/repodata/hydrapp.repo&#39;
+dnf config-manager --add-repo &#39;https://pojntfx.github.io/connmapper/rpm/fedora/37/x86_64/main/repodata/hydrapp.repo&#39;
 dnf install -y &#39;com.pojtinger.felicitas.connmapper.main&#39;
 EOT</code></pre>
 <p>To install the source package, build the binary package locally and install it, run the following:</p>
 <pre class="shell"><code>pkexec sudo bash - &lt;&lt;&#39;EOT&#39;
-dnf config-manager --add-repo &#39;https://pojntfx.github.io/connmapper/rpm/fedora/37/x86_64/fedora/37/main/repodata/hydrapp.repo&#39;
+dnf config-manager --add-repo &#39;https://pojntfx.github.io/connmapper/rpm/fedora/37/x86_64/main/repodata/hydrapp.repo&#39;
 
 dnf install -y rpm-build
 dnf download --source -y &#39;com.pojtinger.felicitas.connmapper.main&#39;

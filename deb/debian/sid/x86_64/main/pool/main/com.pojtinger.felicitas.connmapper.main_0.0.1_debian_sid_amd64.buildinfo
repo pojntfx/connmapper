@@ -4,20 +4,20 @@ Binary: com.pojtinger.felicitas.connmapper.main com.pojtinger.felicitas.connmapp
 Architecture: amd64 source
 Version: 0.0.1
 Checksums-Md5:
- 460f55633c0b16bf1ae59382b8480812 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
- 146009656d46f0cfbe1bc9abf110ebb0 2968860 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
- a379038d90cffccea84cf8f233201c00 22215224 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
+ 88f91f9ca91b6a8a4e40116260d4ded6 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
+ a2f65e8b8992676fe3b72406137907e2 2969884 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
+ 12dc092e904aaab772d2521ae10f1f59 22217996 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
 Checksums-Sha1:
- 4207b7c40fafa57ac2e28bd54d0c5bbe2015d1a0 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
- 58b92fccdc815b4724bf21114378b5cdace1b029 2968860 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
- fdadeac5ebb4873d48a6d1f92cb41f0e04195283 22215224 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
+ 5b331807b8205081f83c1dc93956e42dda558c52 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
+ 13a05b16dffdcef8e9e67db005d7899ca473ecda 2969884 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
+ 0703a74617f7794781cc3331b6e71857c5d96822 22217996 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
 Checksums-Sha256:
- 008b99bc65e25d5fa9f13bf48fbc231f9f9ddeef13235e133b04144b83a46186 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
- 3189914dc6a8e471f2db6690b4bf3f458bd07f307b74e725989edd6b4c72a882 2968860 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
- 1035e2904aec17177e8daec42edac99ee42bbdbf2d8afd0258c72334cd5b3d8b 22215224 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
+ 80224b67ff389b6610e133921bdc93b7acd04e8f05f56d58aec1dfb139b69c7c 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
+ c23a1f4440375dc08f7b4c99f1c4c82e1f20f40bcda91c1575fddd0130a7beb8 2969884 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
+ 388f546252142d5f5b04424680818a447c24aabcdd0f1f8b382ae993b92299b8 22217996 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
 Build-Origin: Debian
 Build-Architecture: amd64
-Build-Date: Wed, 07 Dec 2022 23:10:31 +0000
+Build-Date: Thu, 08 Dec 2022 21:57:47 +0000
 Build-Path: /build/com.pojtinger.felicitas.connmapper.main-0.0.1
 Installed-Build-Depends:
  appstream-util (= 0.8.2-1),
@@ -64,8 +64,8 @@ Installed-Build-Depends:
  gettext-base (= 0.21-10),
  git (= 1:2.38.1-1),
  git-man (= 1:2.38.1-1),
- golang-1.19-go (= 1.19.3-1),
- golang-1.19-src (= 1.19.3-1),
+ golang-1.19-go (= 1.19.4-1),
+ golang-1.19-src (= 1.19.4-1),
  golang-go (= 2:1.19~1),
  golang-src (= 2:1.19~1),
  grep (= 3.8-3),
@@ -412,7 +412,7 @@ Installed-Build-Depends:
  node-is-buffer (= 2.0.5-2),
  node-is-extendable (= 1.0.1-3),
  node-is-extglob (= 2.1.1-5),
- node-is-glob (= 4.0.3-1),
+ node-is-glob (= 4.0.3-2),
  node-is-number (= 7.0.0-4),
  node-is-path-cwd (= 2.2.0-2),
  node-is-path-inside (= 3.0.3-2),
@@ -441,14 +441,14 @@ Installed-Build-Depends:
  node-kind-of (= 6.0.3+dfsg-2),
  node-levn (= 0.4.1+dfsg-2),
  node-loader-runner (= 4.3.0-1),
- node-locate-path (= 7.1.1-1),
+ node-locate-path (= 7.1.1-2),
  node-lodash (= 4.17.21+dfsg+~cs8.31.198.20210220-9),
  node-lodash-packages (= 4.17.21+dfsg+~cs8.31.198.20210220-9),
  node-lowercase-keys (= 2.0.0-2),
  node-lru-cache (= 7.14.1-1),
  node-make-dir (= 3.1.0-3),
  node-memfs (= 3.4.12+~cs1.0.3-1),
- node-memory-fs (= 0.5.0+~0.3.3-1),
+ node-memory-fs (= 0.5.0+~0.3.3-2),
  node-merge-stream (= 2.0.0+~1.1.2-2),
  node-micromatch (= 4.0.5+~4.0.2-1),
  node-mime (= 3.0.0+dfsg+~cs3.97.1-1),
@@ -505,7 +505,7 @@ Installed-Build-Depends:
  node-punycode (= 2.1.1-6),
  node-quick-lru (= 6.1.1-4),
  node-randombytes (= 2.1.0+~2.0.0-2),
- node-read (= 1.0.7-4),
+ node-read (= 1.0.7-5),
  node-read-package-json (= 5.0.2+~2.0.0-1),
  node-read-pkg (= 5.2.0-2),
  node-readable-stream (= 3.6.0+~cs3.0.0-4),
@@ -582,7 +582,7 @@ Installed-Build-Depends:
  node-validate-npm-package-license (= 3.0.4-2),
  node-validate-npm-package-name (= 5.0.0+~4.0.0-1),
  node-watchpack (= 2.4.0+~cs2.8.1-1),
- node-wcwidth.js (= 1.0.2-1),
+ node-wcwidth.js (= 1.0.2-2),
  node-webassemblyjs (= 1.11.4+dfsg+~cs10.11.17-2),
  node-webpack-sources (= 3.2.3+~3.2.0-2),
  node-which (= 2.0.2+~cs1.3.2-2),
@@ -596,7 +596,7 @@ Installed-Build-Depends:
  node-y18n (= 5.0.8+~5.0.0-3),
  node-yallist (= 4.0.0+~4.0.1-1),
  node-yargs (= 16.2.0+~16.0.4-7),
- node-yargs-parser (= 21.1.1+~21.0.0-3),
+ node-yargs-parser (= 21.1.1+~21.0.0-4),
  nodejs (= 18.12.1+dfsg-2),
  npm (= 9.1.3~ds1-1),
  openssl (= 3.0.7-1),
