@@ -88,6 +88,8 @@ type local struct {
 	packetCache      []tracedConnection
 	packetsCacheLock sync.Mutex
 
+	summarized bool
+
 	Peers func() map[string]remote
 }
 
@@ -293,9 +295,33 @@ func (l *local) TraceDevice(ctx context.Context, name string) error {
 				}
 				l.connectionsLock.Unlock()
 
+				if l.summarized {
+					// TODO: Add API for maximum packets to store to store
+					l.packetsCacheLock.Lock()
+
+					newPacketCache := []tracedConnection{}
+					for _, packet := range l.packetCache {
+						for i, candidate := range newPacketCache {
+							if getTracedConnectionID(candidate) == getTracedConnectionID(packet) {
+								newPacketCache[i].Length += packet.Length
+
+								continue
+							}
+						}
+
+						newPacketCache = append(newPacketCache, packet)
+					}
+
+					l.packetCache = newPacketCache
+
+					l.packetsCacheLock.Unlock()
+				}
+
 				// TODO: Add API for maximum packets to store to store
 				if len(l.packetCache) > 100 {
+					l.packetsCacheLock.Lock()
 					l.packetCache = l.packetCache[:100]
+					l.packetsCacheLock.Unlock()
 				}
 			}
 		}
@@ -325,9 +351,19 @@ func (l *local) GetPackets(ctx context.Context) ([]tracedConnection, error) {
 	return l.packetCache, nil
 }
 
+func (l *local) SetIsSummarized(ctx context.Context, summarized bool) error {
+	l.packetsCacheLock.Lock()
+	defer l.packetsCacheLock.Unlock()
+
+	l.summarized = summarized
+
+	l.packetCache = []tracedConnection{}
+
+	return nil
+}
+
 type remote struct {
 	GetEscalationPermission func(ctx context.Context, restart bool) (bool, error)
-	SetRealtimePackets      func(ctx context.Context, packets []tracedConnection) error
 }
 
 func StartServer(ctx context.Context, addr string, heartbeat time.Duration, localhostize bool, browserState *update.BrowserState) (string, func() error, error) {
