@@ -7,7 +7,11 @@ import {
   Select,
   SelectOption,
   SelectVariant,
+  Switch,
   Title,
+  Toolbar,
+  ToolbarContent,
+  ToolbarItem,
 } from "@patternfly/react-core";
 import {
   AngleUpIcon,
@@ -77,6 +81,7 @@ const App = () => {
     TraceDevice: async (name: string): Promise<void> => {},
     GetConnections: async (): Promise<ITracedConnection[]> => [],
     GetPackets: async (): Promise<ITracedConnectionDetails[]> => [],
+    SetIsSummarized: async (summarized: boolean): Promise<void> => {},
   });
 
   const [ready, setReady] = useState(false);
@@ -205,6 +210,8 @@ const App = () => {
   const [isInspectorOpen, setIsInspectorOpen] = useState(false);
   const [isInspectorMinimized, setIsInspectorMinimized] = useState(true);
 
+  const [isSummarized, setIsSummarized] = useState(false);
+
   return ready ? (
     tracing ? (
       <>
@@ -260,38 +267,61 @@ const App = () => {
               </FlexItem>
 
               <FlexItem>
-                <Flex
-                  spaceItems={{ default: "spaceItemsXs" }}
-                  direction={{ default: "row" }}
-                  justifyContent={{ default: "justifyContentCenter" }}
-                  alignItems={{ default: "alignItemsCenter" }}
-                >
-                  {isInspectorMinimized ? (
-                    <Button
-                      variant="plain"
-                      aria-label="Expand"
-                      onClick={() => setIsInspectorMinimized(false)}
-                    >
-                      <ExpandIcon />
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="plain"
-                      aria-label="Compress"
-                      onClick={() => setIsInspectorMinimized(true)}
-                    >
-                      <CompressIcon />
-                    </Button>
-                  )}
+                <Toolbar>
+                  <ToolbarContent>
+                    <ToolbarItem>
+                      <Switch
+                        label="Summarized"
+                        labelOff="Real-time"
+                        isChecked={isSummarized}
+                        onChange={() =>
+                          setIsSummarized((isSummarized) => {
+                            const nv = !isSummarized;
 
-                  <Button
-                    variant="plain"
-                    aria-label="Minimize"
-                    onClick={() => setIsInspectorOpen(false)}
-                  >
-                    <TimesIcon />
-                  </Button>
-                </Flex>
+                            (async () => {
+                              await remote.SetIsSummarized(nv);
+                            })();
+
+                            return nv;
+                          })
+                        }
+                        isReversed
+                      />
+                    </ToolbarItem>
+
+                    <ToolbarItem variant="separator" />
+
+                    <ToolbarItem>
+                      {isInspectorMinimized ? (
+                        <Button
+                          variant="plain"
+                          aria-label="Expand"
+                          onClick={() => setIsInspectorMinimized(false)}
+                        >
+                          <ExpandIcon />
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="plain"
+                          aria-label="Compress"
+                          onClick={() => setIsInspectorMinimized(true)}
+                        >
+                          <CompressIcon />
+                        </Button>
+                      )}
+                    </ToolbarItem>
+
+                    <ToolbarItem>
+                      <Button
+                        variant="plain"
+                        aria-label="Minimize"
+                        onClick={() => setIsInspectorOpen(false)}
+                      >
+                        <TimesIcon />
+                      </Button>
+                    </ToolbarItem>
+                  </ToolbarContent>
+                </Toolbar>
               </FlexItem>
             </Flex>
           }
@@ -367,24 +397,22 @@ const App = () => {
   );
 };
 
-interface IRealtimeTrafficTableProps {
+interface ITrafficTableProps {
   getPackets: () => Promise<ITracedConnectionDetails[]>;
   addLocalLocation: (packet: ITracedConnection) => void;
 }
 
-const RealtimeTrafficTable: React.FC<IRealtimeTrafficTableProps> = ({
+const RealtimeTrafficTable: React.FC<ITrafficTableProps> = ({
   getPackets,
   addLocalLocation,
 }) => {
-  const [realtimePackets, setRealtimePackets] = useState<
-    ITracedConnectionDetails[]
-  >([]);
+  const [packets, setPackets] = useState<ITracedConnectionDetails[]>([]);
 
   useEffect(() => {
     const interval = setInterval(async () => {
       const packets = await getPackets();
 
-      setRealtimePackets(
+      setPackets(
         packets.map((p) => {
           addLocalLocation(p);
 
@@ -422,7 +450,7 @@ const RealtimeTrafficTable: React.FC<IRealtimeTrafficTableProps> = ({
         </Tr>
       </Thead>
       <Tbody>
-        {realtimePackets.map((packet, i) => (
+        {packets.map((packet, i) => (
           <Tr isHoverable key={i}>
             <Td>{packet.timestamp}</Td>
 
