@@ -9,7 +9,12 @@ import {
   SelectVariant,
   Title,
 } from "@patternfly/react-core";
-import { TableIcon } from "@patternfly/react-icons";
+import {
+  AngleUpIcon,
+  CompressIcon,
+  ExpandIcon,
+  TimesIcon,
+} from "@patternfly/react-icons";
 import {
   TableComposable,
   Tbody,
@@ -198,6 +203,7 @@ const App = () => {
   const { width, height } = useWindowSize();
 
   const [isInspectorOpen, setIsInspectorOpen] = useState(false);
+  const [isInspectorMinimized, setIsInspectorMinimized] = useState(true);
 
   return ready ? (
     tracing ? (
@@ -222,22 +228,78 @@ const App = () => {
           height={height}
         />
 
-        <Button
-          variant="primary"
-          icon={<TableIcon />}
-          className="pf-x-button--cta"
-          onClick={() => setIsInspectorOpen(true)}
-        >
-          {" "}
-          Inspect Traffic
-        </Button>
+        {!isInspectorOpen && (
+          <Button
+            variant="primary"
+            icon={<AngleUpIcon />}
+            className="pf-x-button--cta"
+            onClick={() => setIsInspectorOpen(true)}
+          >
+            {" "}
+            Inspect Traffic
+          </Button>
+        )}
 
         <Modal
           variant={ModalVariant.large}
-          title="Traffic Inspector"
           isOpen={isInspectorOpen}
-          onClose={() => setIsInspectorOpen(false)}
-          className="pf-c-modal-box--fullscreen"
+          showClose={false}
+          onEscapePress={() => setIsInspectorOpen(false)}
+          aria-labelledby="traffic-inspector-title"
+          header={
+            <Flex
+              spaceItems={{ default: "spaceItemsMd" }}
+              direction={{ default: "row" }}
+              justifyContent={{ default: "justifyContentSpaceBetween" }}
+              alignItems={{ default: "alignItemsCenter" }}
+            >
+              <FlexItem>
+                <Title id="traffic-inspector-title" headingLevel="h1">
+                  Traffic Inspector
+                </Title>
+              </FlexItem>
+
+              <FlexItem>
+                <Flex
+                  spaceItems={{ default: "spaceItemsXs" }}
+                  direction={{ default: "row" }}
+                  justifyContent={{ default: "justifyContentCenter" }}
+                  alignItems={{ default: "alignItemsCenter" }}
+                >
+                  {isInspectorMinimized ? (
+                    <Button
+                      variant="plain"
+                      aria-label="Expand"
+                      onClick={() => setIsInspectorMinimized(false)}
+                    >
+                      <ExpandIcon />
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="plain"
+                      aria-label="Compress"
+                      onClick={() => setIsInspectorMinimized(true)}
+                    >
+                      <CompressIcon />
+                    </Button>
+                  )}
+
+                  <Button
+                    variant="plain"
+                    aria-label="Minimize"
+                    onClick={() => setIsInspectorOpen(false)}
+                  >
+                    <TimesIcon />
+                  </Button>
+                </Flex>
+              </FlexItem>
+            </Flex>
+          }
+          className={
+            isInspectorMinimized
+              ? "pf-c-modal-box"
+              : "pf-c-modal-box--fullscreen"
+          }
         >
           <RealtimeTrafficTable
             getPackets={remote.GetPackets}
