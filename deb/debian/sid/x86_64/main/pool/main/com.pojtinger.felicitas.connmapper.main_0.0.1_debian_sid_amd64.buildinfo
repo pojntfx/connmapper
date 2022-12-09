@@ -4,20 +4,20 @@ Binary: com.pojtinger.felicitas.connmapper.main com.pojtinger.felicitas.connmapp
 Architecture: amd64 source
 Version: 0.0.1
 Checksums-Md5:
- 88f91f9ca91b6a8a4e40116260d4ded6 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
- a2f65e8b8992676fe3b72406137907e2 2969884 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
- 12dc092e904aaab772d2521ae10f1f59 22217996 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
+ e3d23639d763b30e7ba05f91fec8bb67 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
+ ea3d2f290e73252bbd3bb8f1d7bdc0b4 2969904 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
+ 1445a33a2d07d7672b9534506b515b5b 22216740 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
 Checksums-Sha1:
- 5b331807b8205081f83c1dc93956e42dda558c52 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
- 13a05b16dffdcef8e9e67db005d7899ca473ecda 2969884 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
- 0703a74617f7794781cc3331b6e71857c5d96822 22217996 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
+ 0fd474bf3b12b5147c8c0a31fb7953bba72bea89 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
+ f321cd7128b7c1d5c33bc56bd256ea8c98e8b969 2969904 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
+ 3c33e37d36a7fbc36cf1c917de69e3a2621b8bce 22216740 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
 Checksums-Sha256:
- 80224b67ff389b6610e133921bdc93b7acd04e8f05f56d58aec1dfb139b69c7c 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
- c23a1f4440375dc08f7b4c99f1c4c82e1f20f40bcda91c1575fddd0130a7beb8 2969884 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
- 388f546252142d5f5b04424680818a447c24aabcdd0f1f8b382ae993b92299b8 22217996 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
+ 014377a471d511fa65fe4627dc40bd525ed5ce9a36dbf6af2804197452c4992a 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
+ 21155a59d1923e1a344cb6b9d51342d45cab0f1d43149bd9775c485725886e0d 2969904 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
+ c6e0768b5dddbef980b6f9fbe639bff499e55e3281d4642f9a10e259c1d6809a 22216740 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
 Build-Origin: Debian
 Build-Architecture: amd64
-Build-Date: Thu, 08 Dec 2022 21:57:47 +0000
+Build-Date: Fri, 09 Dec 2022 13:43:41 +0000
 Build-Path: /build/com.pojtinger.felicitas.connmapper.main-0.0.1
 Installed-Build-Depends:
  appstream-util (= 0.8.2-1),
@@ -28,9 +28,9 @@ Installed-Build-Depends:
  base-files (= 12.3),
  base-passwd (= 3.6.1),
  bash (= 5.2-2+b1),
- binutils (= 2.39-8),
- binutils-common (= 2.39-8),
- binutils-x86-64-linux-gnu (= 2.39-8),
+ binutils (= 2.39.50.20221208-2),
+ binutils-common (= 2.39.50.20221208-2),
+ binutils-x86-64-linux-gnu (= 2.39.50.20221208-2),
  bsdextrautils (= 2.38.1-4),
  bsdutils (= 1:2.38.1-4),
  build-essential (= 12.9),
@@ -90,7 +90,7 @@ Installed-Build-Depends:
  libattr1 (= 1:2.5.1-3),
  libaudit-common (= 1:3.0.7-1.1),
  libaudit1 (= 1:3.0.7-1.1+b2),
- libbinutils (= 2.39-8),
+ libbinutils (= 2.39.50.20221208-2),
  libblkid1 (= 2.38.1-4),
  libbrotli1 (= 1.0.9-2+b5),
  libbsd0 (= 0.11.7-1),
@@ -106,8 +106,8 @@ Installed-Build-Depends:
  libcom-err2 (= 1.46.6~rc1-1+b1),
  libcrypt-dev (= 1:4.4.33-1),
  libcrypt1 (= 1:4.4.33-1),
- libctf-nobfd0 (= 2.39-8),
- libctf0 (= 2.39-8),
+ libctf-nobfd0 (= 2.39.50.20221208-2),
+ libctf0 (= 2.39.50.20221208-2),
  libcurl3-gnutls (= 7.86.0-2),
  libdav1d6 (= 1.0.0-2),
  libdb5.3 (= 5.3.28+dfsg1-0.10),
@@ -138,7 +138,7 @@ Installed-Build-Depends:
  libgnutls30 (= 3.7.8-4),
  libgomp1 (= 12.2.0-9),
  libgpg-error0 (= 1.46-1),
- libgprofng0 (= 2.39-8),
+ libgprofng0 (= 2.39.50.20221208-2),
  libgssapi-krb5-2 (= 1.20.1-1),
  libheif1 (= 1.13.0-1),
  libhogweed6 (= 3.8.1-2),
@@ -146,6 +146,7 @@ Installed-Build-Depends:
  libidn2-0 (= 2.3.3-1+b1),
  libisl23 (= 0.25-1),
  libitm1 (= 12.2.0-9),
+ libjansson4 (= 2.14-2),
  libjbig0 (= 2.1-6),
  libjpeg62-turbo (= 1:2.1.2-1+b1),
  libjs-async (= 0.8.0-6),
