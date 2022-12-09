@@ -334,6 +334,7 @@ const App = () => {
           <RealtimeTrafficTable
             getPackets={remote.GetPackets}
             addLocalLocation={addLocalLocation}
+            isSummarized={isSummarized}
           />
         </Modal>
       </>
@@ -400,11 +401,13 @@ const App = () => {
 interface ITrafficTableProps {
   getPackets: () => Promise<ITracedConnectionDetails[]>;
   addLocalLocation: (packet: ITracedConnection) => void;
+  isSummarized: boolean;
 }
 
 const RealtimeTrafficTable: React.FC<ITrafficTableProps> = ({
   getPackets,
   addLocalLocation,
+  isSummarized,
 }) => {
   const [packets, setPackets] = useState<ITracedConnectionDetails[]>([]);
 
@@ -450,33 +453,37 @@ const RealtimeTrafficTable: React.FC<ITrafficTableProps> = ({
         </Tr>
       </Thead>
       <Tbody>
-        {packets.map((packet, i) => (
-          <Tr isHoverable key={i}>
-            <Td>{packet.timestamp}</Td>
+        {packets
+          .sort((a, b) =>
+            isSummarized ? b.length - a.length : b.timestamp - a.timestamp
+          )
+          .map((packet, i) => (
+            <Tr isHoverable key={i}>
+              <Td>{packet.timestamp}</Td>
 
-            <Td>{packet.layerType}</Td>
-            <Td>{packet.nextLayerType}</Td>
-            <Td>{packet.length}</Td>
+              <Td>{packet.layerType}</Td>
+              <Td>{packet.nextLayerType}</Td>
+              <Td>{packet.length}</Td>
 
-            <Td>{packet.srcIP}</Td>
-            <Td>
-              {packet.srcCityName || "Unknown city"},{" "}
-              {packet.srcCountryName || "unknown country"}
-            </Td>
-            <Td>
-              {packet.srcLatitude}, {packet.srcLongitude}
-            </Td>
+              <Td>{packet.srcIP}</Td>
+              <Td>
+                {packet.srcCityName || "Unknown city"},{" "}
+                {packet.srcCountryName || "unknown country"}
+              </Td>
+              <Td>
+                {packet.srcLatitude}, {packet.srcLongitude}
+              </Td>
 
-            <Td>{packet.dstIP}</Td>
-            <Td>
-              {packet.dstCityName || "Unknown city"},{" "}
-              {packet.dstCountryName || "unknown country"}
-            </Td>
-            <Td>
-              {packet.dstLatitude}, {packet.dstLongitude}
-            </Td>
-          </Tr>
-        ))}
+              <Td>{packet.dstIP}</Td>
+              <Td>
+                {packet.dstCityName || "Unknown city"},{" "}
+                {packet.dstCountryName || "unknown country"}
+              </Td>
+              <Td>
+                {packet.dstLatitude}, {packet.dstLongitude}
+              </Td>
+            </Tr>
+          ))}
       </Tbody>
     </TableComposable>
   );

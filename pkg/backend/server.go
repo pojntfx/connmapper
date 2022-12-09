@@ -266,10 +266,6 @@ func (l *local) TraceDevice(ctx context.Context, name string) error {
 					nil,
 				}
 
-				l.packetsCacheLock.Lock()
-				l.packetCache = append([]tracedConnection{connection}, l.packetCache...)
-				l.packetsCacheLock.Unlock()
-
 				l.connectionsLock.Lock()
 
 				// TODO: Add API for maximum connections to store
@@ -299,29 +295,36 @@ func (l *local) TraceDevice(ctx context.Context, name string) error {
 					// TODO: Add API for maximum packets to store to store
 					l.packetsCacheLock.Lock()
 
-					newPacketCache := []tracedConnection{}
-					for _, packet := range l.packetCache {
-						for i, candidate := range newPacketCache {
-							if getTracedConnectionID(candidate) == getTracedConnectionID(packet) {
-								newPacketCache[i].Length += packet.Length
-
-								continue
+					exists := false
+					for i, candidate := range l.packetCache {
+						if getTracedConnectionID(candidate) == getTracedConnectionID(connection) {
+							// Don't increment length of self
+							if i != len(l.packetCache)-1 {
+								l.packetCache[i].Length += connection.Length
 							}
-						}
 
-						newPacketCache = append(newPacketCache, packet)
+							exists = true
+
+							break
+						}
 					}
 
-					l.packetCache = newPacketCache
+					if !exists {
+						l.packetCache = append([]tracedConnection{connection}, l.packetCache...)
+					}
 
 					l.packetsCacheLock.Unlock()
-				}
-
-				// TODO: Add API for maximum packets to store to store
-				if len(l.packetCache) > 100 {
+				} else {
 					l.packetsCacheLock.Lock()
-					l.packetCache = l.packetCache[:100]
+					l.packetCache = append([]tracedConnection{connection}, l.packetCache...)
 					l.packetsCacheLock.Unlock()
+
+					// TODO: Add API for maximum packets to store to store
+					if len(l.packetCache) > 100 {
+						l.packetsCacheLock.Lock()
+						l.packetCache = l.packetCache[:100]
+						l.packetsCacheLock.Unlock()
+					}
 				}
 			}
 		}
