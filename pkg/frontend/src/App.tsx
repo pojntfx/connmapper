@@ -7,8 +7,9 @@ import {
   Select,
   SelectOption,
   SelectVariant,
-  Switch,
   Title,
+  ToggleGroup,
+  ToggleGroupItem,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
@@ -17,6 +18,8 @@ import {
   AngleUpIcon,
   CompressIcon,
   ExpandIcon,
+  ListIcon,
+  OutlinedClockIcon,
   TimesIcon,
 } from "@patternfly/react-icons";
 import {
@@ -270,26 +273,22 @@ const App = () => {
                 <Toolbar>
                   <ToolbarContent>
                     <ToolbarItem>
-                      <Switch
-                        label="Summarized"
-                        labelOff="Real-time"
-                        isChecked={isSummarized}
-                        onChange={() =>
-                          setIsSummarized((isSummarized) => {
-                            const nv = !isSummarized;
+                      <ToggleGroup aria-label="Select your output mode">
+                        <ToggleGroupItem
+                          icon={<OutlinedClockIcon />}
+                          text="Real-time"
+                          isSelected={!isSummarized}
+                          onChange={() => setIsSummarized(false)}
+                        />
 
-                            (async () => {
-                              await remote.SetIsSummarized(nv);
-                            })();
-
-                            return nv;
-                          })
-                        }
-                        isReversed
-                      />
+                        <ToggleGroupItem
+                          icon={<ListIcon />}
+                          text="Summarized"
+                          isSelected={isSummarized}
+                          onChange={() => setIsSummarized(true)}
+                        />
+                      </ToggleGroup>
                     </ToolbarItem>
-
-                    <ToolbarItem variant="separator" />
 
                     <ToolbarItem>
                       {isInspectorMinimized ? (
@@ -309,9 +308,7 @@ const App = () => {
                           <CompressIcon />
                         </Button>
                       )}
-                    </ToolbarItem>
 
-                    <ToolbarItem>
                       <Button
                         variant="plain"
                         aria-label="Minimize"
