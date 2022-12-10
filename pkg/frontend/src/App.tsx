@@ -28,6 +28,7 @@ import {
   Td,
   Th,
   Thead,
+  ThProps,
   Tr,
 } from "@patternfly/react-table";
 import { bind } from "@pojntfx/dudirekta";
@@ -331,7 +332,6 @@ const App = () => {
           <RealtimeTrafficTable
             getPackets={remote.GetPackets}
             addLocalLocation={addLocalLocation}
-            isSummarized={isSummarized}
           />
         </Modal>
       </>
@@ -398,13 +398,11 @@ const App = () => {
 interface ITrafficTableProps {
   getPackets: () => Promise<ITracedConnectionDetails[]>;
   addLocalLocation: (packet: ITracedConnection) => void;
-  isSummarized: boolean;
 }
 
 const RealtimeTrafficTable: React.FC<ITrafficTableProps> = ({
   getPackets,
   addLocalLocation,
-  isSummarized,
 }) => {
   const [packets, setPackets] = useState<ITracedConnectionDetails[]>([]);
 
@@ -424,6 +422,37 @@ const RealtimeTrafficTable: React.FC<ITrafficTableProps> = ({
     return () => clearInterval(interval);
   }, []);
 
+  const [activeSortIndex, setActiveSortIndex] = useState<number | undefined>();
+  const [activeSortDirection, setActiveSortDirection] = useState<
+    "asc" | "desc" | undefined
+  >();
+
+  const sortableKeys = [
+    "timestamp",
+    "layerType",
+    "nextLayerType",
+    "length",
+
+    "srcCountryName",
+
+    "dstCountryName",
+  ];
+
+  const getSort = useCallback(
+    (columnIndex: number): ThProps["sort"] => ({
+      columnIndex,
+      sortBy: {
+        index: activeSortIndex,
+        direction: activeSortDirection,
+      },
+      onSort: (_event, index, direction) => {
+        setActiveSortIndex(index);
+        setActiveSortDirection(direction);
+      },
+    }),
+    [activeSortDirection, activeSortIndex]
+  );
+
   return (
     <TableComposable
       aria-label="Simple table"
@@ -434,26 +463,51 @@ const RealtimeTrafficTable: React.FC<ITrafficTableProps> = ({
     >
       <Thead noWrap>
         <Tr>
-          <Th>Timestamp</Th>
+          <Th sort={getSort(0)}>Timestamp</Th>
 
-          <Th>Layer</Th>
-          <Th>Next Layer</Th>
-          <Th>Length</Th>
+          <Th sort={getSort(1)}>Layer</Th>
+          <Th sort={getSort(2)}>Next Layer</Th>
+          <Th sort={getSort(3)}>Length</Th>
 
           <Th>Src IP</Th>
-          <Th>Src Location</Th>
+          <Th sort={getSort(4)}>Src Location</Th>
           <Th>Src Coordinates</Th>
 
           <Th>Dst IP</Th>
-          <Th>Dst Location</Th>
+          <Th sort={getSort(5)}>Dst Location</Th>
           <Th>Dst Coordinates</Th>
         </Tr>
       </Thead>
       <Tbody>
         {packets
-          .sort((a, b) =>
-            isSummarized ? b.length - a.length : b.timestamp - a.timestamp
-          )
+          .sort((a, b) => {
+            if (activeSortIndex === null || activeSortIndex === undefined) {
+              return 1;
+            }
+
+            const key = sortableKeys[activeSortIndex];
+
+            if (typeof (a as any)[key] === "number") {
+              return (
+                ((activeSortDirection === "desc" ? (b as any) : (a as any))[
+                  key
+                ] as number) -
+                ((activeSortDirection === "desc" ? (a as any) : (b as any))[
+                  key
+                ] as number)
+              );
+            }
+
+            return (activeSortDirection === "desc" ? (b as any) : (a as any))[
+              key
+            ]
+              .toString()
+              .localeCompare(
+                (activeSortDirection === "desc" ? (a as any) : (b as any))[
+                  key
+                ].toString()
+              );
+          })
           .map((packet, i) => (
             <Tr isHoverable key={i}>
               <Td>{packet.timestamp}</Td>
