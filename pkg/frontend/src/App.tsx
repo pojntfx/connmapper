@@ -4,6 +4,7 @@ import {
   FlexItem,
   Modal,
   ModalVariant,
+  SearchInput,
   Select,
   SelectOption,
   SelectVariant,
@@ -187,14 +188,14 @@ const App = () => {
             return {
               id: getTracedConnectionID(conn),
               label: `${conn.layerType}/${conn.nextLayerType} ${conn.srcIP} (${
-                conn.srcCountryName || "Unknown country"
-              }, ${conn.srcCityName || "unknown city"}, ${conn.srcLongitude}, ${
-                conn.srcLatitude
-              }) → ${conn.dstIP} (${
-                conn.dstCountryName || "Unknown country"
-              }, ${conn.dstCityName || "unknown city"}, ${conn.dstLongitude}, ${
-                conn.dstLatitude
-              })`,
+                conn.srcCountryName && conn.srcCityName
+                  ? conn.srcCountryName + ", " + conn.srcCityName
+                  : conn.srcCountryName || conn.srcCityName || "-"
+              }, ${conn.srcLongitude}, ${conn.srcLatitude}) → ${conn.dstIP} (${
+                conn.dstCountryName && conn.dstCityName
+                  ? conn.dstCountryName + ", " + conn.dstCityName
+                  : conn.dstCountryName || conn.dstCityName || "-"
+              }, ${conn.dstLongitude}, ${conn.dstLatitude})`,
               coords: [
                 [conn.srcLongitude, conn.srcLatitude],
                 [conn.dstLongitude, conn.dstLatitude],
@@ -215,6 +216,8 @@ const App = () => {
   const [isInspectorMinimized, setIsInspectorMinimized] = useState(true);
 
   const [isSummarized, setIsSummarized] = useState(false);
+
+  const [searchQuery, setSearchQuery] = useState("");
 
   return ready ? (
     tracing ? (
@@ -274,6 +277,15 @@ const App = () => {
                 <Toolbar>
                   <ToolbarContent>
                     <ToolbarItem>
+                      <SearchInput
+                        placeholder="Search ..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e)}
+                        onClear={() => setSearchQuery("")}
+                      />
+                    </ToolbarItem>
+
+                    <ToolbarItem>
                       <ToggleGroup aria-label="Select your output mode">
                         <ToggleGroupItem
                           icon={<OutlinedClockIcon />}
@@ -332,6 +344,7 @@ const App = () => {
           <RealtimeTrafficTable
             getPackets={remote.GetPackets}
             addLocalLocation={addLocalLocation}
+            searchQuery={searchQuery}
           />
         </Modal>
       </>
@@ -398,11 +411,13 @@ const App = () => {
 interface ITrafficTableProps {
   getPackets: () => Promise<ITracedConnectionDetails[]>;
   addLocalLocation: (packet: ITracedConnection) => void;
+  searchQuery: string;
 }
 
 const RealtimeTrafficTable: React.FC<ITrafficTableProps> = ({
   getPackets,
   addLocalLocation,
+  searchQuery,
 }) => {
   const [packets, setPackets] = useState<ITracedConnectionDetails[]>([]);
 
@@ -461,7 +476,7 @@ const RealtimeTrafficTable: React.FC<ITrafficTableProps> = ({
       isStriped
       isStickyHeader
     >
-      <Thead noWrap>
+      <Thead>
         <Tr>
           <Th sort={getSort(0)}>Timestamp</Th>
 
@@ -480,6 +495,14 @@ const RealtimeTrafficTable: React.FC<ITrafficTableProps> = ({
       </Thead>
       <Tbody>
         {packets
+          .filter((p) =>
+            searchQuery.trim().length <= 0
+              ? true
+              : Object.values(p)
+                  .join(" ")
+                  .toLowerCase()
+                  .includes(searchQuery.toLowerCase())
+          )
           .sort((a, b) => {
             if (activeSortIndex === null || activeSortIndex === undefined) {
               return 1;
@@ -518,8 +541,9 @@ const RealtimeTrafficTable: React.FC<ITrafficTableProps> = ({
 
               <Td>{packet.srcIP}</Td>
               <Td>
-                {packet.srcCityName || "Unknown city"},{" "}
-                {packet.srcCountryName || "unknown country"}
+                {packet.srcCountryName && packet.srcCityName
+                  ? packet.srcCountryName + ", " + packet.srcCityName
+                  : packet.srcCountryName || packet.srcCityName || "-"}
               </Td>
               <Td>
                 {packet.srcLatitude}, {packet.srcLongitude}
@@ -527,8 +551,9 @@ const RealtimeTrafficTable: React.FC<ITrafficTableProps> = ({
 
               <Td>{packet.dstIP}</Td>
               <Td>
-                {packet.dstCityName || "Unknown city"},{" "}
-                {packet.dstCountryName || "unknown country"}
+                {packet.dstCountryName && packet.dstCityName
+                  ? packet.dstCountryName + ", " + packet.dstCityName
+                  : packet.dstCountryName || packet.dstCityName || "-"}
               </Td>
               <Td>
                 {packet.dstLatitude}, {packet.dstLongitude}
