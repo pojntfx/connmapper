@@ -4,20 +4,20 @@ Binary: com.pojtinger.felicitas.connmapper.main com.pojtinger.felicitas.connmapp
 Architecture: amd64 source
 Version: 0.0.1
 Checksums-Md5:
- 49466247a5a3fba285823b50396c4cac 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
- 338ddb6dc49d39b33d9321fc1c67848d 2970876 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
- 0d488befa80ed189c205cc7cd52c08da 22232832 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
+ 1a67164d4b0683f13e6400e6fa0ae19a 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
+ ab02398378fa5d81ea70d9473b40b480 2970988 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
+ 3dd6c016dce4d0f19db79ac89d8188da 22256672 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
 Checksums-Sha1:
- 33fcc2c0e395aac6c76051ac0ffb4eebbbf942e1 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
- ab4245790550a49c7c441373c5df807c5f44a20d 2970876 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
- b3124acae97d847db042ae4d78816b090e390a45 22232832 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
+ 7be238cccccd751f46cf09a9b0f711b784dd984a 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
+ 2a225e37a0de366f2edc741f45b59f1dc8a66710 2970988 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
+ 4b292c31396531eec915bda51ed2fa5cfe3f9f45 22256672 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
 Checksums-Sha256:
- d930608687a03b29b93f0a8b511fdabdb3b6c783c462da717bfc958f5aa822d7 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
- 3845887c87478410ed0a6845cb6a7556829e34625e331b73b7bfcabf1aab86f9 2970876 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
- 932de868b5d99af7f2642abc7879ef689b93d514140571caad424a95eccfe4de 22232832 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
+ 276e7ffc4dcd6512f36f6f4880488deec2d8ed5351e204033c6d90a6b053725d 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
+ 03d3d4ff2e763b441fa15e153f0d3c5c7188345fb93147717348953bf7447d52 2970988 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
+ 5c760ab791748c3a84850f0701214ae271ffb020c690bbe653adc5f3b2c85793 22256672 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
 Build-Origin: Debian
 Build-Architecture: amd64
-Build-Date: Sun, 11 Dec 2022 00:29:51 +0000
+Build-Date: Sun, 11 Dec 2022 23:08:33 +0000
 Build-Path: /build/com.pojtinger.felicitas.connmapper.main-0.0.1
 Installed-Build-Depends:
  appstream-util (= 0.8.2-1),
@@ -182,7 +182,7 @@ Installed-Build-Depends:
  libmpfr6 (= 4.1.0-3),
  libncursesw6 (= 6.3+20220423-2),
  libnettle8 (= 3.8.1-2),
- libnghttp2-14 (= 1.50.0-1+b1),
+ libnghttp2-14 (= 1.51.0-1),
  libnode-dev (= 18.12.1+dfsg-2),
  libnode108 (= 18.12.1+dfsg-2),
  libnsl-dev (= 1.3.0-2),
@@ -222,7 +222,7 @@ Installed-Build-Depends:
  libstdc++6 (= 12.2.0-9.1),
  libstemmer0d (= 2.2.0-2),
  libsub-override-perl (= 0.09-4),
- libsystemd0 (= 252.2-2),
+ libsystemd0 (= 252.3-1),
  libtasn1-6 (= 4.19.0-2),
  libtiff5 (= 4.4.0-6),
  libtinfo6 (= 6.3+20220423-2),
@@ -233,7 +233,7 @@ Installed-Build-Depends:
  libtsan2 (= 12.2.0-9.1),
  libubsan1 (= 12.2.0-9.1),
  libuchardet0 (= 0.0.7-1),
- libudev1 (= 252.2-2),
+ libudev1 (= 252.3-1),
  libunistring2 (= 1.0-2),
  libuuid1 (= 2.38.1-4),
  libuv1 (= 1.44.2-1),
@@ -269,14 +269,12 @@ Installed-Build-Depends:
  node-ansi-escapes (= 5.0.0+really.4.3.1-1),
  node-ansi-regex (= 5.0.1-1),
  node-ansi-styles (= 6.2.1-2),
- node-ansistyles (= 0.1.3-5),
  node-anymatch (= 3.1.3+~cs4.6.1-2),
  node-aproba (= 2.0.0-3),
  node-archy (= 1.0.0-6),
  node-are-we-there-yet (= 3.0.1+~1.1.0-1),
  node-argparse (= 2.0.1-2),
  node-arrify (= 2.0.1-3),
- node-asap (= 2.0.6+~2.0.0-1),
  node-assert (= 2.0.0+~cs3.9.8-2),
  node-async (= 0.8.0-6),
  node-async-each (= 1.0.3-3),
@@ -296,7 +294,7 @@ Installed-Build-Depends:
  node-browserslist (= 4.21.4+~cs6.1.17-1),
  node-builtins (= 5.0.1-1),
  node-busboy (= 1.6.0+~cs2.6.0-2),
- node-cacache (= 17.0.2+~cs10.3.7-2),
+ node-cacache (= 17.0.3+~cs10.3.7-1),
  node-camelcase (= 7.0.0-3),
  node-caniuse-lite (= 1.0.30001436+dfsg+~1.0.1-1),
  node-chalk (= 5.1.2-2),
@@ -375,7 +373,6 @@ Installed-Build-Depends:
  node-for-in (= 1.0.2-4),
  node-for-own (= 1.0.0-3),
  node-foreground-child (= 2.0.0-5),
- node-formidable (= 3.2.5+20221017git493ec88+~cs4.0.9-1),
  node-fs-readdir-recursive (= 1.1.0+~1.1.0-1),
  node-fs-write-stream-atomic (= 1.0.10-6),
  node-fs.realpath (= 1.0.0-3),
@@ -561,14 +558,14 @@ Installed-Build-Depends:
  node-terser (= 5.16.1-1),
  node-text-table (= 0.2.0-4),
  node-through (= 2.3.8+~cs0.0.30-1),
- node-time-stamp (= 2.2.0-1),
+ node-time-stamp (= 2.2.0-2),
  node-to-fast-properties (= 3.0.1-3),
  node-to-regex-range (= 5.0.1-4),
  node-tslib (= 2.4.1-1),
  node-type-check (= 0.4.0+dfsg-3),
  node-typedarray (= 0.0.7-1),
  node-typedarray-to-buffer (= 4.0.0-2),
- node-undici (= 5.13.0+dfsg1+~cs20.10.9-1),
+ node-undici (= 5.14.0+dfsg1+~cs20.10.9-1),
  node-unicode-canonical-property-names-ecmascript (= 2.0.0-2),
  node-unicode-match-property-ecmascript (= 2.0.0-2),
  node-unicode-match-property-value-ecmascript (= 2.1.0+ds-1),
@@ -599,7 +596,7 @@ Installed-Build-Depends:
  node-yargs (= 16.2.0+~16.0.4-7),
  node-yargs-parser (= 21.1.1+~21.0.0-4),
  nodejs (= 18.12.1+dfsg-2),
- npm (= 9.1.3~ds1-1),
+ npm (= 9.2.0~ds1-1),
  openssl (= 3.0.7-1),
  patch (= 2.7.6-7),
  perl (= 5.36.0-6),
@@ -625,7 +622,7 @@ Installed-Build-Depends:
  tar (= 1.34+dfsg-1.1),
  terser (= 5.16.1-1),
  ucf (= 3.0043),
- usr-is-merged (= 33),
+ usr-is-merged (= 34),
  util-linux (= 2.38.1-4),
  util-linux-extra (= 2.38.1-4),
  webpack (= 5.75.0+dfsg+~cs17.16.14-1),
