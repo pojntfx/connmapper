@@ -153,13 +153,15 @@ const App = () => {
   const [devices, setDevices] = useState<string[]>([]);
 
   useEffect(() => {
-    if (ready) {
-      (async () => {
-        const devices = await remote.ListDevices();
-
-        setDevices(devices);
-      })();
+    if (!ready) {
+      return;
     }
+
+    (async () => {
+      const devices = await remote.ListDevices();
+
+      setDevices(devices);
+    })();
   }, [ready]);
 
   const [deviceSelectorIsOpen, setDeviceSelectorIsOpen] = useState(false);
@@ -216,6 +218,16 @@ const App = () => {
   const [isInspectorMinimized, setIsInspectorMinimized] = useState(true);
 
   const [isSummarized, setIsSummarized] = useState(false);
+
+  useEffect(() => {
+    if (!ready) {
+      return;
+    }
+
+    (async () => {
+      await remote.SetIsSummarized(isSummarized);
+    })();
+  }, [ready, isSummarized]);
 
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -533,30 +545,42 @@ const RealtimeTrafficTable: React.FC<ITrafficTableProps> = ({
           })
           .map((packet, i) => (
             <Tr isHoverable key={i}>
-              <Td>{packet.timestamp}</Td>
+              <Td>
+                <code>{packet.timestamp}</code>
+              </Td>
 
               <Td>{packet.layerType}</Td>
               <Td>{packet.nextLayerType}</Td>
-              <Td>{packet.length}</Td>
+              <Td>
+                <code>{packet.length}</code>
+              </Td>
 
-              <Td>{packet.srcIP}</Td>
+              <Td>
+                <code>{packet.srcIP}</code>
+              </Td>
               <Td>
                 {packet.srcCountryName && packet.srcCityName
                   ? packet.srcCountryName + ", " + packet.srcCityName
                   : packet.srcCountryName || packet.srcCityName || "-"}
               </Td>
               <Td>
-                {packet.srcLatitude}, {packet.srcLongitude}
+                <code>
+                  {packet.srcLatitude}, {packet.srcLongitude}
+                </code>
               </Td>
 
-              <Td>{packet.dstIP}</Td>
+              <Td>
+                <code>{packet.dstIP}</code>
+              </Td>
               <Td>
                 {packet.dstCountryName && packet.dstCityName
                   ? packet.dstCountryName + ", " + packet.dstCityName
                   : packet.dstCountryName || packet.dstCityName || "-"}
               </Td>
               <Td>
-                {packet.dstLatitude}, {packet.dstLongitude}
+                <code>
+                  {packet.dstLatitude}, {packet.dstLongitude}
+                </code>
               </Td>
             </Tr>
           ))}
