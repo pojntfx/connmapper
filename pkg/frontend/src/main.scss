@@ -55,17 +55,17 @@ body {
   transition: background-color 250ms ease-in-out;
   backdrop-filter: blur(7.5px);
   -webkit-backdrop-filter: blur(7.5px);
-  max-width: 1600px;
+  max-width: 1600px !important;
 
   &--fullscreen {
     height: 100%;
     margin-top: 0;
     margin-bottom: 0;
-    max-width: 100%;
+    max-width: 100% !important;
   }
 
   &--transparent {
-    background: rgba(255, 255, 255, 85%);
+    background: rgba(255, 255, 255, 85%) !important;
 
     .pf-c-form-control {
       border-left-color: transparent;
@@ -97,5 +97,10 @@ body {
 }
 
 .pf-c-modal-box__header {
-  padding: 0;
+  padding: 0 !important;
+}
+
+.pf-l-bullseye {
+  padding-left: 1.5rem !important;
+  padding-right: 1.5rem !important;
 }
