@@ -16,12 +16,12 @@ import {
   ToolbarItem,
 } from "@patternfly/react-core";
 import {
-  AngleUpIcon,
   CompressIcon,
   ExpandIcon,
   ListIcon,
   OutlinedClockIcon,
   OutlinedWindowRestoreIcon,
+  TableIcon,
   TimesIcon,
 } from "@patternfly/react-icons";
 import {
@@ -236,6 +236,8 @@ const App = () => {
 
   const [inWindow, setInWindow] = useState(false);
 
+  const [modalTransparent, setModalTransparent] = useState(true);
+
   return ready ? (
     tracing ? (
       <>
@@ -262,9 +264,12 @@ const App = () => {
         {!isInspectorOpen && (
           <Button
             variant="primary"
-            icon={<AngleUpIcon />}
+            icon={<TableIcon />}
             className="pf-x-button--cta"
-            onClick={() => setIsInspectorOpen(true)}
+            onClick={() => {
+              setModalTransparent(false);
+              setIsInspectorOpen(true);
+            }}
           >
             {" "}
             Inspect Traffic
@@ -282,8 +287,16 @@ const App = () => {
 
               setIsInspectorOpen(open);
             }}
-            setInWindow={(inWindow) => setInWindow(inWindow)}
+            setInWindow={(inWindow) => {
+              if (!inWindow) {
+                setModalTransparent(false);
+              }
+
+              setInWindow(inWindow);
+            }}
             minimized={isInspectorMinimized}
+            modalTransparent={modalTransparent}
+            setModalTransparent={setModalTransparent}
             header={
               <Flex
                 spaceItems={{ default: "spaceItemsMd" }}
@@ -368,7 +381,10 @@ const App = () => {
                               <Button
                                 variant="plain"
                                 aria-label="Compress"
-                                onClick={() => setIsInspectorMinimized(true)}
+                                onClick={() => {
+                                  setIsInspectorMinimized(true);
+                                  setModalTransparent(false);
+                                }}
                               >
                                 <CompressIcon />
                               </Button>
@@ -526,7 +542,6 @@ const RealtimeTrafficTable: React.FC<ITrafficTableProps> = ({
       aria-label="Simple table"
       variant="compact"
       borders={false}
-      isStriped
       isStickyHeader
     >
       <Thead noWrap>
@@ -649,6 +664,8 @@ interface IInWindowOrModalProps {
   setOpen: (open: boolean) => void;
   setInWindow: (open: boolean) => void;
   minimized: boolean;
+  modalTransparent: boolean;
+  setModalTransparent: (modalTransparent: boolean) => void;
 
   header: React.ReactNode;
   children: React.ReactNode;
@@ -661,6 +678,8 @@ const InWindowOrModal: React.FC<IInWindowOrModalProps> = ({
   setOpen,
   setInWindow,
   minimized,
+  modalTransparent,
+  setModalTransparent,
 
   header,
   children,
@@ -695,10 +714,26 @@ const InWindowOrModal: React.FC<IInWindowOrModalProps> = ({
       variant={ModalVariant.large}
       isOpen={open}
       showClose={false}
-      onEscapePress={() => setOpen(false)}
+      onEscapePress={() => {
+        setOpen(false);
+        setModalTransparent(true);
+      }}
       aria-labelledby="traffic-inspector-title"
-      header={header}
-      className={minimized ? "pf-c-modal-box" : "pf-c-modal-box--fullscreen"}
+      header={
+        <div
+          className="pf-c-modal-box__header pf-u-px-lg pf-u-pt-lg pf-u-pb-0"
+          onMouseEnter={() => setModalTransparent(true)}
+          onMouseLeave={() => setModalTransparent(false)}
+        >
+          {header}
+        </div>
+      }
+      className={
+        (minimized ? "pf-c-modal-box" : "pf-c-modal-box--fullscreen") +
+        (modalTransparent ? "" : " pf-c-modal-box--transparent")
+      }
+      onMouseEnter={() => setModalTransparent(true)}
+      onMouseLeave={() => setModalTransparent(false)}
     >
       {children}
     </Modal>

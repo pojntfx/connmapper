@@ -52,14 +52,50 @@ body {
   height: 33vh;
   margin-top: auto;
   margin-bottom: 1.5rem;
+  transition: background-color 250ms ease-in-out;
+  backdrop-filter: blur(7.5px);
+  -webkit-backdrop-filter: blur(7.5px);
+  max-width: 1600px;
 
   &--fullscreen {
     height: 100%;
     margin-top: 0;
     margin-bottom: 0;
+    max-width: 100%;
+  }
+
+  &--transparent {
+    background: rgba(255, 255, 255, 85%);
+
+    .pf-c-form-control {
+      border-left-color: transparent;
+      border-top-color: transparent;
+      border-right-color: transparent;
+    }
+
+    .pf-c-table thead th {
+      background: rgba(255, 255, 255, 50%) !important;
+    }
+  }
+
+  .pf-c-toolbar,
+  .pf-c-table,
+  .pf-c-toggle-group__button,
+  .pf-c-form-control {
+    background: transparent;
+  }
+
+  .pf-c-table thead th {
+    transition: background-color 250ms ease-in-out;
+    backdrop-filter: blur(7.5px);
+    -webkit-backdrop-filter: blur(7.5px);
   }
 }
 
 .pf-c-toggle-group__item--centered > .pf-c-toggle-group__button {
   align-items: center !important;
+}
+
+.pf-c-modal-box__header {
+  padding: 0;
 }
