@@ -59,3 +59,7 @@ body {
     margin-bottom: 0;
   }
 }
+
+.pf-c-toggle-group__item--centered > .pf-c-toggle-group__button {
+  align-items: center !important;
+}

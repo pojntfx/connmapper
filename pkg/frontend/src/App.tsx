@@ -4,10 +4,10 @@ import {
   FlexItem,
   Modal,
   ModalVariant,
-  SearchInput,
   Select,
   SelectOption,
   SelectVariant,
+  TextInput,
   Title,
   ToggleGroup,
   ToggleGroupItem,
@@ -21,6 +21,7 @@ import {
   ExpandIcon,
   ListIcon,
   OutlinedClockIcon,
+  OutlinedWindowRestoreIcon,
   TimesIcon,
 } from "@patternfly/react-icons";
 import {
@@ -33,8 +34,9 @@ import {
   Tr,
 } from "@patternfly/react-table";
 import { bind } from "@pojntfx/dudirekta";
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import ReactGlobeGl from "react-globe.gl";
+import NewWindow from "react-new-window";
 import { useWindowSize } from "usehooks-ts";
 import earthTexture from "./8k_earth_nightmap.jpg";
 import earthElevation from "./8k_earth_normal_map.png";
@@ -230,6 +232,9 @@ const App = () => {
   }, [ready, isSummarized]);
 
   const [searchQuery, setSearchQuery] = useState("");
+  const [regexErr, setRegexErr] = useState(false);
+
+  const [inWindow, setInWindow] = useState(false);
 
   return ready ? (
     tracing ? (
@@ -266,99 +271,133 @@ const App = () => {
           </Button>
         )}
 
-        <Modal
-          variant={ModalVariant.large}
-          isOpen={isInspectorOpen}
-          showClose={false}
-          onEscapePress={() => setIsInspectorOpen(false)}
-          aria-labelledby="traffic-inspector-title"
-          header={
-            <Flex
-              spaceItems={{ default: "spaceItemsMd" }}
-              direction={{ default: "row" }}
-              justifyContent={{ default: "justifyContentSpaceBetween" }}
-              alignItems={{ default: "alignItemsCenter" }}
-            >
-              <FlexItem>
-                <Title id="traffic-inspector-title" headingLevel="h1">
-                  Traffic Inspector
-                </Title>
-              </FlexItem>
+        {isInspectorOpen && (
+          <InWindowOrModal
+            inWindow={inWindow}
+            open={isInspectorOpen}
+            setOpen={(open) => {
+              if (!open) {
+                setInWindow(false);
+              }
 
-              <FlexItem>
-                <Toolbar>
-                  <ToolbarContent>
-                    <ToolbarItem>
-                      <SearchInput
-                        placeholder="Search ..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e)}
-                        onClear={() => setSearchQuery("")}
-                      />
-                    </ToolbarItem>
+              setIsInspectorOpen(open);
+            }}
+            setInWindow={(inWindow) => setInWindow(inWindow)}
+            minimized={isInspectorMinimized}
+            header={
+              <Flex
+                spaceItems={{ default: "spaceItemsMd" }}
+                direction={{ default: "row" }}
+                justifyContent={{ default: "justifyContentSpaceBetween" }}
+                alignItems={{ default: "alignItemsCenter" }}
+              >
+                <FlexItem>
+                  <Title
+                    id="traffic-inspector-title"
+                    headingLevel="h1"
+                    className={inWindow ? "pf-u-ml-md" : ""}
+                  >
+                    Traffic Inspector
+                  </Title>
+                </FlexItem>
 
-                    <ToolbarItem>
-                      <ToggleGroup aria-label="Select your output mode">
-                        <ToggleGroupItem
-                          icon={<OutlinedClockIcon />}
-                          text="Real-time"
-                          isSelected={!isSummarized}
-                          onChange={() => setIsSummarized(false)}
+                <FlexItem>
+                  <Toolbar>
+                    <ToolbarContent>
+                      <ToolbarItem>
+                        <TextInput
+                          type="text"
+                          aria-label="Filter by regex"
+                          placeholder="Filter by regex"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e)}
+                          validated={regexErr ? "error" : "default"}
                         />
+                      </ToolbarItem>
 
-                        <ToggleGroupItem
-                          icon={<ListIcon />}
-                          text="Summarized"
-                          isSelected={isSummarized}
-                          onChange={() => setIsSummarized(true)}
-                        />
-                      </ToggleGroup>
-                    </ToolbarItem>
+                      <ToolbarItem>
+                        <ToggleGroup aria-label="Select your output mode">
+                          <ToggleGroupItem
+                            icon={<OutlinedClockIcon />}
+                            text="Real-time"
+                            isSelected={!isSummarized}
+                            onChange={() => setIsSummarized(false)}
+                            className="pf-c-toggle-group__item--centered"
+                          />
 
-                    <ToolbarItem>
-                      {isInspectorMinimized ? (
-                        <Button
-                          variant="plain"
-                          aria-label="Expand"
-                          onClick={() => setIsInspectorMinimized(false)}
-                        >
-                          <ExpandIcon />
-                        </Button>
-                      ) : (
-                        <Button
-                          variant="plain"
-                          aria-label="Compress"
-                          onClick={() => setIsInspectorMinimized(true)}
-                        >
-                          <CompressIcon />
-                        </Button>
-                      )}
+                          <ToggleGroupItem
+                            icon={<ListIcon />}
+                            text="Summarized"
+                            isSelected={isSummarized}
+                            onChange={() => setIsSummarized(true)}
+                            className="pf-c-toggle-group__item--centered"
+                          />
+                        </ToggleGroup>
+                      </ToolbarItem>
 
-                      <Button
-                        variant="plain"
-                        aria-label="Minimize"
-                        onClick={() => setIsInspectorOpen(false)}
-                      >
-                        <TimesIcon />
-                      </Button>
-                    </ToolbarItem>
-                  </ToolbarContent>
-                </Toolbar>
-              </FlexItem>
-            </Flex>
-          }
-          className={
-            isInspectorMinimized
-              ? "pf-c-modal-box"
-              : "pf-c-modal-box--fullscreen"
-          }
-        >
-          <RealtimeTrafficTable
-            getPackets={remote.GetPackets}
-            addLocalLocation={addLocalLocation}
-            searchQuery={searchQuery}
-          />
-        </Modal>
+                      <ToolbarItem>
+                        {inWindow ? (
+                          <>
+                            <Button
+                              variant="plain"
+                              aria-label="Add back to main window"
+                              onClick={() => setInWindow(false)}
+                            >
+                              <OutlinedWindowRestoreIcon />
+                            </Button>
+                          </>
+                        ) : (
+                          <>
+                            <Button
+                              variant="plain"
+                              aria-label="Open in new window"
+                              onClick={() => setInWindow(true)}
+                            >
+                              <OutlinedWindowRestoreIcon />
+                            </Button>
+
+                            {isInspectorMinimized ? (
+                              <Button
+                                variant="plain"
+                                aria-label="Expand"
+                                onClick={() => setIsInspectorMinimized(false)}
+                              >
+                                <ExpandIcon />
+                              </Button>
+                            ) : (
+                              <Button
+                                variant="plain"
+                                aria-label="Compress"
+                                onClick={() => setIsInspectorMinimized(true)}
+                              >
+                                <CompressIcon />
+                              </Button>
+                            )}
+
+                            <Button
+                              variant="plain"
+                              aria-label="Minimize"
+                              onClick={() => setIsInspectorOpen(false)}
+                            >
+                              <TimesIcon />
+                            </Button>
+                          </>
+                        )}
+                      </ToolbarItem>
+                    </ToolbarContent>
+                  </Toolbar>
+                </FlexItem>
+              </Flex>
+            }
+          >
+            <RealtimeTrafficTable
+              getPackets={remote.GetPackets}
+              addLocalLocation={addLocalLocation}
+              searchQuery={searchQuery}
+              setRegexErr={setRegexErr}
+            />
+          </InWindowOrModal>
+        )}
       </>
     ) : (
       <Flex
@@ -424,12 +463,14 @@ interface ITrafficTableProps {
   getPackets: () => Promise<ITracedConnectionDetails[]>;
   addLocalLocation: (packet: ITracedConnection) => void;
   searchQuery: string;
+  setRegexErr: (err: boolean) => void;
 }
 
 const RealtimeTrafficTable: React.FC<ITrafficTableProps> = ({
   getPackets,
   addLocalLocation,
   searchQuery,
+  setRegexErr,
 }) => {
   const [packets, setPackets] = useState<ITracedConnectionDetails[]>([]);
 
@@ -488,7 +529,7 @@ const RealtimeTrafficTable: React.FC<ITrafficTableProps> = ({
       isStriped
       isStickyHeader
     >
-      <Thead>
+      <Thead noWrap>
         <Tr>
           <Th sort={getSort(0)}>Timestamp</Th>
 
@@ -507,14 +548,26 @@ const RealtimeTrafficTable: React.FC<ITrafficTableProps> = ({
       </Thead>
       <Tbody>
         {packets
-          .filter((p) =>
-            searchQuery.trim().length <= 0
-              ? true
-              : Object.values(p)
-                  .join(" ")
-                  .toLowerCase()
-                  .includes(searchQuery.toLowerCase())
-          )
+          .filter((p) => {
+            try {
+              const rv =
+                searchQuery.trim().length <= 0
+                  ? true
+                  : new RegExp(searchQuery, "gi").test(
+                      Object.values(p).join(" ").toLowerCase()
+                    );
+
+              setRegexErr(false);
+
+              return rv;
+            } catch (e) {
+              console.error("Could not process search:", e);
+
+              setRegexErr(true);
+
+              return true;
+            }
+          })
           .sort((a, b) => {
             if (activeSortIndex === null || activeSortIndex === undefined) {
               return 1;
@@ -586,6 +639,69 @@ const RealtimeTrafficTable: React.FC<ITrafficTableProps> = ({
           ))}
       </Tbody>
     </TableComposable>
+  );
+};
+
+interface IInWindowOrModalProps {
+  inWindow: boolean;
+
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  setInWindow: (open: boolean) => void;
+  minimized: boolean;
+
+  header: React.ReactNode;
+  children: React.ReactNode;
+}
+
+const InWindowOrModal: React.FC<IInWindowOrModalProps> = ({
+  inWindow,
+
+  open,
+  setOpen,
+  setInWindow,
+  minimized,
+
+  header,
+  children,
+}) => {
+  if (inWindow) {
+    return (
+      <NewWindow
+        title="Connmapper Traffic Inspector"
+        features={{
+          width: 1280,
+          height: 720,
+        }}
+        onOpen={(e) => {
+          // See https://github.com/rmariuzzo/react-new-window/issues/109#issuecomment-1009683557
+          const popupTick = setInterval(() => {
+            if (e.closed) {
+              clearInterval(popupTick);
+
+              setInWindow(false);
+            }
+          }, 100);
+        }}
+      >
+        {header}
+        {children}
+      </NewWindow>
+    );
+  }
+
+  return (
+    <Modal
+      variant={ModalVariant.large}
+      isOpen={open}
+      showClose={false}
+      onEscapePress={() => setOpen(false)}
+      aria-labelledby="traffic-inspector-title"
+      header={header}
+      className={minimized ? "pf-c-modal-box" : "pf-c-modal-box--fullscreen"}
+    >
+      {children}
+    </Modal>
   );
 };
 
