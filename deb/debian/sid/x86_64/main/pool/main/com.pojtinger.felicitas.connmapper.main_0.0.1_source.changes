@@ -12,14 +12,14 @@ Changes:
  .
    * Initial release
 Checksums-Sha1:
- a212a57cacc4b197b33551eb59790eaa4079ea5a 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
- d4c701289b9f6b9bad5357a5788851b45f3f4c75 27918368 com.pojtinger.felicitas.connmapper.main_0.0.1.tar.xz
- 37e360e074774b082db68c4d56c3be6ab4cf4ffe 21466 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.buildinfo
+ 67667ef16965e7d3a83986bf4b699f4d1d7820c7 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
+ 773b823e7ee33ad64a414187316e49a1cc36e0c0 27920596 com.pojtinger.felicitas.connmapper.main_0.0.1.tar.xz
+ 6fa60ffc999c5913a8c5978f09fdb2cf92bf03b4 21466 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.buildinfo
 Checksums-Sha256:
- 11c3b99e28abc74d7644466d9b9de83c36d63c4e6e3bb38458a6245179c92b60 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
- 1484e6ec0eaacf4f3f06bb0fb4600de158c55990065c1a9207712b6798f93abd 27918368 com.pojtinger.felicitas.connmapper.main_0.0.1.tar.xz
- 5db45a0d9073836c3ebba3082c8b3743cf480c6740c41d0965da5b3eb74af356 21466 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.buildinfo
+ a3a39a4e59eb5a8485a5f93ca839aa7b38f177ebbe8eb173910b2bfd87d9ba7d 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
+ 02ec9c117bf6e4ed99c9cc39c4e3717f23361f4269b7b25a176d2fc86fef45b8 27920596 com.pojtinger.felicitas.connmapper.main_0.0.1.tar.xz
+ d04798d65dcb3138de211e69dd9f853025f8bfad36ede521f502557b10579d2a 21466 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.buildinfo
 Files:
- ab35c03a3b3c9be24a64ca6d6f6eb682 1042 utils optional com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
- c5fcce4e23e9ed30ce0a1825621cdcaa 27918368 utils optional com.pojtinger.felicitas.connmapper.main_0.0.1.tar.xz
- f10694aed5fc7f3f4c6095b3f51302f7 21466 utils optional com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.buildinfo
+ 11e376d8ddc54499f9925bede9580cd3 1042 utils optional com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
+ 108731b06bc742dbc64d15541f27002c 27920596 utils optional com.pojtinger.felicitas.connmapper.main_0.0.1.tar.xz
+ 97a76db07e96329e946f48eea46327b0 21466 utils optional com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.buildinfo
