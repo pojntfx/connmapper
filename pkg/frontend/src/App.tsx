@@ -17,6 +17,7 @@ import {
 } from "@patternfly/react-core";
 import {
   CompressIcon,
+  DownloadIcon,
   ExpandIcon,
   ListIcon,
   OutlinedClockIcon,
@@ -42,6 +43,7 @@ import earthTexture from "./8k_earth_nightmap.jpg";
 import earthElevation from "./8k_earth_normal_map.png";
 import universeTexture from "./8k_stars_milky_way.jpg";
 import "./main.scss";
+import Papa from "papaparse";
 
 interface ITracedConnection {
   layerType: string;
@@ -238,6 +240,10 @@ const App = () => {
 
   const [modalTransparent, setModalTransparent] = useState(true);
 
+  const [filteredPackets, setFilteredPackets] = useState<
+    ITracedConnectionDetails[]
+  >([]);
+
   return ready ? (
     tracing ? (
       <>
@@ -349,6 +355,70 @@ const App = () => {
                       </ToolbarItem>
 
                       <ToolbarItem>
+                        <Button
+                          variant="plain"
+                          aria-label="Download as CSV"
+                          onClick={() => {
+                            const element = document.createElement("a");
+                            element.setAttribute(
+                              "href",
+                              "data:text/plain;charset=utf-8," +
+                                encodeURIComponent(
+                                  Papa.unparse({
+                                    fields: [
+                                      "timestamp",
+
+                                      "layerType",
+                                      "nextLayerType",
+                                      "length",
+
+                                      "srcIP",
+                                      "srcCountryName",
+                                      "srcCityName",
+                                      "srcLatitude",
+                                      "srcLongitude",
+
+                                      "dstIP",
+                                      "dstCountryName",
+                                      "dstCityName",
+                                      "dstLatitude",
+                                      "dstLongitude",
+                                    ],
+                                    data: filteredPackets.map((packet) => [
+                                      packet.timestamp,
+
+                                      packet.layerType,
+                                      packet.nextLayerType,
+                                      packet.length,
+
+                                      packet.srcIP,
+                                      packet.srcCountryName,
+                                      packet.srcCityName,
+                                      packet.srcLatitude,
+                                      packet.srcLongitude,
+
+                                      packet.dstIP,
+                                      packet.dstCountryName,
+                                      packet.dstCityName,
+                                      packet.dstLatitude,
+                                      packet.dstLongitude,
+                                    ]),
+                                  })
+                                )
+                            );
+                            element.setAttribute("download", "packets.csv");
+
+                            element.style.display = "none";
+                            document.body.appendChild(element);
+
+                            element.click();
+
+                            document.body.removeChild(element);
+                          }}
+                        >
+                          <DownloadIcon />
+                        </Button>
+
                         {inWindow ? (
                           <>
                             <Button
@@ -411,6 +481,8 @@ const App = () => {
               addLocalLocation={addLocalLocation}
               searchQuery={searchQuery}
               setRegexErr={setRegexErr}
+              filteredPackets={filteredPackets}
+              setFilteredPackets={setFilteredPackets}
             />
           </InWindowOrModal>
         )}
@@ -475,11 +547,24 @@ const App = () => {
   );
 };
 
+const sortableKeys = [
+  "timestamp",
+  "layerType",
+  "nextLayerType",
+  "length",
+
+  "srcCountryName",
+
+  "dstCountryName",
+];
+
 interface ITrafficTableProps {
   getPackets: () => Promise<ITracedConnectionDetails[]>;
   addLocalLocation: (packet: ITracedConnection) => void;
   searchQuery: string;
   setRegexErr: (err: boolean) => void;
+  filteredPackets: ITracedConnectionDetails[];
+  setFilteredPackets: (packets: ITracedConnectionDetails[]) => void;
 }
 
 const RealtimeTrafficTable: React.FC<ITrafficTableProps> = ({
@@ -487,6 +572,8 @@ const RealtimeTrafficTable: React.FC<ITrafficTableProps> = ({
   addLocalLocation,
   searchQuery,
   setRegexErr,
+  filteredPackets,
+  setFilteredPackets,
 }) => {
   const [packets, setPackets] = useState<ITracedConnectionDetails[]>([]);
 
@@ -511,17 +598,6 @@ const RealtimeTrafficTable: React.FC<ITrafficTableProps> = ({
     "asc" | "desc" | undefined
   >();
 
-  const sortableKeys = [
-    "timestamp",
-    "layerType",
-    "nextLayerType",
-    "length",
-
-    "srcCountryName",
-
-    "dstCountryName",
-  ];
-
   const getSort = useCallback(
     (columnIndex: number): ThProps["sort"] => ({
       columnIndex,
@@ -536,6 +612,58 @@ const RealtimeTrafficTable: React.FC<ITrafficTableProps> = ({
     }),
     [activeSortDirection, activeSortIndex]
   );
+
+  useEffect(() => {
+    setFilteredPackets(
+      packets
+        .filter((p) => {
+          try {
+            const rv =
+              searchQuery.trim().length <= 0
+                ? true
+                : new RegExp(searchQuery, "gi").test(
+                    Object.values(p).join(" ").toLowerCase()
+                  );
+
+            setRegexErr(false);
+
+            return rv;
+          } catch (e) {
+            console.error("Could not process search:", e);
+
+            setRegexErr(true);
+
+            return true;
+          }
+        })
+        .sort((a, b) => {
+          if (activeSortIndex === null || activeSortIndex === undefined) {
+            return 1;
+          }
+
+          const key = sortableKeys[activeSortIndex];
+
+          if (typeof (a as any)[key] === "number") {
+            return (
+              ((activeSortDirection === "desc" ? (b as any) : (a as any))[
+                key
+              ] as number) -
+              ((activeSortDirection === "desc" ? (a as any) : (b as any))[
+                key
+              ] as number)
+            );
+          }
+
+          return (activeSortDirection === "desc" ? (b as any) : (a as any))[key]
+            .toString()
+            .localeCompare(
+              (activeSortDirection === "desc" ? (a as any) : (b as any))[
+                key
+              ].toString()
+            );
+        })
+    );
+  }, [activeSortDirection, activeSortIndex, packets, searchQuery, setRegexErr]);
 
   return (
     <TableComposable
@@ -562,96 +690,47 @@ const RealtimeTrafficTable: React.FC<ITrafficTableProps> = ({
         </Tr>
       </Thead>
       <Tbody>
-        {packets
-          .filter((p) => {
-            try {
-              const rv =
-                searchQuery.trim().length <= 0
-                  ? true
-                  : new RegExp(searchQuery, "gi").test(
-                      Object.values(p).join(" ").toLowerCase()
-                    );
+        {filteredPackets.map((packet, i) => (
+          <Tr isHoverable key={i}>
+            <Td>
+              <code>{packet.timestamp}</code>
+            </Td>
 
-              setRegexErr(false);
+            <Td>{packet.layerType}</Td>
+            <Td>{packet.nextLayerType}</Td>
+            <Td>
+              <code>{packet.length}</code>
+            </Td>
 
-              return rv;
-            } catch (e) {
-              console.error("Could not process search:", e);
+            <Td>
+              <code>{packet.srcIP}</code>
+            </Td>
+            <Td>
+              {packet.srcCountryName && packet.srcCityName
+                ? packet.srcCountryName + ", " + packet.srcCityName
+                : packet.srcCountryName || packet.srcCityName || "-"}
+            </Td>
+            <Td>
+              <code>
+                {packet.srcLatitude}, {packet.srcLongitude}
+              </code>
+            </Td>
 
-              setRegexErr(true);
-
-              return true;
-            }
-          })
-          .sort((a, b) => {
-            if (activeSortIndex === null || activeSortIndex === undefined) {
-              return 1;
-            }
-
-            const key = sortableKeys[activeSortIndex];
-
-            if (typeof (a as any)[key] === "number") {
-              return (
-                ((activeSortDirection === "desc" ? (b as any) : (a as any))[
-                  key
-                ] as number) -
-                ((activeSortDirection === "desc" ? (a as any) : (b as any))[
-                  key
-                ] as number)
-              );
-            }
-
-            return (activeSortDirection === "desc" ? (b as any) : (a as any))[
-              key
-            ]
-              .toString()
-              .localeCompare(
-                (activeSortDirection === "desc" ? (a as any) : (b as any))[
-                  key
-                ].toString()
-              );
-          })
-          .map((packet, i) => (
-            <Tr isHoverable key={i}>
-              <Td>
-                <code>{packet.timestamp}</code>
-              </Td>
-
-              <Td>{packet.layerType}</Td>
-              <Td>{packet.nextLayerType}</Td>
-              <Td>
-                <code>{packet.length}</code>
-              </Td>
-
-              <Td>
-                <code>{packet.srcIP}</code>
-              </Td>
-              <Td>
-                {packet.srcCountryName && packet.srcCityName
-                  ? packet.srcCountryName + ", " + packet.srcCityName
-                  : packet.srcCountryName || packet.srcCityName || "-"}
-              </Td>
-              <Td>
-                <code>
-                  {packet.srcLatitude}, {packet.srcLongitude}
-                </code>
-              </Td>
-
-              <Td>
-                <code>{packet.dstIP}</code>
-              </Td>
-              <Td>
-                {packet.dstCountryName && packet.dstCityName
-                  ? packet.dstCountryName + ", " + packet.dstCityName
-                  : packet.dstCountryName || packet.dstCityName || "-"}
-              </Td>
-              <Td>
-                <code>
-                  {packet.dstLatitude}, {packet.dstLongitude}
-                </code>
-              </Td>
-            </Tr>
-          ))}
+            <Td>
+              <code>{packet.dstIP}</code>
+            </Td>
+            <Td>
+              {packet.dstCountryName && packet.dstCityName
+                ? packet.dstCountryName + ", " + packet.dstCityName
+                : packet.dstCountryName || packet.dstCityName || "-"}
+            </Td>
+            <Td>
+              <code>
+                {packet.dstLatitude}, {packet.dstLongitude}
+              </code>
+            </Td>
+          </Tr>
+        ))}
       </Tbody>
     </TableComposable>
   );
