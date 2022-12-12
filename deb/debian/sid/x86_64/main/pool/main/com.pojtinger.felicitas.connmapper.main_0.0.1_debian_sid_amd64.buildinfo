@@ -4,20 +4,20 @@ Binary: com.pojtinger.felicitas.connmapper.main com.pojtinger.felicitas.connmapp
 Architecture: amd64 source
 Version: 0.0.1
 Checksums-Md5:
- 5b2afdadac8e4772d24f467b2cf67c9a 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
- dd0a6fa57c9be72bf0edb75afaedc87a 2970976 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
- 46e196e082ec1344f60f682c944a125a 22247484 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
+ 22507d1344ab971459455cec3215d390 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
+ 5666d092334e0e5470089d79b30829d1 2970908 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
+ 46a0ab1059903f1f8d1f9b561267d694 22267436 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
 Checksums-Sha1:
- 9f683745e5738c573f4861baa7f12546a4cb0df9 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
- b03112e322163a41981edd24aaba62beac9acc57 2970976 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
- 59158221d9098a4c261aa101c2ab5293d65454f0 22247484 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
+ 56d400bbc489426520a2ac319921e783d367f16e 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
+ c03fa75a802794eb7def5c0f3beeb01d6a619bf6 2970908 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
+ 13f1cf8660716df65bf75160d0c0646aee3d367f 22267436 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
 Checksums-Sha256:
- 7cfaa08f8f9728f9b6a37d94c0087abd81c1306e09a8312de05bea1315c06622 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
- ffc4b59ec166798ea31ee22d5fd6c81160d712f5465c6ab633baf73e5c99c262 2970976 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
- 84ac77ee1fde6d33edb4bfdc1a0c0fc6567e0c2e94ddf6763e508c02c9905e83 22247484 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
+ 78c41f26dbdf6f314c55678677f0eaefddbb46da337730d9f824221d0566ddb7 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
+ d344ee4886b81a4b21a0fa40d9734272fc26bdf8f52ec9ce9e17fa3e53435ca4 2970908 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
+ 69a271aff7e43f4823cd359f991bddcc234a3477ce5d1b739e649c2ba4208808 22267436 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
 Build-Origin: Debian
 Build-Architecture: amd64
-Build-Date: Mon, 12 Dec 2022 02:41:57 +0000
+Build-Date: Mon, 12 Dec 2022 23:10:36 +0000
 Build-Path: /build/com.pojtinger.felicitas.connmapper.main-0.0.1
 Installed-Build-Depends:
  appstream-util (= 0.8.2-1),
@@ -38,7 +38,7 @@ Installed-Build-Depends:
  ca-certificates (= 20211016),
  coreutils (= 9.1-1),
  cpp (= 4:12.2.0-1),
- cpp-12 (= 12.2.0-9.1),
+ cpp-12 (= 12.2.0-10),
  dash (= 0.5.11+git20210903+057cd650a4ed-9),
  debconf (= 1.5.80),
  debhelper (= 13.11.1),
@@ -56,10 +56,10 @@ Installed-Build-Depends:
  fontconfig-config (= 2.13.1-4.5),
  fonts-dejavu-core (= 2.37-2),
  g++ (= 4:12.2.0-1),
- g++-12 (= 12.2.0-9.1),
+ g++-12 (= 12.2.0-10),
  gcc (= 4:12.2.0-1),
- gcc-12 (= 12.2.0-9.1),
- gcc-12-base (= 12.2.0-9.1),
+ gcc-12 (= 12.2.0-10),
+ gcc-12-base (= 12.2.0-10),
  gettext (= 0.21-10),
  gettext-base (= 0.21-10),
  git (= 1:2.38.1-1),
@@ -85,8 +85,8 @@ Installed-Build-Depends:
  libappstream-glib8 (= 0.8.2-1),
  libarchive-zip-perl (= 1.68-1),
  libarchive13 (= 3.6.0-1),
- libasan8 (= 12.2.0-9.1),
- libatomic1 (= 12.2.0-9.1),
+ libasan8 (= 12.2.0-10),
+ libatomic1 (= 12.2.0-10),
  libattr1 (= 1:2.5.1-3),
  libaudit-common (= 1:3.0.7-1.1),
  libaudit1 (= 1:3.0.7-1.1+b2),
@@ -102,7 +102,7 @@ Installed-Build-Depends:
  libc6-dev (= 2.36-6),
  libcap-ng0 (= 0.8.3-1+b2),
  libcap2 (= 1:2.63-1),
- libcc1-0 (= 12.2.0-9.1),
+ libcc1-0 (= 12.2.0-10),
  libcom-err2 (= 1.46.6~rc1-1+b1),
  libcrypt-dev (= 1:4.4.33-1),
  libcrypt1 (= 1:4.4.33-1),
@@ -126,8 +126,8 @@ Installed-Build-Depends:
  libfile-stripnondeterminism-perl (= 1.13.0-2),
  libfontconfig1 (= 2.13.1-4.5),
  libfreetype6 (= 2.12.1+dfsg-3),
- libgcc-12-dev (= 12.2.0-9.1),
- libgcc-s1 (= 12.2.0-9.1),
+ libgcc-12-dev (= 12.2.0-10),
+ libgcc-s1 (= 12.2.0-10),
  libgcrypt20 (= 1.10.1-3),
  libgdbm-compat4 (= 1.23-3),
  libgdbm6 (= 1.23-3),
@@ -136,7 +136,7 @@ Installed-Build-Depends:
  libglib2.0-0 (= 2.74.2-1),
  libgmp10 (= 2:6.2.1+dfsg1-1.1),
  libgnutls30 (= 3.7.8-4),
- libgomp1 (= 12.2.0-9.1),
+ libgomp1 (= 12.2.0-10),
  libgpg-error0 (= 1.46-1),
  libgprofng0 (= 2.39.50.20221208-5),
  libgssapi-krb5-2 (= 1.20.1-1),
@@ -145,7 +145,7 @@ Installed-Build-Depends:
  libicu72 (= 72.1-3),
  libidn2-0 (= 2.3.3-1+b1),
  libisl23 (= 0.25-1),
- libitm1 (= 12.2.0-9.1),
+ libitm1 (= 12.2.0-10),
  libjansson4 (= 2.14-2),
  libjbig0 (= 2.1-6.1),
  libjpeg62-turbo (= 1:2.1.2-1+b1),
@@ -167,7 +167,7 @@ Installed-Build-Depends:
  libldap-2.5-0 (= 2.5.13+dfsg-2+b1),
  liblerc4 (= 4.0.0+ds-2),
  liblqr-1-0 (= 0.4.2-2.1),
- liblsan0 (= 12.2.0-9.1),
+ liblsan0 (= 12.2.0-10),
  libltdl7 (= 2.4.7-5),
  liblz4-1 (= 1.9.4-1),
  liblzma5 (= 5.2.9-0.0),
@@ -206,7 +206,7 @@ Installed-Build-Depends:
  libpython3-stdlib (= 3.10.6-3),
  libpython3.10-minimal (= 3.10.9-1),
  libpython3.10-stdlib (= 3.10.9-1),
- libquadmath0 (= 12.2.0-9.1),
+ libquadmath0 (= 12.2.0-10),
  libreadline8 (= 8.2-1.2),
  librtmp1 (= 2.4+20151223.gitfa8646d.1-2+b2),
  libsasl2-2 (= 2.1.28+dfsg-10),
@@ -218,8 +218,8 @@ Installed-Build-Depends:
  libssh2-1 (= 1.10.0-3+b1),
  libssl-dev (= 3.0.7-1),
  libssl3 (= 3.0.7-1),
- libstdc++-12-dev (= 12.2.0-9.1),
- libstdc++6 (= 12.2.0-9.1),
+ libstdc++-12-dev (= 12.2.0-10),
+ libstdc++6 (= 12.2.0-10),
  libstemmer0d (= 2.2.0-2),
  libsub-override-perl (= 0.09-4),
  libsystemd0 (= 252.3-1),
@@ -230,8 +230,8 @@ Installed-Build-Depends:
  libtirpc-dev (= 1.3.3+ds-1),
  libtirpc3 (= 1.3.3+ds-1),
  libtool (= 2.4.7-5),
- libtsan2 (= 12.2.0-9.1),
- libubsan1 (= 12.2.0-9.1),
+ libtsan2 (= 12.2.0-10),
+ libubsan1 (= 12.2.0-10),
  libuchardet0 (= 0.0.7-1),
  libudev1 (= 252.3-1),
  libunistring2 (= 1.0-2),
@@ -297,7 +297,7 @@ Installed-Build-Depends:
  node-cacache (= 17.0.3+~cs10.3.7-1),
  node-camelcase (= 7.0.0-3),
  node-caniuse-lite (= 1.0.30001436+dfsg+~1.0.1-1),
- node-chalk (= 5.1.2-2),
+ node-chalk (= 5.2.0-1),
  node-chokidar (= 3.5.3-2),
  node-chownr (= 2.0.0-2),
  node-chrome-trace-event (= 1.0.3-2),
@@ -488,7 +488,7 @@ Installed-Build-Depends:
  node-picocolors (= 1.0.0-4),
  node-pify (= 5.0.0+~cs5.0.1-1),
  node-pkg-dir (= 5.0.0-2),
- node-postcss (= 8.4.19+~cs8.0.23-1),
+ node-postcss (= 8.4.20+~cs8.0.23-1),
  node-postcss-modules-extract-imports (= 3.0.0-2),
  node-postcss-modules-values (= 4.0.0+~4.0.0-1),
  node-postcss-value-parser (= 4.2.0-1),
@@ -622,7 +622,7 @@ Installed-Build-Depends:
  tar (= 1.34+dfsg-1.1),
  terser (= 5.16.1-1),
  ucf (= 3.0043),
- usr-is-merged (= 34),
+ usr-is-merged (= 35),
  util-linux (= 2.38.1-4),
  util-linux-extra (= 2.38.1-4),
  webpack (= 5.75.0+dfsg+~cs17.16.14-1),
