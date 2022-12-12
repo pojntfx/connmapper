@@ -721,7 +721,7 @@ const InWindowOrModal: React.FC<IInWindowOrModalProps> = ({
       aria-labelledby="traffic-inspector-title"
       header={
         <div
-          className="pf-c-modal-box__header pf-u-px-lg pf-u-pt-lg pf-u-pb-0"
+          className="pf-u-px-lg pf-u-pt-md pf-u-pb-0"
           onMouseEnter={() => setModalTransparent(true)}
           onMouseLeave={() => setModalTransparent(false)}
         >
