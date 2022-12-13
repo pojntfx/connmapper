@@ -245,24 +245,25 @@ const App = () => {
 
   const [inWindow, setInWindow] = useState(false);
 
-  const [inspectorTransparent, setInspectorTransparent] = useState(true);
+  const [isInspectorTransparent, setIsInspectorTransparent] = useState(true);
 
   const [filteredPackets, setFilteredPackets] = useState<
     ITracedConnectionDetails[]
   >([]);
 
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [settingsTansparent, setSettingsTransparent] = useState(true);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isSettingsTransparent, setIsSettingsTransparent] = useState(true);
 
   return ready ? (
     <>
-      {!settingsOpen && (
+      {!isSettingsOpen && (
         <Button
           variant="plain"
           aria-label="Settings"
           className="pf-x-settings"
           onClick={() => {
-            setSettingsOpen(true);
+            setIsSettingsTransparent(false);
+            setIsSettingsOpen(true);
           }}
         >
           <CogIcon />
@@ -270,13 +271,20 @@ const App = () => {
       )}
 
       <Modal
-        isOpen={settingsOpen}
-        onEscapePress={() => setSettingsOpen(false)}
-        className="pf-u-mt-0 pf-u-mb-0"
+        isOpen={isSettingsOpen}
+        onEscapePress={() => setIsSettingsOpen(false)}
+        className={
+          "pf-u-mt-0 pf-u-mb-0 pf-c-modal-box--settings" +
+          (isSettingsTransparent ? "" : " pf-c-modal-box--transparent")
+        }
         showClose={false}
         aria-labelledby="settings-modal-title"
         header={
-          <div className="pf-u-px-lg pf-u-pt-md pf-u-pb-0">
+          <div
+            className="pf-u-pl-lg pf-u-pt-md pf-u-pb-0 pf-u-pr-md"
+            onMouseEnter={() => setIsSettingsTransparent(true)}
+            onMouseLeave={() => setIsSettingsTransparent(false)}
+          >
             <Flex
               spaceItems={{ default: "spaceItemsMd" }}
               direction={{ default: "row" }}
@@ -297,7 +305,7 @@ const App = () => {
                 <Button
                   variant="plain"
                   aria-label="Close"
-                  onClick={() => setSettingsOpen(false)}
+                  onClick={() => setIsSettingsOpen(false)}
                 >
                   <TimesIcon />
                 </Button>
@@ -305,6 +313,8 @@ const App = () => {
             </Flex>
           </div>
         }
+        onMouseEnter={() => setIsSettingsTransparent(true)}
+        onMouseLeave={() => setIsSettingsTransparent(false)}
       >
         Settings
       </Modal>
@@ -339,7 +349,7 @@ const App = () => {
               icon={<TableIcon />}
               className="pf-x-cta"
               onClick={() => {
-                setInspectorTransparent(false);
+                setIsInspectorTransparent(false);
                 setIsInspectorOpen(true);
               }}
             >
@@ -361,14 +371,14 @@ const App = () => {
               }}
               setInWindow={(inWindow) => {
                 if (!inWindow) {
-                  setInspectorTransparent(false);
+                  setIsInspectorTransparent(false);
                 }
 
                 setInWindow(inWindow);
               }}
               minimized={isInspectorMinimized}
-              modalTransparent={inspectorTransparent}
-              setModalTransparent={setInspectorTransparent}
+              modalTransparent={isInspectorTransparent}
+              setModalTransparent={setIsInspectorTransparent}
               header={
                 <Flex
                   spaceItems={{ default: "spaceItemsMd" }}
@@ -519,7 +529,7 @@ const App = () => {
                                   aria-label="Compress"
                                   onClick={() => {
                                     setIsInspectorMinimized(true);
-                                    setInspectorTransparent(false);
+                                    setIsInspectorTransparent(false);
                                   }}
                                 >
                                   <CompressIcon />
@@ -867,7 +877,7 @@ const InWindowOrModal: React.FC<IInWindowOrModalProps> = ({
       aria-labelledby="traffic-inspector-title"
       header={
         <div
-          className="pf-u-px-lg pf-u-pt-md pf-u-pb-0"
+          className="pf-u-pl-lg pf-u-pt-md pf-u-pb-0 pf-u-pr-md"
           onMouseEnter={() => setModalTransparent(true)}
           onMouseLeave={() => setModalTransparent(false)}
         >

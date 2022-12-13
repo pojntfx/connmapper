@@ -115,6 +115,13 @@ body {
     backdrop-filter: blur(7.5px);
     -webkit-backdrop-filter: blur(7.5px);
   }
+
+  &--settings {
+    margin-top: 1.5rem !important;
+    margin-bottom: auto !important;
+    max-width: 60rem !important;
+    height: auto !important;
+  }
 }
 
 .pf-c-toggle-group__item--centered > .pf-c-toggle-group__button {
