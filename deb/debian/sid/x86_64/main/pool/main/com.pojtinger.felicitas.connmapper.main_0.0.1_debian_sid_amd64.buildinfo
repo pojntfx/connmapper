@@ -4,20 +4,20 @@ Binary: com.pojtinger.felicitas.connmapper.main com.pojtinger.felicitas.connmapp
 Architecture: amd64 source
 Version: 0.0.1
 Checksums-Md5:
- 22507d1344ab971459455cec3215d390 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
- 5666d092334e0e5470089d79b30829d1 2970908 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
- 46a0ab1059903f1f8d1f9b561267d694 22267436 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
+ 189a67e7e06e1a83197f10f367028602 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
+ 3246c298c837fa01d81ed49505d6e7db 2971080 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
+ ebaf2dca8eac8a8c15401954c8e8f204 22268772 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
 Checksums-Sha1:
- 56d400bbc489426520a2ac319921e783d367f16e 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
- c03fa75a802794eb7def5c0f3beeb01d6a619bf6 2970908 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
- 13f1cf8660716df65bf75160d0c0646aee3d367f 22267436 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
+ 89ec65e4fb62c848b952440b810570a117c4ed8f 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
+ bb938f7a2d79671260ff9442140c4c896eea5d17 2971080 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
+ b93676bef7eb135d7d227bdd3e6be6f8be343468 22268772 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
 Checksums-Sha256:
- 78c41f26dbdf6f314c55678677f0eaefddbb46da337730d9f824221d0566ddb7 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
- d344ee4886b81a4b21a0fa40d9734272fc26bdf8f52ec9ce9e17fa3e53435ca4 2970908 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
- 69a271aff7e43f4823cd359f991bddcc234a3477ce5d1b739e649c2ba4208808 22267436 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
+ a92e03e749eb3eb86eb9cf0a424be842eac90c57b27350bc5588d97e4952351f 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
+ 8fd3e4b15acea6db5e12538a76a83e8000963d1ebee25694ebc60e931eb81de7 2971080 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
+ d24a429afa3bae0bf9584e618d12caefb485269085b6caa12eda09924d33909c 22268772 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
 Build-Origin: Debian
 Build-Architecture: amd64
-Build-Date: Mon, 12 Dec 2022 23:10:36 +0000
+Build-Date: Tue, 13 Dec 2022 23:08:12 +0000
 Build-Path: /build/com.pojtinger.felicitas.connmapper.main-0.0.1
 Installed-Build-Depends:
  appstream-util (= 0.8.2-1),
@@ -62,8 +62,8 @@ Installed-Build-Depends:
  gcc-12-base (= 12.2.0-10),
  gettext (= 0.21-10),
  gettext-base (= 0.21-10),
- git (= 1:2.38.1-1),
- git-man (= 1:2.38.1-1),
+ git (= 1:2.39.0-1),
+ git-man (= 1:2.39.0-1),
  golang-1.19-go (= 1.19.4-1),
  golang-1.19-src (= 1.19.4-1),
  golang-go (= 2:1.19~1),
@@ -101,7 +101,7 @@ Installed-Build-Depends:
  libc6 (= 2.36-6),
  libc6-dev (= 2.36-6),
  libcap-ng0 (= 0.8.3-1+b2),
- libcap2 (= 1:2.63-1),
+ libcap2 (= 1:2.66-1),
  libcc1-0 (= 12.2.0-10),
  libcom-err2 (= 1.46.6~rc1-1+b1),
  libcrypt-dev (= 1:4.4.33-1),
@@ -222,7 +222,7 @@ Installed-Build-Depends:
  libstdc++6 (= 12.2.0-10),
  libstemmer0d (= 2.2.0-2),
  libsub-override-perl (= 0.09-4),
- libsystemd0 (= 252.3-1),
+ libsystemd0 (= 252.3-2),
  libtasn1-6 (= 4.19.0-2),
  libtiff5 (= 4.4.0-6),
  libtinfo6 (= 6.3+20220423-2),
@@ -233,7 +233,7 @@ Installed-Build-Depends:
  libtsan2 (= 12.2.0-10),
  libubsan1 (= 12.2.0-10),
  libuchardet0 (= 0.0.7-1),
- libudev1 (= 252.3-1),
+ libudev1 (= 252.3-2),
  libunistring2 (= 1.0-2),
  libuuid1 (= 2.38.1-4),
  libuv1 (= 1.44.2-1),
@@ -291,7 +291,7 @@ Installed-Build-Depends:
  node-binary-extensions (= 2.2.0-2),
  node-brace-expansion (= 2.0.1-2),
  node-braces (= 3.0.2+~3.0.1-1),
- node-browserslist (= 4.21.4+~cs6.1.17-1),
+ node-browserslist (= 4.21.4+~cs6.1.17-2),
  node-builtins (= 5.0.1-1),
  node-busboy (= 1.6.0+~cs2.6.0-2),
  node-cacache (= 17.0.3+~cs10.3.7-1),
@@ -423,8 +423,8 @@ Installed-Build-Depends:
  node-isexe (= 2.0.0+~2.0.1-5),
  node-isobject (= 4.0.0-2),
  node-istanbul (= 0.4.5+repack10+~cs97.25.57-3),
- node-jest-debbundle (= 29.3.1~ds1+~cs70.48.22-1),
- node-jest-worker (= 29.3.1~ds1+~cs70.48.22-1),
+ node-jest-debbundle (= 29.3.1~ds1+~cs70.48.25-1),
+ node-jest-worker (= 29.3.1~ds1+~cs70.48.25-1),
  node-js-tokens (= 8.0.0-2),
  node-js-yaml (= 4.1.0+dfsg+~4.0.5-7),
  node-jsesc (= 3.0.2+~3.0.1-1),
@@ -608,7 +608,7 @@ Installed-Build-Depends:
  po-debconf (= 1.0.21+nmu1),
  python3 (= 3.10.6-3),
  python3-minimal (= 3.10.6-3),
- python3-pkg-resources (= 65.5.0-1),
+ python3-pkg-resources (= 65.5.0-1.1),
  python3-six (= 1.16.0-4),
  python3.10 (= 3.10.9-1),
  python3.10-minimal (= 3.10.9-1),
