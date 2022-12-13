@@ -90,6 +90,10 @@ type local struct {
 
 	summarized bool
 
+	maxPackageCache int
+	maxConnections  int
+	dbPath          string
+
 	Peers func() map[string]remote
 }
 
@@ -107,6 +111,36 @@ func (l *local) ListDevices(ctx context.Context) ([]string, error) {
 	return devices, nil
 }
 
+func (l *local) SetMaxPackageCache(ctx context.Context, packetCache int) error {
+	l.maxPackageCache = packetCache
+
+	return nil
+}
+
+func (l *local) GetMaxPackageCache(ctx context.Context) (int, error) {
+	return l.maxPackageCache, nil
+}
+
+func (l *local) SetMaxConnections(ctx context.Context, maxConnections int) error {
+	l.maxConnections = maxConnections
+
+	return nil
+}
+
+func (l *local) GetMaxConnections(ctx context.Context) (int, error) {
+	return l.maxConnections, nil
+}
+
+func (l *local) SetDBPath(ctx context.Context, dbPath string) error {
+	l.dbPath = dbPath
+
+	return nil
+}
+
+func (l *local) GetDBPath(ctx context.Context) (string, error) {
+	return l.dbPath, nil
+}
+
 func (l *local) TraceDevice(ctx context.Context, name string) error {
 	l.tracingDevicesLock.Lock()
 	defer l.tracingDevicesLock.Unlock()
@@ -116,19 +150,11 @@ func (l *local) TraceDevice(ctx context.Context, name string) error {
 		return nil
 	}
 
-	// TODO: Add API for setting DB path
-	home, err := os.UserHomeDir()
-	if err != nil {
+	if _, err := os.Stat(l.dbPath); err != nil {
 		return err
 	}
 
-	dbPath := filepath.Join(home, ".local", "share", "connmapper", "GeoLite2-City.mmdb")
-
-	if _, err := os.Stat(dbPath); err != nil {
-		return err
-	}
-
-	db, err := geoip2.Open(dbPath)
+	db, err := geoip2.Open(l.dbPath)
 	if err != nil {
 		return err
 	}
@@ -268,8 +294,7 @@ func (l *local) TraceDevice(ctx context.Context, name string) error {
 
 				l.connectionsLock.Lock()
 
-				// TODO: Add API for maximum connections to store
-				if len(l.connections) > 1000000 {
+				if len(l.connections) > l.maxConnections {
 					l.connections = map[string]tracedConnection{}
 				}
 
@@ -292,7 +317,6 @@ func (l *local) TraceDevice(ctx context.Context, name string) error {
 				l.connectionsLock.Unlock()
 
 				if l.summarized {
-					// TODO: Add API for maximum packets to store to store
 					l.packetsCacheLock.Lock()
 
 					exists := false
@@ -319,8 +343,7 @@ func (l *local) TraceDevice(ctx context.Context, name string) error {
 					l.packetCache = append([]tracedConnection{connection}, l.packetCache...)
 					l.packetsCacheLock.Unlock()
 
-					// TODO: Add API for maximum packets to store to store
-					if len(l.packetCache) > 100 {
+					if len(l.packetCache) > l.maxPackageCache {
 						l.packetsCacheLock.Lock()
 						l.packetCache = l.packetCache[:100]
 						l.packetsCacheLock.Unlock()
@@ -374,11 +397,22 @@ func StartServer(ctx context.Context, addr string, heartbeat time.Duration, loca
 		addr = ":0"
 	}
 
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return "", nil, err
+	}
+
+	dbPath := filepath.Join(home, ".local", "share", "connmapper", "GeoLite2-City.mmdb")
+
 	l := &local{
 		connections:    map[string]tracedConnection{},
 		tracingDevices: map[string]struct{}{},
 		browserState:   browserState,
 		packetCache:    []tracedConnection{},
+
+		maxPackageCache: 100,
+		maxConnections:  1000000,
+		dbPath:          dbPath,
 	}
 	registry := rpc.NewRegistry(
 		l,
