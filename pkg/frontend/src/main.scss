@@ -34,10 +34,35 @@ body {
   color: var(--pf-global--Color--light-100);
 }
 
-.pf-x-button--cta {
+.pf-x-cta {
+  z-index: 1;
   position: fixed !important;
   right: 1rem;
   bottom: 1rem;
+  background: rgba($pf-global--primary-color--100, 60%) !important;
+  transition: background-color 250ms ease-in-out;
+  backdrop-filter: blur(7.5px);
+  -webkit-backdrop-filter: blur(7.5px);
+
+  &:hover {
+    background: $pf-global--primary-color--100 !important;
+  }
+}
+
+.pf-x-settings {
+  z-index: 1;
+  position: fixed !important;
+  right: 1rem;
+  top: 1rem;
+  background: rgba($pf-color-white, 60%) !important;
+  transition: background-color 250ms ease-in-out;
+  backdrop-filter: blur(7.5px);
+  -webkit-backdrop-filter: blur(7.5px);
+  color: $pf-color-black-900 !important;
+
+  &:hover {
+    background: $pf-color-white !important;
+  }
 }
 
 .pf-c-backdrop {

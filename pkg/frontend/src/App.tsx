@@ -16,6 +16,7 @@ import {
   ToolbarItem,
 } from "@patternfly/react-core";
 import {
+  CogIcon,
   CompressIcon,
   DownloadIcon,
   ExpandIcon,
@@ -91,6 +92,12 @@ const App = () => {
     GetConnections: async (): Promise<ITracedConnection[]> => [],
     GetPackets: async (): Promise<ITracedConnectionDetails[]> => [],
     SetIsSummarized: async (summarized: boolean): Promise<void> => {},
+    SetMaxPackageCache: async (packetCache: number): Promise<void> => {},
+    GetMaxPackageCache: async (): Promise<number> => 0,
+    SetMaxConnections: async (maxConnections: number): Promise<void> => {},
+    GetMaxConnections: async (): Promise<number> => 0,
+    SetDBPath: async (dbPath: string): Promise<void> => {},
+    GetDBPath: async (): Promise<string> => "",
   });
 
   const [ready, setReady] = useState(false);
@@ -238,310 +245,370 @@ const App = () => {
 
   const [inWindow, setInWindow] = useState(false);
 
-  const [modalTransparent, setModalTransparent] = useState(true);
+  const [inspectorTransparent, setInspectorTransparent] = useState(true);
 
   const [filteredPackets, setFilteredPackets] = useState<
     ITracedConnectionDetails[]
   >([]);
 
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [settingsTansparent, setSettingsTransparent] = useState(true);
+
   return ready ? (
-    tracing ? (
-      <>
-        <ReactGlobeGl
-          arcsData={arcs}
-          arcLabel={(d: any) => (d as IArc).label}
-          arcStartLng={(d: any) => (d as IArc).coords[0][0]}
-          arcStartLat={(d: any) => (d as IArc).coords[0][1]}
-          arcEndLng={(d: any) => (d as IArc).coords[1][0]}
-          arcEndLat={(d: any) => (d as IArc).coords[1][1]}
-          arcDashLength={0.05}
-          arcDashGap={0.1}
-          arcDashAnimateTime={10000}
-          arcsTransitionDuration={500}
-          arcStroke={() => 0.25}
-          arcColor={(d: any) => ((d as IArc).incoming ? "#A30000" : "#ACE12E")}
-          globeImageUrl={earthTexture as string}
-          bumpImageUrl={earthElevation as string}
-          backgroundImageUrl={universeTexture as string}
-          width={width}
-          height={height}
-        />
+    <>
+      {!settingsOpen && (
+        <Button
+          variant="plain"
+          aria-label="Settings"
+          className="pf-x-settings"
+          onClick={() => {
+            setSettingsOpen(true);
+          }}
+        >
+          <CogIcon />
+        </Button>
+      )}
 
-        {!isInspectorOpen && (
-          <Button
-            variant="primary"
-            icon={<TableIcon />}
-            className="pf-x-button--cta"
-            onClick={() => {
-              setModalTransparent(false);
-              setIsInspectorOpen(true);
-            }}
-          >
-            {" "}
-            Inspect Traffic
-          </Button>
-        )}
+      <Modal
+        isOpen={settingsOpen}
+        onEscapePress={() => setSettingsOpen(false)}
+        className="pf-u-mt-0 pf-u-mb-0"
+        showClose={false}
+        aria-labelledby="settings-modal-title"
+        header={
+          <div className="pf-u-px-lg pf-u-pt-md pf-u-pb-0">
+            <Flex
+              spaceItems={{ default: "spaceItemsMd" }}
+              direction={{ default: "row" }}
+              justifyContent={{ default: "justifyContentSpaceBetween" }}
+              alignItems={{ default: "alignItemsCenter" }}
+            >
+              <FlexItem>
+                <Title
+                  id="settings-modal-title"
+                  headingLevel="h1"
+                  className={inWindow ? "pf-u-ml-md" : ""}
+                >
+                  Settings
+                </Title>
+              </FlexItem>
 
-        {isInspectorOpen && (
-          <InWindowOrModal
-            inWindow={inWindow}
-            open={isInspectorOpen}
-            setOpen={(open) => {
-              if (!open) {
-                setInWindow(false);
-              }
-
-              setIsInspectorOpen(open);
-            }}
-            setInWindow={(inWindow) => {
-              if (!inWindow) {
-                setModalTransparent(false);
-              }
-
-              setInWindow(inWindow);
-            }}
-            minimized={isInspectorMinimized}
-            modalTransparent={modalTransparent}
-            setModalTransparent={setModalTransparent}
-            header={
-              <Flex
-                spaceItems={{ default: "spaceItemsMd" }}
-                direction={{ default: "row" }}
-                justifyContent={{ default: "justifyContentSpaceBetween" }}
-                alignItems={{ default: "alignItemsCenter" }}
-              >
-                <FlexItem>
-                  <Title
-                    id="traffic-inspector-title"
-                    headingLevel="h1"
-                    className={inWindow ? "pf-u-ml-md" : ""}
-                  >
-                    Traffic Inspector
-                  </Title>
-                </FlexItem>
-
-                <FlexItem>
-                  <Toolbar>
-                    <ToolbarContent>
-                      <ToolbarItem>
-                        <TextInput
-                          type="text"
-                          aria-label="Filter by regex"
-                          placeholder="Filter by regex"
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e)}
-                          validated={regexErr ? "error" : "default"}
-                        />
-                      </ToolbarItem>
-
-                      <ToolbarItem>
-                        <ToggleGroup aria-label="Select your output mode">
-                          <ToggleGroupItem
-                            icon={<OutlinedClockIcon />}
-                            text="Real-time"
-                            isSelected={!isSummarized}
-                            onChange={() => setIsSummarized(false)}
-                            className="pf-c-toggle-group__item--centered"
-                          />
-
-                          <ToggleGroupItem
-                            icon={<ListIcon />}
-                            text="Summarized"
-                            isSelected={isSummarized}
-                            onChange={() => setIsSummarized(true)}
-                            className="pf-c-toggle-group__item--centered"
-                          />
-                        </ToggleGroup>
-                      </ToolbarItem>
-
-                      <ToolbarItem>
-                        <Button
-                          variant="plain"
-                          aria-label="Download as CSV"
-                          onClick={() => {
-                            const element = document.createElement("a");
-                            element.setAttribute(
-                              "href",
-                              "data:text/plain;charset=utf-8," +
-                                encodeURIComponent(
-                                  Papa.unparse({
-                                    fields: [
-                                      "timestamp",
-
-                                      "layerType",
-                                      "nextLayerType",
-                                      "length",
-
-                                      "srcIP",
-                                      "srcCountryName",
-                                      "srcCityName",
-                                      "srcLatitude",
-                                      "srcLongitude",
-
-                                      "dstIP",
-                                      "dstCountryName",
-                                      "dstCityName",
-                                      "dstLatitude",
-                                      "dstLongitude",
-                                    ],
-                                    data: filteredPackets.map((packet) => [
-                                      packet.timestamp,
-
-                                      packet.layerType,
-                                      packet.nextLayerType,
-                                      packet.length,
-
-                                      packet.srcIP,
-                                      packet.srcCountryName,
-                                      packet.srcCityName,
-                                      packet.srcLatitude,
-                                      packet.srcLongitude,
-
-                                      packet.dstIP,
-                                      packet.dstCountryName,
-                                      packet.dstCityName,
-                                      packet.dstLatitude,
-                                      packet.dstLongitude,
-                                    ]),
-                                  })
-                                )
-                            );
-                            element.setAttribute("download", "packets.csv");
-
-                            element.style.display = "none";
-                            document.body.appendChild(element);
-
-                            element.click();
-
-                            document.body.removeChild(element);
-                          }}
-                        >
-                          <DownloadIcon />
-                        </Button>
-
-                        {inWindow ? (
-                          <>
-                            <Button
-                              variant="plain"
-                              aria-label="Add back to main window"
-                              onClick={() => setInWindow(false)}
-                            >
-                              <OutlinedWindowRestoreIcon />
-                            </Button>
-                          </>
-                        ) : (
-                          <>
-                            <Button
-                              variant="plain"
-                              aria-label="Open in new window"
-                              onClick={() => setInWindow(true)}
-                            >
-                              <OutlinedWindowRestoreIcon />
-                            </Button>
-
-                            {isInspectorMinimized ? (
-                              <Button
-                                variant="plain"
-                                aria-label="Expand"
-                                onClick={() => setIsInspectorMinimized(false)}
-                              >
-                                <ExpandIcon />
-                              </Button>
-                            ) : (
-                              <Button
-                                variant="plain"
-                                aria-label="Compress"
-                                onClick={() => {
-                                  setIsInspectorMinimized(true);
-                                  setModalTransparent(false);
-                                }}
-                              >
-                                <CompressIcon />
-                              </Button>
-                            )}
-
-                            <Button
-                              variant="plain"
-                              aria-label="Minimize"
-                              onClick={() => setIsInspectorOpen(false)}
-                            >
-                              <TimesIcon />
-                            </Button>
-                          </>
-                        )}
-                      </ToolbarItem>
-                    </ToolbarContent>
-                  </Toolbar>
-                </FlexItem>
-              </Flex>
-            }
-          >
-            <RealtimeTrafficTable
-              getPackets={remote.GetPackets}
-              addLocalLocation={addLocalLocation}
-              searchQuery={searchQuery}
-              setRegexErr={setRegexErr}
-              filteredPackets={filteredPackets}
-              setFilteredPackets={setFilteredPackets}
-            />
-          </InWindowOrModal>
-        )}
-      </>
-    ) : (
-      <Flex
-        className="pf-u-p-lg pf-u-h-100"
-        spaceItems={{ default: "spaceItemsMd" }}
-        direction={{ default: "column" }}
-        justifyContent={{ default: "justifyContentCenter" }}
-        alignItems={{ default: "alignItemsCenter" }}
+              <FlexItem>
+                <Button
+                  variant="plain"
+                  aria-label="Close"
+                  onClick={() => setSettingsOpen(false)}
+                >
+                  <TimesIcon />
+                </Button>
+              </FlexItem>
+            </Flex>
+          </div>
+        }
       >
-        <FlexItem className="pf-x-c-title">
-          <Title headingLevel="h1">Connmapper</Title>
-        </FlexItem>
+        Settings
+      </Modal>
 
-        <FlexItem>
-          <Flex direction={{ default: "row" }}>
-            <FlexItem>
-              <Select
-                variant={SelectVariant.single}
-                isOpen={deviceSelectorIsOpen}
-                onToggle={(isOpen) => setDeviceSelectorIsOpen(isOpen)}
-                selections={selectedDevice}
-                onSelect={(_, selection) => {
-                  setSelectedDevice(selection.toString());
-                  setDeviceSelectorIsOpen(false);
-                }}
-              >
-                {devices.map((d, i) => (
-                  <SelectOption value={d} key={i}>
-                    {d}
-                  </SelectOption>
-                ))}
-              </Select>
-            </FlexItem>
+      {tracing ? (
+        <>
+          <ReactGlobeGl
+            arcsData={arcs}
+            arcLabel={(d: any) => (d as IArc).label}
+            arcStartLng={(d: any) => (d as IArc).coords[0][0]}
+            arcStartLat={(d: any) => (d as IArc).coords[0][1]}
+            arcEndLng={(d: any) => (d as IArc).coords[1][0]}
+            arcEndLat={(d: any) => (d as IArc).coords[1][1]}
+            arcDashLength={0.05}
+            arcDashGap={0.1}
+            arcDashAnimateTime={10000}
+            arcsTransitionDuration={500}
+            arcStroke={() => 0.25}
+            arcColor={(d: any) =>
+              (d as IArc).incoming ? "#A30000" : "#ACE12E"
+            }
+            globeImageUrl={earthTexture as string}
+            bumpImageUrl={earthElevation as string}
+            backgroundImageUrl={universeTexture as string}
+            width={width}
+            height={height}
+          />
 
-            <FlexItem>
-              <Button
-                variant="primary"
-                onClick={() => {
-                  (async () => {
-                    try {
-                      await remote.TraceDevice(selectedDevice || devices[0]);
+          {!isInspectorOpen && (
+            <Button
+              variant="primary"
+              icon={<TableIcon />}
+              className="pf-x-cta"
+              onClick={() => {
+                setInspectorTransparent(false);
+                setIsInspectorOpen(true);
+              }}
+            >
+              {" "}
+              Inspect Traffic
+            </Button>
+          )}
 
-                      setTracing(true);
-                    } catch (e) {
-                      alert((e as Error).message);
-                    }
-                  })();
-                }}
-              >
-                Trace device
-              </Button>
-            </FlexItem>
-          </Flex>
-        </FlexItem>
-      </Flex>
-    )
+          {isInspectorOpen && (
+            <InWindowOrModal
+              inWindow={inWindow}
+              open={isInspectorOpen}
+              setOpen={(open) => {
+                if (!open) {
+                  setInWindow(false);
+                }
+
+                setIsInspectorOpen(open);
+              }}
+              setInWindow={(inWindow) => {
+                if (!inWindow) {
+                  setInspectorTransparent(false);
+                }
+
+                setInWindow(inWindow);
+              }}
+              minimized={isInspectorMinimized}
+              modalTransparent={inspectorTransparent}
+              setModalTransparent={setInspectorTransparent}
+              header={
+                <Flex
+                  spaceItems={{ default: "spaceItemsMd" }}
+                  direction={{ default: "row" }}
+                  justifyContent={{ default: "justifyContentSpaceBetween" }}
+                  alignItems={{ default: "alignItemsCenter" }}
+                >
+                  <FlexItem>
+                    <Title
+                      id="traffic-inspector-title"
+                      headingLevel="h1"
+                      className={inWindow ? "pf-u-ml-md" : ""}
+                    >
+                      Traffic Inspector
+                    </Title>
+                  </FlexItem>
+
+                  <FlexItem>
+                    <Toolbar>
+                      <ToolbarContent>
+                        <ToolbarItem>
+                          <TextInput
+                            type="text"
+                            aria-label="Filter by regex"
+                            placeholder="Filter by regex"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e)}
+                            validated={regexErr ? "error" : "default"}
+                          />
+                        </ToolbarItem>
+
+                        <ToolbarItem>
+                          <ToggleGroup aria-label="Select your output mode">
+                            <ToggleGroupItem
+                              icon={<OutlinedClockIcon />}
+                              text="Real-time"
+                              isSelected={!isSummarized}
+                              onChange={() => setIsSummarized(false)}
+                              className="pf-c-toggle-group__item--centered"
+                            />
+
+                            <ToggleGroupItem
+                              icon={<ListIcon />}
+                              text="Summarized"
+                              isSelected={isSummarized}
+                              onChange={() => setIsSummarized(true)}
+                              className="pf-c-toggle-group__item--centered"
+                            />
+                          </ToggleGroup>
+                        </ToolbarItem>
+
+                        <ToolbarItem>
+                          <Button
+                            variant="plain"
+                            aria-label="Download as CSV"
+                            onClick={() => {
+                              const element = document.createElement("a");
+                              element.setAttribute(
+                                "href",
+                                "data:text/plain;charset=utf-8," +
+                                  encodeURIComponent(
+                                    Papa.unparse({
+                                      fields: [
+                                        "timestamp",
+
+                                        "layerType",
+                                        "nextLayerType",
+                                        "length",
+
+                                        "srcIP",
+                                        "srcCountryName",
+                                        "srcCityName",
+                                        "srcLatitude",
+                                        "srcLongitude",
+
+                                        "dstIP",
+                                        "dstCountryName",
+                                        "dstCityName",
+                                        "dstLatitude",
+                                        "dstLongitude",
+                                      ],
+                                      data: filteredPackets.map((packet) => [
+                                        packet.timestamp,
+
+                                        packet.layerType,
+                                        packet.nextLayerType,
+                                        packet.length,
+
+                                        packet.srcIP,
+                                        packet.srcCountryName,
+                                        packet.srcCityName,
+                                        packet.srcLatitude,
+                                        packet.srcLongitude,
+
+                                        packet.dstIP,
+                                        packet.dstCountryName,
+                                        packet.dstCityName,
+                                        packet.dstLatitude,
+                                        packet.dstLongitude,
+                                      ]),
+                                    })
+                                  )
+                              );
+                              element.setAttribute("download", "packets.csv");
+
+                              element.style.display = "none";
+                              document.body.appendChild(element);
+
+                              element.click();
+
+                              document.body.removeChild(element);
+                            }}
+                          >
+                            <DownloadIcon />
+                          </Button>
+
+                          {inWindow ? (
+                            <>
+                              <Button
+                                variant="plain"
+                                aria-label="Add back to main window"
+                                onClick={() => setInWindow(false)}
+                              >
+                                <OutlinedWindowRestoreIcon />
+                              </Button>
+                            </>
+                          ) : (
+                            <>
+                              <Button
+                                variant="plain"
+                                aria-label="Open in new window"
+                                onClick={() => setInWindow(true)}
+                              >
+                                <OutlinedWindowRestoreIcon />
+                              </Button>
+
+                              {isInspectorMinimized ? (
+                                <Button
+                                  variant="plain"
+                                  aria-label="Expand"
+                                  onClick={() => setIsInspectorMinimized(false)}
+                                >
+                                  <ExpandIcon />
+                                </Button>
+                              ) : (
+                                <Button
+                                  variant="plain"
+                                  aria-label="Compress"
+                                  onClick={() => {
+                                    setIsInspectorMinimized(true);
+                                    setInspectorTransparent(false);
+                                  }}
+                                >
+                                  <CompressIcon />
+                                </Button>
+                              )}
+
+                              <Button
+                                variant="plain"
+                                aria-label="Close"
+                                onClick={() => setIsInspectorOpen(false)}
+                              >
+                                <TimesIcon />
+                              </Button>
+                            </>
+                          )}
+                        </ToolbarItem>
+                      </ToolbarContent>
+                    </Toolbar>
+                  </FlexItem>
+                </Flex>
+              }
+            >
+              <RealtimeTrafficTable
+                getPackets={remote.GetPackets}
+                addLocalLocation={addLocalLocation}
+                searchQuery={searchQuery}
+                setRegexErr={setRegexErr}
+                filteredPackets={filteredPackets}
+                setFilteredPackets={setFilteredPackets}
+              />
+            </InWindowOrModal>
+          )}
+        </>
+      ) : (
+        <Flex
+          className="pf-u-p-lg pf-u-h-100"
+          spaceItems={{ default: "spaceItemsMd" }}
+          direction={{ default: "column" }}
+          justifyContent={{ default: "justifyContentCenter" }}
+          alignItems={{ default: "alignItemsCenter" }}
+        >
+          <FlexItem className="pf-x-c-title">
+            <Title headingLevel="h1">Connmapper</Title>
+          </FlexItem>
+
+          <FlexItem>
+            <Flex direction={{ default: "row" }}>
+              <FlexItem>
+                <Select
+                  variant={SelectVariant.single}
+                  isOpen={deviceSelectorIsOpen}
+                  onToggle={(isOpen) => setDeviceSelectorIsOpen(isOpen)}
+                  selections={selectedDevice}
+                  onSelect={(_, selection) => {
+                    setSelectedDevice(selection.toString());
+                    setDeviceSelectorIsOpen(false);
+                  }}
+                >
+                  {devices.map((d, i) => (
+                    <SelectOption value={d} key={i}>
+                      {d}
+                    </SelectOption>
+                  ))}
+                </Select>
+              </FlexItem>
+
+              <FlexItem>
+                <Button
+                  variant="primary"
+                  onClick={() => {
+                    (async () => {
+                      try {
+                        await remote.TraceDevice(selectedDevice || devices[0]);
+
+                        setTracing(true);
+                      } catch (e) {
+                        alert((e as Error).message);
+                      }
+                    })();
+                  }}
+                >
+                  Trace device
+                </Button>
+              </FlexItem>
+            </Flex>
+          </FlexItem>
+        </Flex>
+      )}
+    </>
   ) : (
     <span>"Loading ..."</span>
   );
