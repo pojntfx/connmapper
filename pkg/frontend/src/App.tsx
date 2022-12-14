@@ -166,6 +166,9 @@ const App = () => {
   }, []);
 
   const [devices, setDevices] = useState<string[]>([]);
+  const [dbPath, setDbPath] = useState("");
+  const [maxConnectionsCache, setMaxConnectionsCache] = useState(0);
+  const [maxPacketCache, setMaxPacketCache] = useState(0);
 
   useEffect(() => {
     if (!ready) {
@@ -173,11 +176,50 @@ const App = () => {
     }
 
     (async () => {
-      const devices = await remote.ListDevices();
+      const [devices, dbPath, maxConnectionsCache, maxPacketCache] =
+        await Promise.all([
+          remote.ListDevices(),
+          remote.GetDBPath(),
+          remote.GetMaxConnectionsCache(),
+          remote.GetMaxPacketCache(),
+        ]);
 
       setDevices(devices);
+      setDbPath(dbPath);
+      setMaxConnectionsCache(maxConnectionsCache);
+      setMaxPacketCache(maxPacketCache);
     })();
   }, [ready]);
+
+  useEffect(() => {
+    if (!ready || maxPacketCache <= 0) {
+      return;
+    }
+
+    (async () => {
+      await remote.SetMaxPacketCache(maxPacketCache);
+    })();
+  }, [ready, maxPacketCache]);
+
+  useEffect(() => {
+    if (!ready || maxConnectionsCache <= 0) {
+      return;
+    }
+
+    (async () => {
+      await remote.SetMaxConnectionsCache(maxConnectionsCache);
+    })();
+  }, [ready, maxConnectionsCache]);
+
+  useEffect(() => {
+    if (!ready || dbPath.trim().length <= 0) {
+      return;
+    }
+
+    (async () => {
+      await remote.SetDBPath(dbPath);
+    })();
+  }, [ready, dbPath]);
 
   const [deviceSelectorIsOpen, setDeviceSelectorIsOpen] = useState(false);
   const [selectedDevice, setSelectedDevice] = useState("");
@@ -257,42 +299,6 @@ const App = () => {
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isSettingsTransparent, setIsSettingsTransparent] = useState(true);
-
-  const [maxPacketCache, setMaxPacketCache] = useState(100);
-
-  useEffect(() => {
-    if (!ready) {
-      return;
-    }
-
-    (async () => {
-      await remote.SetMaxPacketCache(maxPacketCache);
-    })();
-  }, [ready, maxPacketCache]);
-
-  const [maxConnectionsCache, setMaxConnectionsCache] = useState(1000000);
-
-  useEffect(() => {
-    if (!ready) {
-      return;
-    }
-
-    (async () => {
-      await remote.SetMaxConnectionsCache(maxConnectionsCache);
-    })();
-  }, [ready, maxConnectionsCache]);
-
-  const [dbPath, setDbPath] = useState("");
-
-  useEffect(() => {
-    if (!ready) {
-      return;
-    }
-
-    (async () => {
-      await remote.SetDBPath(dbPath);
-    })();
-  }, [ready, dbPath]);
 
   return ready ? (
     <>
