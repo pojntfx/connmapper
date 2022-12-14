@@ -12,8 +12,8 @@ Build-Depends: debhelper (>= 12.10), git (>= 2.20.1), golang-go (>= 1.19), image
 Package-List:
  com.pojtinger.felicitas.connmapper.main deb utils optional arch=any
 Checksums-Sha1:
- c7fbc5587bef4560418b7ed420528c198deb8aeb 27926256 com.pojtinger.felicitas.connmapper.main_0.0.1.tar.xz
+ 8c2ed2c8b23821a8940d3e080bfba1d4557cb6cc 27927424 com.pojtinger.felicitas.connmapper.main_0.0.1.tar.xz
 Checksums-Sha256:
- 6d997521d44ab396443d32b443e850e710c7c850fd7746e8f1f65da039854694 27926256 com.pojtinger.felicitas.connmapper.main_0.0.1.tar.xz
+ 8e192519996203b74b264a9655ddcebb5cfaa8f796f1a7e623187e9fa68f5fec 27927424 com.pojtinger.felicitas.connmapper.main_0.0.1.tar.xz
 Files:
- 25a8dffd95a48670a56ab59d2d71377d 27926256 com.pojtinger.felicitas.connmapper.main_0.0.1.tar.xz
+ e37a41f2e8b598df5d0562d649a11aec 27927424 com.pojtinger.felicitas.connmapper.main_0.0.1.tar.xz
