@@ -90,9 +90,9 @@ type local struct {
 
 	summarized bool
 
-	maxPackageCache int
-	maxConnections  int
-	dbPath          string
+	maxPacketCache      int
+	maxConnectionsCache int
+	dbPath              string
 
 	Peers func() map[string]remote
 }
@@ -111,24 +111,24 @@ func (l *local) ListDevices(ctx context.Context) ([]string, error) {
 	return devices, nil
 }
 
-func (l *local) SetMaxPackageCache(ctx context.Context, packetCache int) error {
-	l.maxPackageCache = packetCache
+func (l *local) SetMaxPacketCache(ctx context.Context, packetCache int) error {
+	l.maxPacketCache = packetCache
 
 	return nil
 }
 
-func (l *local) GetMaxPackageCache(ctx context.Context) (int, error) {
-	return l.maxPackageCache, nil
+func (l *local) GetMaxPacketCache(ctx context.Context) (int, error) {
+	return l.maxPacketCache, nil
 }
 
-func (l *local) SetMaxConnections(ctx context.Context, maxConnections int) error {
-	l.maxConnections = maxConnections
+func (l *local) SetMaxConnectionsCache(ctx context.Context, maxConnectionsCache int) error {
+	l.maxConnectionsCache = maxConnectionsCache
 
 	return nil
 }
 
-func (l *local) GetMaxConnections(ctx context.Context) (int, error) {
-	return l.maxConnections, nil
+func (l *local) GetMaxConnectionsCache(ctx context.Context) (int, error) {
+	return l.maxConnectionsCache, nil
 }
 
 func (l *local) SetDBPath(ctx context.Context, dbPath string) error {
@@ -294,7 +294,7 @@ func (l *local) TraceDevice(ctx context.Context, name string) error {
 
 				l.connectionsLock.Lock()
 
-				if len(l.connections) > l.maxConnections {
+				if len(l.connections) > l.maxConnectionsCache {
 					l.connections = map[string]tracedConnection{}
 				}
 
@@ -343,9 +343,11 @@ func (l *local) TraceDevice(ctx context.Context, name string) error {
 					l.packetCache = append([]tracedConnection{connection}, l.packetCache...)
 					l.packetsCacheLock.Unlock()
 
-					if len(l.packetCache) > l.maxPackageCache {
+					if len(l.packetCache) > l.maxPacketCache {
 						l.packetsCacheLock.Lock()
-						l.packetCache = l.packetCache[:100]
+						if len(l.packetCache) > l.maxPacketCache {
+							l.packetCache = l.packetCache[:l.maxPacketCache]
+						}
 						l.packetsCacheLock.Unlock()
 					}
 				}
@@ -410,9 +412,9 @@ func StartServer(ctx context.Context, addr string, heartbeat time.Duration, loca
 		browserState:   browserState,
 		packetCache:    []tracedConnection{},
 
-		maxPackageCache: 100,
-		maxConnections:  1000000,
-		dbPath:          dbPath,
+		maxPacketCache:      100,
+		maxConnectionsCache: 1000000,
+		dbPath:              dbPath,
 	}
 	registry := rpc.NewRegistry(
 		l,
@@ -420,6 +422,7 @@ func StartServer(ctx context.Context, addr string, heartbeat time.Duration, loca
 
 		time.Second*10,
 		ctx,
+		nil,
 	)
 	l.Peers = registry.Peers
 

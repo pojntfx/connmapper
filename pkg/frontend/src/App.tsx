@@ -2,6 +2,8 @@ import {
   Button,
   Flex,
   FlexItem,
+  Form,
+  FormGroup,
   Modal,
   ModalVariant,
   Select,
@@ -36,6 +38,7 @@ import {
   Tr,
 } from "@patternfly/react-table";
 import { bind } from "@pojntfx/dudirekta";
+import Papa from "papaparse";
 import React, { useCallback, useEffect, useState } from "react";
 import ReactGlobeGl from "react-globe.gl";
 import NewWindow from "react-new-window";
@@ -44,7 +47,6 @@ import earthTexture from "./8k_earth_nightmap.jpg";
 import earthElevation from "./8k_earth_normal_map.png";
 import universeTexture from "./8k_stars_milky_way.jpg";
 import "./main.scss";
-import Papa from "papaparse";
 
 interface ITracedConnection {
   layerType: string;
@@ -92,10 +94,12 @@ const App = () => {
     GetConnections: async (): Promise<ITracedConnection[]> => [],
     GetPackets: async (): Promise<ITracedConnectionDetails[]> => [],
     SetIsSummarized: async (summarized: boolean): Promise<void> => {},
-    SetMaxPackageCache: async (packetCache: number): Promise<void> => {},
-    GetMaxPackageCache: async (): Promise<number> => 0,
-    SetMaxConnections: async (maxConnections: number): Promise<void> => {},
-    GetMaxConnections: async (): Promise<number> => 0,
+    SetMaxPacketCache: async (packetCache: number): Promise<void> => {},
+    GetMaxPacketCache: async (): Promise<number> => 0,
+    SetMaxConnectionsCache: async (
+      maxConnectionsCache: number
+    ): Promise<void> => {},
+    GetMaxConnectionsCache: async (): Promise<number> => 0,
     SetDBPath: async (dbPath: string): Promise<void> => {},
     GetDBPath: async (): Promise<string> => "",
   });
@@ -254,6 +258,42 @@ const App = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isSettingsTransparent, setIsSettingsTransparent] = useState(true);
 
+  const [maxPacketCache, setMaxPacketCache] = useState(100);
+
+  useEffect(() => {
+    if (!ready) {
+      return;
+    }
+
+    (async () => {
+      await remote.SetMaxPacketCache(maxPacketCache);
+    })();
+  }, [ready, maxPacketCache]);
+
+  const [maxConnectionsCache, setMaxConnectionsCache] = useState(1000000);
+
+  useEffect(() => {
+    if (!ready) {
+      return;
+    }
+
+    (async () => {
+      await remote.SetMaxConnectionsCache(maxConnectionsCache);
+    })();
+  }, [ready, maxConnectionsCache]);
+
+  const [dbPath, setDbPath] = useState("");
+
+  useEffect(() => {
+    if (!ready) {
+      return;
+    }
+
+    (async () => {
+      await remote.SetDBPath(dbPath);
+    })();
+  }, [ready, dbPath]);
+
   return ready ? (
     <>
       {!isSettingsOpen && (
@@ -313,10 +353,101 @@ const App = () => {
             </Flex>
           </div>
         }
+        actions={[
+          <Button
+            key={1}
+            variant="primary"
+            form="settings"
+            onClick={() => setIsSettingsOpen(false)}
+          >
+            OK
+          </Button>,
+        ]}
         onMouseEnter={() => setIsSettingsTransparent(true)}
         onMouseLeave={() => setIsSettingsTransparent(false)}
       >
-        Settings
+        <Form
+          id="settings"
+          onSubmit={(e) => {
+            e.preventDefault();
+            setIsSettingsOpen(false);
+          }}
+        >
+          <FormGroup
+            label="Maximum packet cache length"
+            isRequired
+            fieldId="max-packet-cache"
+          >
+            <TextInput
+              isRequired
+              type="number"
+              id="max-packet-cache"
+              name="max-packet-cache"
+              value={maxPacketCache}
+              onChange={(e) => {
+                const v = parseInt(e);
+
+                if (isNaN(v)) {
+                  console.error("Could not parse max packet cache");
+
+                  return;
+                }
+
+                setMaxPacketCache(v);
+              }}
+            />
+          </FormGroup>
+
+          <FormGroup
+            label="Maximum connections cache length"
+            isRequired
+            fieldId="max-connections-cache"
+          >
+            <TextInput
+              isRequired
+              type="number"
+              id="max-connections-cache"
+              name="max-connections-cache"
+              value={maxConnectionsCache}
+              onChange={(e) => {
+                const v = parseInt(e);
+
+                if (isNaN(v)) {
+                  console.error("Could not parse max connections cache");
+
+                  return;
+                }
+
+                setMaxConnectionsCache(v);
+              }}
+            />
+          </FormGroup>
+
+          <FormGroup
+            label="GeoLite2 database path"
+            isRequired
+            fieldId="db-path"
+          >
+            <TextInput
+              isRequired
+              type="text"
+              id="db-path"
+              name="db-path"
+              value={dbPath}
+              onChange={(e) => {
+                const v = e.trim();
+
+                if (v.length <= 0) {
+                  console.error("Could not work with empty path");
+
+                  return;
+                }
+
+                setDbPath(v);
+              }}
+            />
+          </FormGroup>
+        </Form>
       </Modal>
 
       {tracing ? (
