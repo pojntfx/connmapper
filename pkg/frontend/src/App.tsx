@@ -48,6 +48,10 @@ import earthElevation from "./8k_earth_normal_map.png";
 import universeTexture from "./8k_stars_milky_way.jpg";
 import "./main.scss";
 
+const MAX_PACKET_CACHE_KEY = "latensee.maxPacketCache";
+const MAX_CONNECTIONS_CACHE_KEY = "latensee.maxConnectionsCache";
+const DB_PATH_KEY = "latensee.dbPath";
+
 interface ITracedConnection {
   layerType: string;
   nextLayerType: string;
@@ -176,7 +180,19 @@ const App = () => {
     }
 
     (async () => {
-      const [devices, dbPath, maxConnectionsCache, maxPacketCache] =
+      // Rehydrate from localStorage
+      setMaxPacketCache(
+        parseInt(localStorage.getItem(MAX_PACKET_CACHE_KEY) || "0")
+      );
+
+      setMaxConnectionsCache(
+        parseInt(localStorage.getItem(MAX_CONNECTIONS_CACHE_KEY) || "0")
+      );
+
+      setDbPath(localStorage.getItem(DB_PATH_KEY) || "");
+
+      // Rehydrate from server and fetch devices
+      const [newDevices, newDBPath, newMaxConnectionsCache, newMaxPacketCache] =
         await Promise.all([
           remote.ListDevices(),
           remote.GetDBPath(),
@@ -184,10 +200,20 @@ const App = () => {
           remote.GetMaxPacketCache(),
         ]);
 
-      setDevices(devices);
-      setDbPath(dbPath);
-      setMaxConnectionsCache(maxConnectionsCache);
-      setMaxPacketCache(maxPacketCache);
+      setDevices(newDevices);
+
+      // Set local values from server if they aren't set yet
+      if (dbPath.trim().length <= 0) {
+        setDbPath(newDBPath);
+      }
+
+      if (maxConnectionsCache <= 0) {
+        setMaxConnectionsCache(newMaxConnectionsCache);
+      }
+
+      if (maxPacketCache <= 0) {
+        setMaxPacketCache(newMaxPacketCache);
+      }
     })();
   }, [ready]);
 
@@ -195,6 +221,8 @@ const App = () => {
     if (!ready || maxPacketCache <= 0) {
       return;
     }
+
+    localStorage.setItem(MAX_PACKET_CACHE_KEY, maxPacketCache.toString());
 
     (async () => {
       await remote.SetMaxPacketCache(maxPacketCache);
@@ -206,6 +234,11 @@ const App = () => {
       return;
     }
 
+    localStorage.setItem(
+      MAX_CONNECTIONS_CACHE_KEY,
+      maxConnectionsCache.toString()
+    );
+
     (async () => {
       await remote.SetMaxConnectionsCache(maxConnectionsCache);
     })();
@@ -215,6 +248,8 @@ const App = () => {
     if (!ready || dbPath.trim().length <= 0) {
       return;
     }
+
+    localStorage.setItem(DB_PATH_KEY, dbPath);
 
     (async () => {
       await remote.SetDBPath(dbPath);
