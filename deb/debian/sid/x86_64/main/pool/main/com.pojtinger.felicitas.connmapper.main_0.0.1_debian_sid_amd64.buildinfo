@@ -4,20 +4,20 @@ Binary: com.pojtinger.felicitas.connmapper.main com.pojtinger.felicitas.connmapp
 Architecture: amd64 source
 Version: 0.0.1
 Checksums-Md5:
- 55bbd8a5956dc0ec3c8f0820917b57d4 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
- b2557ea3b5429119dd6c1079c66b0360 2971196 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
- f532e272a5bee6a2ac0756e70d18a72a 22270352 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
+ 08f7d4cf994367c6bb3924673080cbcb 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
+ d5a525f65e785827ab01fbd5414a1b71 2970928 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
+ 0603fde1a3ddc55eae590e64a799fc3d 22274668 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
 Checksums-Sha1:
- 013e13ef3ad617311d9be182feba8132462c207c 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
- aa34eff4e9d0c81f77c818cbdbd42758e8c6ed89 2971196 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
- c3447aaa4b5e51462df0570e3e9866950e05bbed 22270352 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
+ eecec0ae42b9d613fc5bb054b56b882b397a308b 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
+ 36e1f0f4a41710a3bf02c36e425a4c02357cd099 2970928 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
+ 75d70b38ed6b4dbe72d98687d65d04940312001e 22274668 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
 Checksums-Sha256:
- 72a6b09a6c9ada4d2028176b7e48a948777995f3b7c3cf4fc69061dc22b852c6 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
- 4989f9be20769ead2da4c0e65d528a2e1f9fc96713d3876941a2cef26b6cb268 2971196 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
- db8573735a855b32e8295c5cf695808ce4a09a674f6e8f8fb3f007654556d2a3 22270352 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
+ add49446d58095bc45d43735db88d4acc446681fa97b1abaf6216d791d8b7b02 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
+ 3e9c3d9037cf4a231a0e0cc6b0d1725dcd784fbf68e09ffd0876b95fe7a29663 2970928 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
+ 327b9da3f915e09b5f6813aef6205119c7765b1ec1600ba1f44f42729092b849 22274668 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
 Build-Origin: Debian
 Build-Architecture: amd64
-Build-Date: Tue, 13 Dec 2022 23:34:28 +0000
+Build-Date: Wed, 14 Dec 2022 23:00:50 +0000
 Build-Path: /build/com.pojtinger.felicitas.connmapper.main-0.0.1
 Installed-Build-Depends:
  appstream-util (= 0.8.2-1),
@@ -101,7 +101,7 @@ Installed-Build-Depends:
  libc6 (= 2.36-6),
  libc6-dev (= 2.36-6),
  libcap-ng0 (= 0.8.3-1+b2),
- libcap2 (= 1:2.66-1),
+ libcap2 (= 1:2.66-2),
  libcc1-0 (= 12.2.0-10),
  libcom-err2 (= 1.46.6~rc1-1+b1),
  libcrypt-dev (= 1:4.4.33-1),
@@ -133,7 +133,7 @@ Installed-Build-Depends:
  libgdbm6 (= 1.23-3),
  libgdk-pixbuf-2.0-0 (= 2.42.10+dfsg-1),
  libgdk-pixbuf2.0-common (= 2.42.10+dfsg-1),
- libglib2.0-0 (= 2.74.2-1),
+ libglib2.0-0 (= 2.74.3-1),
  libgmp10 (= 2:6.2.1+dfsg1-1.1),
  libgnutls30 (= 3.7.8-4),
  libgomp1 (= 12.2.0-10),
@@ -170,7 +170,7 @@ Installed-Build-Depends:
  liblsan0 (= 12.2.0-10),
  libltdl7 (= 2.4.7-5),
  liblz4-1 (= 1.9.4-1),
- liblzma5 (= 5.2.9-0.0),
+ liblzma5 (= 5.2.10-0.0),
  libmagic-mgc (= 1:5.41-4),
  libmagic1 (= 1:5.41-4),
  libmagickcore-6.q16-6 (= 8:6.9.11.60+dfsg-1.3+b4),
@@ -627,7 +627,7 @@ Installed-Build-Depends:
  util-linux-extra (= 2.38.1-4),
  webpack (= 5.75.0+dfsg+~cs17.16.14-1),
  xml-core (= 0.18+nmu1),
- xz-utils (= 5.2.9-0.0),
+ xz-utils (= 5.2.10-0.0),
  zlib1g (= 1:1.2.13.dfsg-1)
 Environment:
  DEB_BUILD_OPTIONS="parallel=2"
