@@ -1,4 +1,7 @@
 import {
+  Alert,
+  AlertActionCloseButton,
+  AlertGroup,
   Button,
   Flex,
   FlexItem,
@@ -25,6 +28,7 @@ import {
   ListIcon,
   OutlinedClockIcon,
   OutlinedWindowRestoreIcon,
+  RedoIcon,
   TableIcon,
   TimesIcon,
 } from "@patternfly/react-icons";
@@ -106,6 +110,7 @@ const App = () => {
     GetMaxConnectionsCache: async (): Promise<number> => 0,
     SetDBPath: async (dbPath: string): Promise<void> => {},
     GetDBPath: async (): Promise<string> => "",
+    RestartApp: async (fixPermissions: boolean): Promise<void> => {},
   });
 
   const [ready, setReady] = useState(false);
@@ -203,15 +208,17 @@ const App = () => {
       setDevices(newDevices);
 
       // Set local values from server if they aren't set yet
-      if (dbPath.trim().length <= 0) {
+      if ((localStorage.getItem(DB_PATH_KEY) || "").trim().length <= 0) {
         setDbPath(newDBPath);
       }
 
-      if (maxConnectionsCache <= 0) {
+      if (
+        parseInt(localStorage.getItem(MAX_CONNECTIONS_CACHE_KEY) || "0") <= 0
+      ) {
         setMaxConnectionsCache(newMaxConnectionsCache);
       }
 
-      if (maxPacketCache <= 0) {
+      if (parseInt(localStorage.getItem(MAX_PACKET_CACHE_KEY) || "0") <= 0) {
         setMaxPacketCache(newMaxPacketCache);
       }
     })();
@@ -335,8 +342,39 @@ const App = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isSettingsTransparent, setIsSettingsTransparent] = useState(true);
 
+  const [showRestartWarning, setShowRestartWarning] = useState(false);
+
   return ready ? (
     <>
+      <AlertGroup isToast isLiveRegion>
+        {!(!showRestartWarning || isSettingsOpen) && (
+          <Alert
+            variant="warning"
+            title="App restart required"
+            actionClose={
+              <AlertActionCloseButton
+                title="Close alert"
+                variantLabel="Close alert"
+                onClose={() => setShowRestartWarning(false)}
+              />
+            }
+          >
+            The changes to the database path can only be applied with by
+            restarting the app.
+            <Button
+              variant="warning"
+              isSmall
+              icon={<RedoIcon />}
+              onClick={() => remote.RestartApp(false)}
+              className="pf-u-mt-sm"
+            >
+              {" "}
+              Restart app
+            </Button>
+          </Alert>
+        )}
+      </AlertGroup>
+
       {!isSettingsOpen && (
         <Button
           variant="plain"
@@ -373,11 +411,7 @@ const App = () => {
               alignItems={{ default: "alignItemsCenter" }}
             >
               <FlexItem>
-                <Title
-                  id="settings-modal-title"
-                  headingLevel="h1"
-                  className={inWindow ? "pf-u-ml-md" : ""}
-                >
+                <Title id="settings-modal-title" headingLevel="h1">
                   Settings
                 </Title>
               </FlexItem>
@@ -485,6 +519,7 @@ const App = () => {
                 }
 
                 setDbPath(v);
+                setShowRestartWarning(true);
               }}
             />
           </FormGroup>

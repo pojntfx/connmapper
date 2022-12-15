@@ -141,6 +141,56 @@ func (l *local) GetDBPath(ctx context.Context) (string, error) {
 	return l.dbPath, nil
 }
 
+func (l *local) RestartApp(ctx context.Context, fixPermissions bool) error {
+	if fixPermissions {
+		for peerID, peer := range l.Peers() {
+			if peerID == rpc.GetRemoteID(ctx) {
+				confirm, nerr := peer.GetEscalationPermission(ctx, false)
+				if nerr != nil {
+					return nerr
+				}
+
+				if !confirm {
+					return nil
+				}
+			}
+		}
+	}
+
+	bin, err := os.Executable()
+	if err != nil {
+		return err
+	}
+
+	if fixPermissions {
+		switch runtime.GOOS {
+		case "linux":
+			if err := utils.RunElevatedCommand(fmt.Sprintf("setcap cap_net_raw,cap_net_admin=eip %v", bin)); err != nil {
+				return err
+			}
+		default:
+			if err := utils.RunElevatedCommand(fmt.Sprintf("%v %v", bin, strings.Join(os.Args, " "))); err != nil {
+				return err
+			}
+		}
+	}
+
+	if err := uutils.ForkExec(
+		bin,
+		os.Args,
+	); err != nil {
+		return err
+	}
+
+	if err := utils.KillBrowser(l.browserState); err != nil {
+		return err
+	}
+
+	os.Exit(0)
+
+	return nil
+}
+
 func (l *local) TraceDevice(ctx context.Context, name string) error {
 	l.tracingDevicesLock.Lock()
 	defer l.tracingDevicesLock.Unlock()
@@ -167,54 +217,9 @@ func (l *local) TraceDevice(ctx context.Context, name string) error {
 	handle, err := pcap.OpenLive(name, int32(iface.MTU), true, pcap.BlockForever)
 	if err != nil {
 		if strings.HasSuffix(err.Error(), "(socket: Operation not permitted)") {
-			for peerID, peer := range l.Peers() {
-				if peerID == rpc.GetRemoteID(ctx) {
-					confirm, nerr := peer.GetEscalationPermission(ctx, false)
-					if nerr != nil {
-						return nerr
-					}
-
-					if !confirm {
-						return err
-					}
-				}
-			}
-
-			bin, err := os.Executable()
-			if err != nil {
+			if err := l.RestartApp(ctx, true); err != nil {
 				return err
 			}
-
-			switch runtime.GOOS {
-			case "linux":
-				if err := utils.RunElevatedCommand(fmt.Sprintf("setcap cap_net_raw,cap_net_admin=eip %v", bin)); err != nil {
-					return err
-				}
-
-				if err := uutils.ForkExec(
-					bin,
-					os.Args,
-				); err != nil {
-					return err
-				}
-			default:
-				if err := utils.RunElevatedCommand(fmt.Sprintf("%v %v", bin, strings.Join(os.Args, " "))); err != nil {
-					return err
-				}
-
-				if err := uutils.ForkExec(
-					bin,
-					os.Args,
-				); err != nil {
-					return err
-				}
-			}
-
-			if err := utils.KillBrowser(l.browserState); err != nil {
-				return err
-			}
-
-			os.Exit(0)
 		} else {
 			return err
 		}
