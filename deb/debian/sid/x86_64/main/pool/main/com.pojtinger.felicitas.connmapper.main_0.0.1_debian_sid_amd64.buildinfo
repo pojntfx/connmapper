@@ -4,20 +4,20 @@ Binary: com.pojtinger.felicitas.connmapper.main com.pojtinger.felicitas.connmapp
 Architecture: amd64 source
 Version: 0.0.1
 Checksums-Md5:
- 4cbdfd4aba430fdfd4f4ae2caf6ebd49 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
- c259bc397e65ae0ec2f113f5654b6484 2971004 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
- 183014d14409426b82fc1a78971446d2 22275684 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
+ 1e559a40fc68ae1c8f0e569fcad951fc 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
+ 036fed49a6ead518ef8a7fdfab8035db 2971436 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
+ 28482999f8bb4782a339682694e32ce6 22284352 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
 Checksums-Sha1:
- d410906d17ea54ae5114dbdb21b01ac9871065ed 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
- b602650e4ddf7463513cd58fbc65c890c7c2a7dc 2971004 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
- 6576f5775d1505778e19066253fc37fafc487e9e 22275684 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
+ 02cab836577652906ff294a74482091d6966b395 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
+ e98821812c81d068950c5e1717aa31a5cd541e78 2971436 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
+ 8667eed4238164ac390d8bdf9a79bf79545de201 22284352 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
 Checksums-Sha256:
- eea274ae0892347a093890e552c702ed8da3c792efe43d2f362b06c5a7ab0dc5 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
- e6649a51764ab0baff8e5c67ef13cea51f3571d49ddd7599dd55285d946bad02 2971004 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
- c3d965b8333a26300d3cbfadfcc9ba31df510526e96d8f7a9ea775f419f65cef 22275684 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
+ e57ff4cf85131a45706d7d3987e5e0d160daa8c4eee4f660a9d4481e36eabe0b 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
+ b3f4aa37e22cf95a46add76f82b26929f2bc4b6c23910449331286f3c25c91c9 2971436 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
+ 7f7a6a99f3ce5b96622bab0c47bc6d5f879995e122d2a36a7c4ef627492ec59a 22284352 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
 Build-Origin: Debian
 Build-Architecture: amd64
-Build-Date: Wed, 14 Dec 2022 23:37:47 +0000
+Build-Date: Fri, 16 Dec 2022 22:55:37 +0000
 Build-Path: /build/com.pojtinger.felicitas.connmapper.main-0.0.1
 Installed-Build-Depends:
  appstream-util (= 0.8.2-1),
@@ -41,12 +41,12 @@ Installed-Build-Depends:
  cpp-12 (= 12.2.0-10),
  dash (= 0.5.11+git20210903+057cd650a4ed-9),
  debconf (= 1.5.80),
- debhelper (= 13.11.1),
+ debhelper (= 13.11.3),
  debianutils (= 5.7-0.4),
  desktop-file-utils (= 0.26-1),
  dh-autoreconf (= 20),
  dh-strip-nondeterminism (= 1.13.0-2),
- diffutils (= 1:3.8-1),
+ diffutils (= 1:3.8-2),
  dpkg (= 1.21.12),
  dpkg-dev (= 1.21.12),
  dwz (= 0.14+20220924-2),
@@ -115,7 +115,7 @@ Installed-Build-Depends:
  libdbus-1-dev (= 1.14.4-1),
  libde265-0 (= 1.0.9-1),
  libdebconfclient0 (= 0.265),
- libdebhelper-perl (= 13.11.1),
+ libdebhelper-perl (= 13.11.3),
  libdeflate0 (= 1.14-1),
  libdpkg-perl (= 1.21.12),
  libelf1 (= 0.188-1),
@@ -170,7 +170,7 @@ Installed-Build-Depends:
  liblsan0 (= 12.2.0-10),
  libltdl7 (= 2.4.7-5),
  liblz4-1 (= 1.9.4-1),
- liblzma5 (= 5.2.10-0.0),
+ liblzma5 (= 5.4.0-0.1),
  libmagic-mgc (= 1:5.41-4),
  libmagic1 (= 1:5.41-4),
  libmagickcore-6.q16-6 (= 8:6.9.11.60+dfsg-1.3+b4),
@@ -200,7 +200,7 @@ Installed-Build-Depends:
  libpcre2-8-0 (= 10.40-3),
  libperl5.36 (= 5.36.0-6),
  libpipeline1 (= 1.5.7-1),
- libpkgconf3 (= 1.8.0-11),
+ libpkgconf3 (= 1.8.0-12),
  libpng16-16 (= 1.6.39-2),
  libpsl5 (= 0.21.0-1.2),
  libpython3-stdlib (= 3.10.6-3),
@@ -392,7 +392,7 @@ Installed-Build-Depends:
  node-has-unicode (= 2.0.1-5),
  node-hosted-git-info (= 6.1.1-2),
  node-https-proxy-agent (= 5.0.1+~cs8.0.0-3),
- node-iconv-lite (= 0.6.3-2),
+ node-iconv-lite (= 0.6.3-3),
  node-icss-utils (= 5.1.0+~5.1.0-1),
  node-ieee754 (= 1.2.1-3),
  node-iferr (= 1.0.2+~1.0.2-1),
@@ -602,9 +602,9 @@ Installed-Build-Depends:
  perl (= 5.36.0-6),
  perl-base (= 5.36.0-6),
  perl-modules-5.36 (= 5.36.0-6),
- pkg-config (= 1.8.0-11),
- pkgconf (= 1.8.0-11),
- pkgconf-bin (= 1.8.0-11),
+ pkg-config (= 1.8.0-12),
+ pkgconf (= 1.8.0-12),
+ pkgconf-bin (= 1.8.0-12),
  po-debconf (= 1.0.21+nmu1),
  python3 (= 3.10.6-3),
  python3-minimal (= 3.10.6-3),
@@ -627,7 +627,7 @@ Installed-Build-Depends:
  util-linux-extra (= 2.38.1-4),
  webpack (= 5.75.0+dfsg+~cs17.16.14-1),
  xml-core (= 0.18+nmu1),
- xz-utils (= 5.2.10-0.0),
+ xz-utils (= 5.4.0-0.1),
  zlib1g (= 1:1.2.13.dfsg-1)
 Environment:
  DEB_BUILD_OPTIONS="parallel=2"

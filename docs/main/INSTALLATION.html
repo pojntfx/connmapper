@@ -167,7 +167,7 @@
 <ol type="1">
 <li>Download F-Droid from <a href="https://f-droid.org/">f-droid.org</a></li>
 <li>Open F-Droid and go to <code>Settings</code>, then <code>Repositories</code></li>
-<li>Add a new repository with the address <code>https://pojntfx.github.io/connmapper/apk/main</code></li>
+<li>Add a new repository with the address <code>https://pojntfx.github.io/connmapper//apk/main</code></li>
 <li>Search for <code>Connmapper (Main)</code> in F-Droid and tap on <code>Install</code></li>
 </ol>
 <p>Connmapper (Main) should now be installed and receive updates automatically.</p>
@@ -177,11 +177,11 @@
 <p>To install the prebuilt binary package, run the following:</p>
 <pre class="shell"><code>pkexec sudo bash - &lt;&lt;&#39;EOT&#39;
 mkdir -p /usr/local/share/keyrings
-curl -Lo https://pojntfx.github.io/connmapper/deb/debian/sid/x86_64/main/repo.asc | gpg --dearmor --output /usr/local/share/keyrings/com.pojtinger.felicitas.connmapper.main.gpg -
+curl -Lo https://pojntfx.github.io/connmapper//deb/debian/sid/x86_64/main/repo.asc | gpg --dearmor --output /usr/local/share/keyrings/com.pojtinger.felicitas.connmapper.main.gpg -
 
 cat &gt;/etc/apt/sources.list.d/com.pojtinger.felicitas.connmapper.main.list &lt;&lt;EOA
-deb [signed-by=/usr/local/share/keyrings/com.pojtinger.felicitas.connmapper.main.gpg] https://pojntfx.github.io/connmapper/deb/debian/sid/x86_64/main debian main
-deb-src [signed-by=/usr/local/share/keyrings/com.pojtinger.felicitas.connmapper.main.gpg] https://pojntfx.github.io/connmapper/deb/debian/sid/x86_64/main debian main
+deb [signed-by=/usr/local/share/keyrings/com.pojtinger.felicitas.connmapper.main.gpg] https://pojntfx.github.io/connmapper//deb/debian/sid/x86_64/main debian main
+deb-src [signed-by=/usr/local/share/keyrings/com.pojtinger.felicitas.connmapper.main.gpg] https://pojntfx.github.io/connmapper//deb/debian/sid/x86_64/main debian main
 EOA
 
 apt update
@@ -191,11 +191,11 @@ EOT</code></pre>
 <p>To install the source package, build the binary package locally and install it, run the following:</p>
 <pre class="shell"><code>pkexec sudo bash - &lt;&lt;&#39;EOT&#39;
 mkdir -p /usr/local/share/keyrings
-curl -Lo https://pojntfx.github.io/connmapper/deb/debian/sid/x86_64/mainrepo.asc | gpg --dearmor --output /usr/local/share/keyrings/com.pojtinger.felicitas.connmapper.main.gpg -
+curl -Lo https://pojntfx.github.io/connmapper//deb/debian/sid/x86_64/mainrepo.asc | gpg --dearmor --output /usr/local/share/keyrings/com.pojtinger.felicitas.connmapper.main.gpg -
 
 cat &gt;/etc/apt/sources.list.d/com.pojtinger.felicitas.connmapper.main.list &lt;&lt;EOA
-deb [signed-by=/usr/local/share/keyrings/com.pojtinger.felicitas.connmapper.main.gpg] https://pojntfx.github.io/connmapper/deb/debian/sid/x86_64/main debian main
-deb-src [signed-by=/usr/local/share/keyrings/com.pojtinger.felicitas.connmapper.main.gpg] https://pojntfx.github.io/connmapper/deb/debian/sid/x86_64/main debian main
+deb [signed-by=/usr/local/share/keyrings/com.pojtinger.felicitas.connmapper.main.gpg] https://pojntfx.github.io/connmapper//deb/debian/sid/x86_64/main debian main
+deb-src [signed-by=/usr/local/share/keyrings/com.pojtinger.felicitas.connmapper.main.gpg] https://pojntfx.github.io/connmapper//deb/debian/sid/x86_64/main debian main
 EOA
 
 apt update
@@ -210,7 +210,7 @@ EOT</code></pre>
 <section id="macos" data-number="0.3">
 <h2 data-number="1.3"><span class="header-section-number">1.3</span> macOS</h2>
 <ol type="1">
-<li>Download the <code>.app</code> from <a href="https://pojntfx.github.io/connmapper/dmg/main/com.pojtinger.felicitas.connmapper.main.darwin.dmg" class="uri">https://pojntfx.github.io/connmapper/dmg/main/com.pojtinger.felicitas.connmapper.main.darwin.dmg</a></li>
+<li>Download the <code>.app</code> from <a href="https://pojntfx.github.io/connmapper//dmg/main/com.pojtinger.felicitas.connmapper.main.darwin.dmg" class="uri">https://pojntfx.github.io/connmapper//dmg/main/com.pojtinger.felicitas.connmapper.main.darwin.dmg</a></li>
 <li>Mount <code>com.pojtinger.felicitas.connmapper.main.darwin.dmg</code> by opening it</li>
 <li>Drag <code>Connmapper (Main)</code> to the <code>Applications</code> folder</li>
 </ol>
@@ -219,14 +219,14 @@ EOT</code></pre>
 <section id="linux-universal-flatpak-on-amd64" data-number="0.4">
 <h2 data-number="1.4"><span class="header-section-number">1.4</span> Linux Universal (Flatpak) on <code>amd64</code></h2>
 <p>To install the package, run the following:</p>
-<pre class="shell"><code>flatpak remote-add &#39;com.pojtinger.felicitas.connmapper.main&#39; --from &#39;https://pojntfx.github.io/connmapper/flatpak/x86_64/main/hydrapp.flatpakrepo&#39;
+<pre class="shell"><code>flatpak remote-add &#39;com.pojtinger.felicitas.connmapper.main&#39; --from &#39;https://pojntfx.github.io/connmapper//flatpak/x86_64/main/hydrapp.flatpakrepo&#39;
 flatpak install -y &#39;com.pojtinger.felicitas.connmapper.main&#39;</code></pre>
 <p>Connmapper (Main) should now be installed and receive updates automatically.</p>
 </section>
 <section id="windows-on-amd64" data-number="0.5">
 <h2 data-number="1.5"><span class="header-section-number">1.5</span> Windows on <code>amd64</code></h2>
 <ol type="1">
-<li>Download the installer from <a href="https://pojntfx.github.io/connmapper/msi/x86_64/main/com.pojtinger.felicitas.connmapper.main.windows-x86_64.msi" class="uri">https://pojntfx.github.io/connmapper/msi/x86_64/main/com.pojtinger.felicitas.connmapper.main.windows-x86_64.msi</a></li>
+<li>Download the installer from <a href="https://pojntfx.github.io/connmapper//msi/x86_64/main/com.pojtinger.felicitas.connmapper.main.windows-x86_64.msi" class="uri">https://pojntfx.github.io/connmapper//msi/x86_64/main/com.pojtinger.felicitas.connmapper.main.windows-x86_64.msi</a></li>
 <li>Install the application by opening the downloaded file</li>
 </ol>
 <p>Connmapper (Main) should now be installed and receive updates automatically.</p>
@@ -235,12 +235,12 @@ flatpak install -y &#39;com.pojtinger.felicitas.connmapper.main&#39;</code></pre
 <h2 data-number="1.6"><span class="header-section-number">1.6</span> Fedora 37 on <code>amd64</code></h2>
 <p>To install the prebuilt binary package, run the following:</p>
 <pre class="shell"><code>pkexec sudo bash - &lt;&lt;&#39;EOT&#39;
-dnf config-manager --add-repo &#39;https://pojntfx.github.io/connmapper/rpm/fedora/37/x86_64/main/repodata/hydrapp.repo&#39;
+dnf config-manager --add-repo &#39;https://pojntfx.github.io/connmapper//rpm/fedora/37/x86_64/main/repodata/hydrapp.repo&#39;
 dnf install -y &#39;com.pojtinger.felicitas.connmapper.main&#39;
 EOT</code></pre>
 <p>To install the source package, build the binary package locally and install it, run the following:</p>
 <pre class="shell"><code>pkexec sudo bash - &lt;&lt;&#39;EOT&#39;
-dnf config-manager --add-repo &#39;https://pojntfx.github.io/connmapper/rpm/fedora/37/x86_64/main/repodata/hydrapp.repo&#39;
+dnf config-manager --add-repo &#39;https://pojntfx.github.io/connmapper//rpm/fedora/37/x86_64/main/repodata/hydrapp.repo&#39;
 
 dnf install -y rpm-build
 dnf download --source -y &#39;com.pojtinger.felicitas.connmapper.main&#39;
@@ -252,7 +252,7 @@ EOT</code></pre>
 </section>
 <section id="other-platforms" data-number="0.7">
 <h2 data-number="1.7"><span class="header-section-number">1.7</span> Other Platforms</h2>
-<p>Connmapper (Main) is also available as a single static binary. To install it, download the binary for your operating system and processor architecture from <a href="https://pojntfx.github.io/connmapper/binaries/main" class="uri">https://pojntfx.github.io/connmapper/binaries/main</a>. They include a self-update mechanism, so you should be receiving updates automatically.</p>
+<p>Connmapper (Main) is also available as a single static binary. To install it, download the binary for your operating system and processor architecture from <a href="https://pojntfx.github.io/connmapper//binaries/main" class="uri">https://pojntfx.github.io/connmapper//binaries/main</a>. They include a self-update mechanism, so you should be receiving updates automatically.</p>
 </section>
 </body>
 </html>
