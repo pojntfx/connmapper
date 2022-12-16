@@ -43,7 +43,7 @@ import {
 } from "@patternfly/react-table";
 import { bind } from "@pojntfx/dudirekta";
 import Papa from "papaparse";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import ReactGlobeGl from "react-globe.gl";
 import NewWindow from "react-new-window";
 import { useWindowSize } from "usehooks-ts";
@@ -55,6 +55,7 @@ import "./main.scss";
 const MAX_PACKET_CACHE_KEY = "latensee.maxPacketCache";
 const MAX_CONNECTIONS_CACHE_KEY = "latensee.maxConnectionsCache";
 const DB_PATH_KEY = "latensee.dbPath";
+const PACKETS_INTERVAL_KEY = "latensee.packetsInterval";
 
 interface ITracedConnection {
   layerType: string;
@@ -178,6 +179,11 @@ const App = () => {
   const [dbPath, setDbPath] = useState("");
   const [maxConnectionsCache, setMaxConnectionsCache] = useState(0);
   const [maxPacketCache, setMaxPacketCache] = useState(0);
+
+  const connectionsInterval = useRef(1000);
+  const packetsInterval = useRef(
+    parseInt(localStorage.getItem(PACKETS_INTERVAL_KEY) || "100")
+  );
 
   useEffect(() => {
     if (!ready) {
@@ -305,7 +311,7 @@ const App = () => {
             };
           })
         );
-      }, 1000);
+      }, connectionsInterval.current);
 
       return () => clearInterval(interval);
     }
@@ -343,6 +349,7 @@ const App = () => {
   const [isSettingsTransparent, setIsSettingsTransparent] = useState(true);
 
   const [showRestartWarning, setShowRestartWarning] = useState(false);
+  const [showReloadWarning, setShowReloadWarning] = useState(false);
 
   return ready ? (
     <>
@@ -359,8 +366,8 @@ const App = () => {
               />
             }
           >
-            The changes to the database path can only be applied with by
-            restarting the app.
+            Changes to the database path can only be applied with by restarting
+            the app.
             <Button
               variant="warning"
               isSmall
@@ -370,6 +377,33 @@ const App = () => {
             >
               {" "}
               Restart app
+            </Button>
+          </Alert>
+        )}
+
+        {!(!showReloadWarning || isSettingsOpen) && !showRestartWarning && (
+          <Alert
+            variant="info"
+            title="App reload required"
+            actionClose={
+              <AlertActionCloseButton
+                title="Close alert"
+                variantLabel="Close alert"
+                onClose={() => setShowReloadWarning(false)}
+              />
+            }
+          >
+            Changes to the polling duration can only be applied with by
+            reloading the app.
+            <Button
+              variant="primary"
+              isSmall
+              icon={<RedoIcon />}
+              onClick={() => window.location.reload()}
+              className="pf-u-mt-sm"
+            >
+              {" "}
+              Reload app
             </Button>
           </Alert>
         )}
@@ -520,6 +554,35 @@ const App = () => {
 
                 setDbPath(v);
                 setShowRestartWarning(true);
+              }}
+            />
+          </FormGroup>
+
+          <FormGroup
+            label="Packet polling interval (in milliseconds)"
+            isRequired
+            fieldId="packet-polling-interval"
+          >
+            <TextInput
+              isRequired
+              type="number"
+              id="packet-polling-interval"
+              name="packet-polling-interval"
+              defaultValue={packetsInterval.current}
+              onChange={(e) => {
+                const v = parseInt(e);
+
+                if (isNaN(v)) {
+                  console.error("Could not parse max connections cache");
+
+                  return;
+                }
+
+                packetsInterval.current = v;
+
+                localStorage.setItem(PACKETS_INTERVAL_KEY, v.toString());
+
+                setShowReloadWarning(true);
               }}
             />
           </FormGroup>
@@ -766,6 +829,7 @@ const App = () => {
                 setRegexErr={setRegexErr}
                 filteredPackets={filteredPackets}
                 setFilteredPackets={setFilteredPackets}
+                packetsInterval={packetsInterval}
               />
             </InWindowOrModal>
           )}
@@ -849,6 +913,7 @@ interface ITrafficTableProps {
   setRegexErr: (err: boolean) => void;
   filteredPackets: ITracedConnectionDetails[];
   setFilteredPackets: (packets: ITracedConnectionDetails[]) => void;
+  packetsInterval: React.MutableRefObject<number>;
 }
 
 const RealtimeTrafficTable: React.FC<ITrafficTableProps> = ({
@@ -858,6 +923,7 @@ const RealtimeTrafficTable: React.FC<ITrafficTableProps> = ({
   setRegexErr,
   filteredPackets,
   setFilteredPackets,
+  packetsInterval,
 }) => {
   const [packets, setPackets] = useState<ITracedConnectionDetails[]>([]);
 
@@ -872,7 +938,7 @@ const RealtimeTrafficTable: React.FC<ITrafficTableProps> = ({
           return p;
         })
       );
-    }, 100);
+    }, packetsInterval.current);
 
     return () => clearInterval(interval);
   }, []);
