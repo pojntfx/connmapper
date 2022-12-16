@@ -55,6 +55,7 @@ import "./main.scss";
 const MAX_PACKET_CACHE_KEY = "latensee.maxPacketCache";
 const MAX_CONNECTIONS_CACHE_KEY = "latensee.maxConnectionsCache";
 const DB_PATH_KEY = "latensee.dbPath";
+const CONNECTIONS_INTERVAL_KEY = "latensee.connectionsInterval";
 const PACKETS_INTERVAL_KEY = "latensee.packetsInterval";
 
 interface ITracedConnection {
@@ -180,7 +181,9 @@ const App = () => {
   const [maxConnectionsCache, setMaxConnectionsCache] = useState(0);
   const [maxPacketCache, setMaxPacketCache] = useState(0);
 
-  const connectionsInterval = useRef(1000);
+  const connectionsInterval = useRef(
+    parseInt(localStorage.getItem(CONNECTIONS_INTERVAL_KEY) || "1000")
+  );
   const packetsInterval = useRef(
     parseInt(localStorage.getItem(PACKETS_INTERVAL_KEY) || "100")
   );
@@ -573,7 +576,7 @@ const App = () => {
                 const v = parseInt(e);
 
                 if (isNaN(v)) {
-                  console.error("Could not parse max connections cache");
+                  console.error("Could not parse packet polling interval");
 
                   return;
                 }
@@ -581,6 +584,35 @@ const App = () => {
                 packetsInterval.current = v;
 
                 localStorage.setItem(PACKETS_INTERVAL_KEY, v.toString());
+
+                setShowReloadWarning(true);
+              }}
+            />
+          </FormGroup>
+
+          <FormGroup
+            label="Connections polling interval (in milliseconds)"
+            isRequired
+            fieldId="connections-polling-interval"
+          >
+            <TextInput
+              isRequired
+              type="number"
+              id="connections-polling-interval"
+              name="connections-polling-interval"
+              defaultValue={connectionsInterval.current}
+              onChange={(e) => {
+                const v = parseInt(e);
+
+                if (isNaN(v)) {
+                  console.error("Could not parse connections polling interval");
+
+                  return;
+                }
+
+                packetsInterval.current = v;
+
+                localStorage.setItem(CONNECTIONS_INTERVAL_KEY, v.toString());
 
                 setShowReloadWarning(true);
               }}
