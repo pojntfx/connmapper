@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -23,6 +24,10 @@ import (
 	"github.com/pojntfx/hydrapp/hydrapp-utils/pkg/update"
 	uutils "github.com/pojntfx/hydrapp/hydrapp-utils/pkg/utils"
 	"nhooyr.io/websocket"
+)
+
+const (
+	flatpakSpawnCmd = "flatpak-spawn"
 )
 
 func lookupLocation(db *geoip2.Reader, ip net.IP) (
@@ -165,7 +170,12 @@ func (l *local) RestartApp(ctx context.Context, fixPermissions bool) error {
 	if fixPermissions {
 		switch runtime.GOOS {
 		case "linux":
-			if err := utils.RunElevatedCommand(fmt.Sprintf("setcap cap_net_raw,cap_net_admin=eip %v", bin)); err != nil {
+			cmd := fmt.Sprintf("setcap cap_net_raw,cap_net_admin=eip %v", bin)
+			if _, err := exec.LookPath(flatpakSpawnCmd); err == nil {
+				cmd = flatpakSpawnCmd + " --host " + cmd
+			}
+
+			if err := utils.RunElevatedCommand(cmd); err != nil {
 				return err
 			}
 		default:

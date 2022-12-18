@@ -14,6 +14,7 @@ finish-args:
   - --socket=wayland
   - --device=dri
   - --filesystem=/tmp:rw
+  - --talk-name=org.freedesktop.Flatpak # Allow for flatpak-spawn --host
 modules:
   - name: libpcap
     sources:
