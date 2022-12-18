@@ -32,12 +32,13 @@ jobs:
             exclude: apk|deb|flatpak|msi|rpm|binaries|tests
             tag: main
             dst: out/*
-          - id: hydrapp-flatpak.com.pojtinger.felicitas.connmapper
-            src: .
-            pkg: .
-            exclude: apk|deb|dmg|msi|rpm|binaries|tests
-            tag: main
-            dst: out/*
+          # Disable Flatpak due to "Error opening file /proc/sys/net/ipv4/route/flush: Permission denied"
+          # - id: hydrapp-flatpak.com.pojtinger.felicitas.connmapper
+          #   src: .
+          #   pkg: .
+          #   exclude: apk|deb|dmg|msi|rpm|binaries|tests
+          #   tag: main
+          #   dst: out/*
           # Disable MSI due to build freeze
           # - id: hydrapp-msi.com.pojtinger.felicitas.connmapper
           #   src: .
