@@ -4,20 +4,20 @@ Binary: com.pojtinger.felicitas.connmapper.main com.pojtinger.felicitas.connmapp
 Architecture: amd64 source
 Version: 0.0.1
 Checksums-Md5:
- 49f2090d3259890e5c814414ac2d6489 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
+ 5a6643f5b15869adf26f83b6c9352d36 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
  7da0afaf2c6905efe43f2d6a45f78f65 2970896 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
  4982f7ce9e88d354be39b07db0a09e95 22380620 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
 Checksums-Sha1:
- a5d2809a8ae3c4d08283bf98dab871a268c83fde 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
+ 9b3b35e2756e97526ffeb1d7c4ced064bf8993df 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
  0f95403aceebbf83418f5ffdd3f4acb3b42a266b 2970896 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
  09ee3b996b64d12c7d01af4e2264bd7331132b68 22380620 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
 Checksums-Sha256:
- 8f37e529dca8595e20b3bede2c82061a1af927b454a7f61da812ac20ba67e9f9 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
+ 95fe62d8d6482f37cea6ae35c3491eec379507a45b1cb5cde385bd284354fdf8 1042 com.pojtinger.felicitas.connmapper.main_0.0.1.dsc
  8d0542ff95551eb1f7c4d89b3f649744e0cfd164653f2de4d37403c198fc282a 2970896 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.1_amd64.deb
  280bc0d1a823542ad72cfcf21b86626ef527b36994344411682002f3b59966a6 22380620 com.pojtinger.felicitas.connmapper.main_0.0.1_amd64.deb
 Build-Origin: Debian
 Build-Architecture: amd64
-Build-Date: Sun, 18 Dec 2022 23:08:30 +0000
+Build-Date: Mon, 19 Dec 2022 00:33:58 +0000
 Build-Path: /build/com.pojtinger.felicitas.connmapper.main-0.0.1
 Installed-Build-Depends:
  appstream-util (= 0.8.2-1),
