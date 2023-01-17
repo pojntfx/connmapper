@@ -98,6 +98,7 @@ type local struct {
 	maxPacketCache      int
 	maxConnectionsCache int
 	dbPath              string
+	dbDownloadURL       string
 
 	Peers func() map[string]remote
 }
@@ -124,6 +125,16 @@ func (l *local) SetMaxPacketCache(ctx context.Context, packetCache int) error {
 
 func (l *local) GetMaxPacketCache(ctx context.Context) (int, error) {
 	return l.maxPacketCache, nil
+}
+
+func (l *local) SetDBDownloadURL(ctx context.Context, dbDownloadURL string) error {
+	l.dbDownloadURL = dbDownloadURL
+
+	return nil
+}
+
+func (l *local) GetDBDownloadURL(ctx context.Context) (string, error) {
+	return l.dbDownloadURL, nil
 }
 
 func (l *local) SetMaxConnectionsCache(ctx context.Context, maxConnectionsCache int) error {
@@ -430,6 +441,7 @@ func StartServer(ctx context.Context, addr string, heartbeat time.Duration, loca
 		maxPacketCache:      100,
 		maxConnectionsCache: 1000000,
 		dbPath:              dbPath,
+		dbDownloadURL:       "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City&suffix=tar.gz",
 	}
 	registry := rpc.NewRegistry(
 		l,

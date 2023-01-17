@@ -55,6 +55,7 @@ import "./main.scss";
 const MAX_PACKET_CACHE_KEY = "latensee.maxPacketCache";
 const MAX_CONNECTIONS_CACHE_KEY = "latensee.maxConnectionsCache";
 const DB_PATH_KEY = "latensee.dbPath";
+const DB_DOWNLOAD_URL_KEY = "latensee.dbDownloadUrl";
 const CONNECTIONS_INTERVAL_KEY = "latensee.connectionsInterval";
 const PACKETS_INTERVAL_KEY = "latensee.packetsInterval";
 
@@ -99,6 +100,8 @@ const getTracedConnectionID = (connection: ITracedConnection) =>
 
 const App = () => {
   const [remote, setRemote] = useState({
+    CheckDatabase: async (): Promise<boolean> => false,
+    DownloadDatabase: async (licenseKey: string): Promise<void> => {},
     ListDevices: async (): Promise<string[]> => [],
     TraceDevice: async (name: string): Promise<void> => {},
     GetConnections: async (): Promise<ITracedConnection[]> => [],
@@ -112,6 +115,8 @@ const App = () => {
     GetMaxConnectionsCache: async (): Promise<number> => 0,
     SetDBPath: async (dbPath: string): Promise<void> => {},
     GetDBPath: async (): Promise<string> => "",
+    SetDBDownloadURL: async (dbDownloadURL: string): Promise<void> => {},
+    GetDBDownloadURL: async (): Promise<string> => "",
     RestartApp: async (fixPermissions: boolean): Promise<void> => {},
   });
 
@@ -180,6 +185,7 @@ const App = () => {
   const [dbPath, setDbPath] = useState("");
   const [maxConnectionsCache, setMaxConnectionsCache] = useState(0);
   const [maxPacketCache, setMaxPacketCache] = useState(0);
+  const [dbDownloadURL, setDBDownloadURL] = useState("");
 
   const connectionsInterval = useRef(
     parseInt(localStorage.getItem(CONNECTIONS_INTERVAL_KEY) || "1000")
@@ -205,14 +211,22 @@ const App = () => {
 
       setDbPath(localStorage.getItem(DB_PATH_KEY) || "");
 
+      setDBDownloadURL(localStorage.getItem(DB_DOWNLOAD_URL_KEY) || "");
+
       // Rehydrate from server and fetch devices
-      const [newDevices, newDBPath, newMaxConnectionsCache, newMaxPacketCache] =
-        await Promise.all([
-          remote.ListDevices(),
-          remote.GetDBPath(),
-          remote.GetMaxConnectionsCache(),
-          remote.GetMaxPacketCache(),
-        ]);
+      const [
+        newDevices,
+        newDBPath,
+        newMaxConnectionsCache,
+        newMaxPacketCache,
+        newDBDownloadURL,
+      ] = await Promise.all([
+        remote.ListDevices(),
+        remote.GetDBPath(),
+        remote.GetMaxConnectionsCache(),
+        remote.GetMaxPacketCache(),
+        remote.GetDBDownloadURL(),
+      ]);
 
       setDevices(newDevices);
 
@@ -229,6 +243,12 @@ const App = () => {
 
       if (parseInt(localStorage.getItem(MAX_PACKET_CACHE_KEY) || "0") <= 0) {
         setMaxPacketCache(newMaxPacketCache);
+      }
+
+      if (
+        (localStorage.getItem(DB_DOWNLOAD_URL_KEY) || "").trim().length <= 0
+      ) {
+        setDBDownloadURL(newDBDownloadURL);
       }
     })();
   }, [ready]);
@@ -271,6 +291,18 @@ const App = () => {
       await remote.SetDBPath(dbPath);
     })();
   }, [ready, dbPath]);
+
+  useEffect(() => {
+    if (!ready || dbDownloadURL.trim().length <= 0) {
+      return;
+    }
+
+    localStorage.setItem(DB_DOWNLOAD_URL_KEY, dbDownloadURL);
+
+    (async () => {
+      await remote.SetDBDownloadURL(dbDownloadURL);
+    })();
+  }, [ready, dbDownloadURL]);
 
   const [deviceSelectorIsOpen, setDeviceSelectorIsOpen] = useState(false);
   const [selectedDevice, setSelectedDevice] = useState("");
@@ -535,11 +567,7 @@ const App = () => {
             />
           </FormGroup>
 
-          <FormGroup
-            label="GeoLite2 database path"
-            isRequired
-            fieldId="db-path"
-          >
+          <FormGroup label="GeoLite2 DB path" isRequired fieldId="db-path">
             <TextInput
               isRequired
               type="text"
@@ -556,6 +584,32 @@ const App = () => {
                 }
 
                 setDbPath(v);
+                setShowRestartWarning(true);
+              }}
+            />
+          </FormGroup>
+
+          <FormGroup
+            label="GeoLite2 DB download URL"
+            isRequired
+            fieldId="db-download-url"
+          >
+            <TextInput
+              isRequired
+              type="text"
+              id="db-download-url"
+              name="db-download-url"
+              value={dbDownloadURL}
+              onChange={(e) => {
+                const v = e.trim();
+
+                if (v.length <= 0) {
+                  console.error("Could not work with download URL");
+
+                  return;
+                }
+
+                setDBDownloadURL(v);
                 setShowRestartWarning(true);
               }}
             />
