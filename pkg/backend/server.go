@@ -1,14 +1,19 @@
 package backend
 
 import (
+	"archive/tar"
+	"compress/gzip"
 	"context"
+	"errors"
 	"fmt"
+	"io"
 	"log"
 	"net"
 	"net/http"
 	"net/url"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -24,6 +29,10 @@ import (
 	"github.com/pojntfx/hydrapp/hydrapp-utils/pkg/update"
 	uutils "github.com/pojntfx/hydrapp/hydrapp-utils/pkg/utils"
 	"nhooyr.io/websocket"
+)
+
+var (
+	ErrDatabaseNotInArchive = errors.New("database not in archive")
 )
 
 const (
@@ -101,6 +110,78 @@ type local struct {
 	dbDownloadURL       string
 
 	Peers func() map[string]remote
+}
+
+func (l *local) CheckDatabase(ctx context.Context) (bool, error) {
+	if _, err := os.Stat(l.dbPath); err != nil {
+		return true, nil
+	}
+
+	return false, nil
+}
+
+func (l *local) DownloadDatabase(licenseKey string) error {
+	if err := os.MkdirAll(path.Dir(l.dbPath), os.ModePerm); err != nil {
+		return err
+	}
+
+	u, err := url.Parse(l.dbDownloadURL)
+	if err != nil {
+		return err
+	}
+
+	q := u.Query()
+	q.Set("license_key", licenseKey)
+	u.RawQuery = q.Encode()
+
+	hr, err := http.Get(u.String())
+	if err != nil {
+		return err
+	}
+	if hr.Body != nil {
+		defer hr.Body.Close()
+	}
+
+	gr, err := gzip.NewReader(hr.Body)
+	if err != nil {
+		return err
+	}
+	defer gr.Close()
+
+	tr := tar.NewReader(gr)
+	found := false
+	for {
+		hdr, err := tr.Next()
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+
+			return err
+		}
+
+		if !strings.HasSuffix(hdr.Name, ".mmdb") {
+			continue
+		}
+
+		out, err := os.Create(filepath.Join(l.dbPath, hdr.Name))
+		if err != nil {
+			return err
+		}
+		defer out.Close()
+
+		if _, err := io.Copy(out, tr); err != nil {
+			return err
+		}
+
+		found = true
+	}
+
+	if !found {
+		return ErrDatabaseNotInArchive
+	}
+
+	return nil
 }
 
 func (l *local) ListDevices(ctx context.Context) ([]string, error) {
