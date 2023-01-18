@@ -12,6 +12,7 @@ import {
   Select,
   SelectOption,
   SelectVariant,
+  Spinner,
   TextInput,
   Title,
   ToggleGroup,
@@ -977,7 +978,21 @@ const App = () => {
       )}
     </>
   ) : (
-    <span>"Loading ..."</span>
+    <Flex
+      className="pf-u-p-md pf-u-h-100"
+      spaceItems={{ default: "spaceItemsMd" }}
+      direction={{ default: "column" }}
+      justifyContent={{ default: "justifyContentCenter" }}
+      alignItems={{ default: "alignItemsCenter" }}
+    >
+      <FlexItem>
+        <Spinner isSVG aria-label="Loading spinner" />
+      </FlexItem>
+
+      <FlexItem className="pf-x-c-spinner-description--main">
+        <Title headingLevel="h1">Connecting to backend ...</Title>
+      </FlexItem>
+    </Flex>
   );
 };
 
