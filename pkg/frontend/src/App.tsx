@@ -387,6 +387,9 @@ const App = () => {
   const [showRestartWarning, setShowRestartWarning] = useState(false);
   const [showReloadWarning, setShowReloadWarning] = useState(false);
 
+  const [isDBDownloadRequired, setIsDBDownloadRequired] = useState(false);
+  const [licenseKey, setLicenseKey] = useState("");
+
   return ready ? (
     <>
       <AlertGroup isToast isLiveRegion>
@@ -445,7 +448,63 @@ const App = () => {
         )}
       </AlertGroup>
 
-      {!isSettingsOpen && (
+      <Modal
+        isOpen={isDBDownloadRequired}
+        className="pf-u-mt-0 pf-u-mb-0 pf-c-modal-box--db-download"
+        showClose={false}
+        aria-labelledby="db-download-modal-title"
+        header={
+          <div className="pf-u-pl-lg pf-u-pt-md pf-u-pb-0 pf-u-pr-md">
+            <Title id="db-download-modal-title" headingLevel="h1">
+              Database Download
+            </Title>
+          </div>
+        }
+        actions={[
+          <Button key={1} variant="primary" form="db-download" type="submit">
+            Download database
+          </Button>,
+        ]}
+      >
+        <Form
+          id="db-download"
+          onSubmit={(e) => {
+            e.preventDefault();
+
+            if (licenseKey.trim().length <= 0) {
+              return;
+            }
+
+            // TODO: Call download RPC
+
+            setIsDBDownloadRequired(false);
+          }}
+          noValidate={false}
+        >
+          <FormGroup label="License key" isRequired fieldId="license-id">
+            <TextInput
+              isRequired
+              type="text"
+              id="license-id"
+              name="license-id"
+              value={licenseKey}
+              onChange={(e) => {
+                const v = e.trim();
+
+                if (v.length <= 0) {
+                  console.error("Could not work with empty license key");
+
+                  return;
+                }
+
+                setLicenseKey(v);
+              }}
+            />
+          </FormGroup>
+        </Form>
+      </Modal>
+
+      {!isDBDownloadRequired && !isSettingsOpen && (
         <Button
           variant="plain"
           aria-label="Settings"
@@ -517,6 +576,7 @@ const App = () => {
             e.preventDefault();
             setIsSettingsOpen(false);
           }}
+          noValidate={false}
         >
           <FormGroup
             label="Maximum packet cache length"
@@ -605,7 +665,7 @@ const App = () => {
                 const v = e.trim();
 
                 if (v.length <= 0) {
-                  console.error("Could not work with download URL");
+                  console.error("Could not work with empty download URL");
 
                   return;
                 }
@@ -922,59 +982,63 @@ const App = () => {
           )}
         </>
       ) : (
-        <Flex
-          className="pf-u-p-lg pf-u-h-100"
-          spaceItems={{ default: "spaceItemsMd" }}
-          direction={{ default: "column" }}
-          justifyContent={{ default: "justifyContentCenter" }}
-          alignItems={{ default: "alignItemsCenter" }}
-        >
-          <FlexItem className="pf-x-c-title">
-            <Title headingLevel="h1">Connmapper</Title>
-          </FlexItem>
+        !isDBDownloadRequired && (
+          <Flex
+            className="pf-u-p-lg pf-u-h-100"
+            spaceItems={{ default: "spaceItemsMd" }}
+            direction={{ default: "column" }}
+            justifyContent={{ default: "justifyContentCenter" }}
+            alignItems={{ default: "alignItemsCenter" }}
+          >
+            <FlexItem className="pf-x-c-title">
+              <Title headingLevel="h1">Connmapper</Title>
+            </FlexItem>
 
-          <FlexItem>
-            <Flex direction={{ default: "row" }}>
-              <FlexItem>
-                <Select
-                  variant={SelectVariant.single}
-                  isOpen={deviceSelectorIsOpen}
-                  onToggle={(isOpen) => setDeviceSelectorIsOpen(isOpen)}
-                  selections={selectedDevice}
-                  onSelect={(_, selection) => {
-                    setSelectedDevice(selection.toString());
-                    setDeviceSelectorIsOpen(false);
-                  }}
-                >
-                  {devices.map((d, i) => (
-                    <SelectOption value={d} key={i}>
-                      {d}
-                    </SelectOption>
-                  ))}
-                </Select>
-              </FlexItem>
+            <FlexItem>
+              <Flex direction={{ default: "row" }}>
+                <FlexItem>
+                  <Select
+                    variant={SelectVariant.single}
+                    isOpen={deviceSelectorIsOpen}
+                    onToggle={(isOpen) => setDeviceSelectorIsOpen(isOpen)}
+                    selections={selectedDevice}
+                    onSelect={(_, selection) => {
+                      setSelectedDevice(selection.toString());
+                      setDeviceSelectorIsOpen(false);
+                    }}
+                  >
+                    {devices.map((d, i) => (
+                      <SelectOption value={d} key={i}>
+                        {d}
+                      </SelectOption>
+                    ))}
+                  </Select>
+                </FlexItem>
 
-              <FlexItem>
-                <Button
-                  variant="primary"
-                  onClick={() => {
-                    (async () => {
-                      try {
-                        await remote.TraceDevice(selectedDevice || devices[0]);
+                <FlexItem>
+                  <Button
+                    variant="primary"
+                    onClick={() => {
+                      (async () => {
+                        try {
+                          await remote.TraceDevice(
+                            selectedDevice || devices[0]
+                          );
 
-                        setTracing(true);
-                      } catch (e) {
-                        alert((e as Error).message);
-                      }
-                    })();
-                  }}
-                >
-                  Trace device
-                </Button>
-              </FlexItem>
-            </Flex>
-          </FlexItem>
-        </Flex>
+                          setTracing(true);
+                        } catch (e) {
+                          alert((e as Error).message);
+                        }
+                      })();
+                    }}
+                  >
+                    Trace device
+                  </Button>
+                </FlexItem>
+              </Flex>
+            </FlexItem>
+          </Flex>
+        )
       )}
     </>
   ) : (
