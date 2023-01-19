@@ -124,6 +124,7 @@ body {
   }
 
   &--db-download {
+    height: auto !important;
     max-width: 40rem !important;
   }
 }
