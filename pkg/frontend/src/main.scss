@@ -146,3 +146,9 @@ body {
   position: relative;
   color: var(--pf-global--Color--light-100);
 }
+
+.pf-c-spinner--button {
+  --pf-c-spinner--Color: var(--pf-global--Color--light-100) !important;
+  height: 10pt !important;
+  margin-left: -0.3rem !important;
+}

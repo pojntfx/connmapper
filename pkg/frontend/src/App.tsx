@@ -397,6 +397,7 @@ const App = () => {
   const [showReloadWarning, setShowReloadWarning] = useState(false);
 
   const [licenseKey, setLicenseKey] = useState("");
+  const [dbIsDownloading, setDBIsDownloading] = useState(false);
 
   const handleExternalLink = useCallback(
     (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -484,7 +485,21 @@ const App = () => {
           </div>
         }
         actions={[
-          <Button key={1} variant="primary" form="db-download" type="submit">
+          <Button
+            key={1}
+            variant="primary"
+            form="db-download"
+            type="submit"
+            disabled={dbIsDownloading}
+          >
+            {dbIsDownloading && (
+              <Spinner
+                isSVG
+                size="md"
+                aria-label="Database download spinner"
+                className="pf-c-spinner--button"
+              />
+            )}{" "}
             Download database
           </Button>,
         ]}
@@ -516,16 +531,26 @@ const App = () => {
               return;
             }
 
-            // TODO: Call download RPC
+            (async () => {
+              try {
+                setDBIsDownloading(true);
 
-            setIsDBDownloadRequired(false);
+                await remote.DownloadDatabase(licenseKey);
+
+                setDBIsDownloading(false);
+
+                setIsDBDownloadRequired(false);
+              } catch (e) {
+                alert((e as Error).message);
+              }
+            })();
           }}
           noValidate={false}
         >
           <FormGroup label="License key" isRequired fieldId="license-id">
             <TextInput
               isRequired
-              type="text"
+              type="password"
               id="license-id"
               name="license-id"
               value={licenseKey}
