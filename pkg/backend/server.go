@@ -20,6 +20,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/cli/browser"
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
 	"github.com/google/gopacket/pcap"
@@ -110,6 +111,10 @@ type local struct {
 	dbDownloadURL       string
 
 	Peers func() map[string]remote
+}
+
+func (l *local) OpenExternalLink(ctx context.Context, url string) error {
+	return browser.OpenURL(url)
 }
 
 func (l *local) CheckDatabase(ctx context.Context) (bool, error) {

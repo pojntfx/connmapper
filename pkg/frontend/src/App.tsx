@@ -13,7 +13,10 @@ import {
   SelectOption,
   SelectVariant,
   Spinner,
+  Text,
+  TextContent,
   TextInput,
+  TextVariants,
   Title,
   ToggleGroup,
   ToggleGroupItem,
@@ -101,6 +104,7 @@ const getTracedConnectionID = (connection: ITracedConnection) =>
 
 const App = () => {
   const [remote, setRemote] = useState({
+    OpenExternalLink: async (url: string): Promise<void> => {},
     CheckDatabase: async (): Promise<boolean> => false,
     DownloadDatabase: async (licenseKey: string): Promise<void> => {},
     ListDevices: async (): Promise<string[]> => [],
@@ -187,6 +191,7 @@ const App = () => {
   const [maxConnectionsCache, setMaxConnectionsCache] = useState(0);
   const [maxPacketCache, setMaxPacketCache] = useState(0);
   const [dbDownloadURL, setDBDownloadURL] = useState("");
+  const [isDBDownloadRequired, setIsDBDownloadRequired] = useState(false);
 
   const connectionsInterval = useRef(
     parseInt(localStorage.getItem(CONNECTIONS_INTERVAL_KEY) || "1000")
@@ -221,12 +226,14 @@ const App = () => {
         newMaxConnectionsCache,
         newMaxPacketCache,
         newDBDownloadURL,
+        newIsDBDownloadRequired,
       ] = await Promise.all([
         remote.ListDevices(),
         remote.GetDBPath(),
         remote.GetMaxConnectionsCache(),
         remote.GetMaxPacketCache(),
         remote.GetDBDownloadURL(),
+        remote.CheckDatabase(),
       ]);
 
       setDevices(newDevices);
@@ -251,6 +258,8 @@ const App = () => {
       ) {
         setDBDownloadURL(newDBDownloadURL);
       }
+
+      setIsDBDownloadRequired(newIsDBDownloadRequired);
     })();
   }, [ready]);
 
@@ -387,8 +396,22 @@ const App = () => {
   const [showRestartWarning, setShowRestartWarning] = useState(false);
   const [showReloadWarning, setShowReloadWarning] = useState(false);
 
-  const [isDBDownloadRequired, setIsDBDownloadRequired] = useState(false);
   const [licenseKey, setLicenseKey] = useState("");
+
+  const handleExternalLink = useCallback(
+    (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+      e.preventDefault();
+
+      (async () => {
+        try {
+          await remote.OpenExternalLink((e.target as HTMLAnchorElement).href);
+        } catch (e) {
+          alert((e as Error).message);
+        }
+      })();
+    },
+    [remote]
+  );
 
   return ready ? (
     <>
@@ -466,6 +489,24 @@ const App = () => {
           </Button>,
         ]}
       >
+        <TextContent className="pf-u-mb-md">
+          <Text component={TextVariants.p}>
+            Connmapper requires the GeoLite2 City database to resolve IP
+            addresses to their physical location, which you have not downloaded
+            yet. Please grab your free license key by visiting{" "}
+            <Text
+              component={TextVariants.a}
+              href="https://support.maxmind.com/hc/en-us/articles/4407111582235-Generate-a-License-Key"
+              target="_blank"
+              onAuxClick={handleExternalLink}
+              onClick={handleExternalLink}
+            >
+              support.maxmind.com
+            </Text>{" "}
+            and enter it below:
+          </Text>
+        </TextContent>
+
         <Form
           id="db-download"
           onSubmit={(e) => {
@@ -574,6 +615,7 @@ const App = () => {
           id="settings"
           onSubmit={(e) => {
             e.preventDefault();
+
             setIsSettingsOpen(false);
           }}
           noValidate={false}

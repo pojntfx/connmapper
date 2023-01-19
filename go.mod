@@ -3,6 +3,7 @@ module github.com/pojntfx/connmapper
 go 1.18
 
 require (
+	github.com/cli/browser v1.1.0
 	github.com/google/gopacket v1.1.19
 	github.com/oschwald/geoip2-golang v1.8.0
 	github.com/pojntfx/dudirekta v0.3.0
