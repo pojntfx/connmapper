@@ -1,5 +1,7 @@
 ## Connmapper
 
+![Logo](./docs/logo-readme.png)
+
 System internet connection visualizer.
 
 [![hydrapp CI](https://github.com/pojntfx/connmapper/actions/workflows/hydrapp.yaml/badge.svg)](https://github.com/pojntfx/connmapper/actions/workflows/hydrapp.yaml)
