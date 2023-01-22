@@ -54,6 +54,7 @@ import { useWindowSize } from "usehooks-ts";
 import earthTexture from "./8k_earth_nightmap.jpg";
 import earthElevation from "./8k_earth_normal_map.png";
 import universeTexture from "./8k_stars_milky_way.jpg";
+import logoDark from "./logo-dark.png";
 import "./main.scss";
 
 const MAX_PACKET_CACHE_KEY = "latensee.maxPacketCache";
@@ -1058,7 +1059,13 @@ const App = () => {
             alignItems={{ default: "alignItemsCenter" }}
           >
             <FlexItem className="pf-x-c-title">
-              <Title headingLevel="h1">Connmapper</Title>
+              {/* <Title headingLevel="h1">Connmapper</Title> */}
+
+              <img
+                src={logoDark}
+                alt="Connmapper logo"
+                className="pf-u-mb-xs pf-x-c-logo"
+              />
             </FlexItem>
 
             <FlexItem>
