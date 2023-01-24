@@ -1,7 +1,7 @@
 {
   "name": "com.pojtinger.felicitas.connmapper",
   "version": "0.0.1",
-  "description": "Visualize your system's internet connections on a world map.",
+  "description": "Visualize your system's internet connections on a globe.",
   "type": "module",
   "scripts": {
     "dev": "BUILD_PATH=out react-scripts start",
