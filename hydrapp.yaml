@@ -2,7 +2,7 @@ app:
   id: com.pojtinger.felicitas.connmapper
   name: Connmapper
   summary: System internet connection visualizer
-  description: Visualize your system's internet connections on a world map.
+  description: Visualize your system's internet connections on a globe.
   license: AGPL-3.0-or-later
   homepage: https://github.com/pojntfx/connmapper
   git: https://github.com/pojntfx/connmapper.git
