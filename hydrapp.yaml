@@ -14,8 +14,8 @@ go:
   tests: go test ./...
   img: ghcr.io/pojntfx/hydrapp-build-tests:main
 releases:
-  - version: 0.0.1
-    date: 2022-12-04T01:11:18.891410607+01:00
+  - version: 0.1.0
+    date: 2023-01-24T01:11:18.891410607+01:00
     description: Initial release
     author: Felicitas Pojtinger
     email: felicitas@pojtinger.com

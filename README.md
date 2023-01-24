@@ -23,7 +23,7 @@ It enables you to ...
 
 ## Installation
 
-See [INSTALLATION.html](https://pojntfx.github.io/connmapper/docs/main/INSTALLATION.html).
+See [INSTALLATION.html](https://pojntfx.github.io/connmapper/docs/stable/INSTALLATION.html).
 
 ## Usage
 
