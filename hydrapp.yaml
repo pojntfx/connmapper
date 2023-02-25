@@ -14,6 +14,11 @@ go:
   tests: go test ./...
   img: ghcr.io/pojntfx/hydrapp-build-tests:main
 releases:
+  - version: 0.1.1
+    date: 2023-02-26T00:32:18.891410607+01:00
+    description: Bump Hydrapp version
+    author: Felicitas Pojtinger
+    email: felicitas@pojtinger.com
   - version: 0.1.0
     date: 2023-01-24T01:11:18.891410607+01:00
     description: Initial release
