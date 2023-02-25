@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "BUILD_PATH=out react-scripts start",
-    "build": "BUILD_PATH=out react-scripts build; cp ../../icon.png out"
+    "build": "BUILD_PATH=out react-scripts build; cp ../../icon.png out/icon.png"
   },
   "keywords": [],
   "author": "Felicitas Pojtinger <felicitas@pojtinger.com>",

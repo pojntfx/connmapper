@@ -91,8 +91,6 @@ All arguments passed to the binary will be forwarded to the browser used to disp
 - [google/gopacket](https://github.com/google/gopacket) provides the library that the packets are being parsed with.
 - [oschwald/geoip2-golang](https://github.com/oschwald/geoip2-golang) provides the library for reading the GeoIP2 database.
 
-To all the rest of the authors who worked on the dependencies used: **Thanks a lot!**
-
 ## Contributing
 
 To contribute, please use the [GitHub flow](https://guides.github.com/introduction/flow/) and follow our [Code of Conduct](./CODE_OF_CONDUCT.md).
@@ -101,7 +99,7 @@ To build and start a development version of Connmapper locally, run the followin
 
 ```shell
 $ git clone https://github.com/pojntfx/connmapper.git
-$ cd myapp
+$ cd connmapper
 $ go generate ./...
 $ go install .
 # Linux

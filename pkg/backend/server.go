@@ -25,10 +25,10 @@ import (
 	"github.com/google/gopacket/layers"
 	"github.com/google/gopacket/pcap"
 	"github.com/oschwald/geoip2-golang"
-	"github.com/pojntfx/connmapper/pkg/utils"
+	uutils "github.com/pojntfx/connmapper/pkg/utils"
 	"github.com/pojntfx/dudirekta/pkg/rpc"
-	"github.com/pojntfx/hydrapp/hydrapp-utils/pkg/update"
-	uutils "github.com/pojntfx/hydrapp/hydrapp-utils/pkg/utils"
+	"github.com/pojntfx/hydrapp/hydrapp/pkg/update"
+	"github.com/pojntfx/hydrapp/hydrapp/pkg/utils"
 	"nhooyr.io/websocket"
 )
 
@@ -272,24 +272,24 @@ func (l *local) RestartApp(ctx context.Context, fixPermissions bool) error {
 				cmd = flatpakSpawnCmd + " --host " + cmd
 			}
 
-			if err := utils.RunElevatedCommand(cmd); err != nil {
+			if err := uutils.RunElevatedCommand(cmd); err != nil {
 				return err
 			}
 		default:
-			if err := utils.RunElevatedCommand(fmt.Sprintf("%v %v", bin, strings.Join(os.Args, " "))); err != nil {
+			if err := uutils.RunElevatedCommand(fmt.Sprintf("%v %v", bin, strings.Join(os.Args, " "))); err != nil {
 				return err
 			}
 		}
 	}
 
-	if err := uutils.ForkExec(
+	if err := utils.ForkExec(
 		bin,
 		os.Args,
 	); err != nil {
 		return err
 	}
 
-	if err := utils.KillBrowser(l.browserState); err != nil {
+	if err := uutils.KillBrowser(l.browserState); err != nil {
 		return err
 	}
 
@@ -618,7 +618,7 @@ func StartServer(ctx context.Context, addr string, heartbeat time.Duration, loca
 	}
 
 	if localhostize {
-		return uutils.Localhostize(url.String()), listener.Close, nil
+		return utils.Localhostize(url.String()), listener.Close, nil
 	}
 
 	return url.String(), listener.Close, nil
