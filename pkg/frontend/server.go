@@ -12,7 +12,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/pojntfx/hydrapp/hydrapp-utils/pkg/utils"
+	"github.com/pojntfx/hydrapp/hydrapp/pkg/utils"
 )
 
 var (

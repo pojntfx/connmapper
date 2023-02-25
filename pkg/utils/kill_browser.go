@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"syscall"
 
-	"github.com/pojntfx/hydrapp/hydrapp-utils/pkg/update"
+	"github.com/pojntfx/hydrapp/hydrapp/pkg/update"
 )
 
 func KillBrowser(browserState *update.BrowserState) error {
