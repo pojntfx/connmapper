@@ -1,0 +1,25 @@
+Format: 1.8
+Date: Sun, 26 Feb 2023 00:32:18 +0100
+Source: com.pojtinger.felicitas.connmapper.main
+Architecture: source
+Version: 0.1.1
+Distribution: unstable
+Urgency: medium
+Maintainer: Felicitas Pojtinger <felicitas@pojtinger.com>
+Changed-By: Felicitas Pojtinger <felicitas@pojtinger.com>
+Changes:
+ com.pojtinger.felicitas.connmapper.main (0.1.1) unstable; urgency=medium
+ .
+   * Bump Hydrapp version
+Checksums-Sha1:
+ 176d440fd4632d496ea663751396df215e9b55af 1042 com.pojtinger.felicitas.connmapper.main_0.1.1.dsc
+ bb595be17db16ffd89e43c0cbf80769f4a5120bd 32516400 com.pojtinger.felicitas.connmapper.main_0.1.1.tar.xz
+ 3a12f65c13fb305e122360b9e98463acf14822a0 21233 com.pojtinger.felicitas.connmapper.main_0.1.1_amd64.buildinfo
+Checksums-Sha256:
+ 5116f7883cb43d806a8e358a0488c08989b7efb0da4deff960e4a98614ffc5a7 1042 com.pojtinger.felicitas.connmapper.main_0.1.1.dsc
+ 538a7b513b6bece9d8efd38795596d7b8fe2186331ef03f648d38d0608e6abce 32516400 com.pojtinger.felicitas.connmapper.main_0.1.1.tar.xz
+ 689c560883d6e517b2f085ffb0ca739f89f5217d40eb01462bbea580a649d3e7 21233 com.pojtinger.felicitas.connmapper.main_0.1.1_amd64.buildinfo
+Files:
+ 7979c634b46a6f63238d5600717d61b9 1042 utils optional com.pojtinger.felicitas.connmapper.main_0.1.1.dsc
+ f4c3b7759c102c82a7c43f97da98598a 32516400 utils optional com.pojtinger.felicitas.connmapper.main_0.1.1.tar.xz
+ 06118833f46b04bcd4314bca9010f8ee 21233 utils optional com.pojtinger.felicitas.connmapper.main_0.1.1_amd64.buildinfo
