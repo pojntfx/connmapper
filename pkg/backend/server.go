@@ -4,6 +4,7 @@ import (
 	"archive/tar"
 	"compress/gzip"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -110,7 +111,7 @@ type local struct {
 	dbPath              string
 	dbDownloadURL       string
 
-	Peers func() map[string]remote
+	ForRemotes func(cb func(remoteID string, remote remote) error) error
 }
 
 func (l *local) OpenExternalLink(ctx context.Context, url string) error {
@@ -138,6 +139,8 @@ func (l *local) DownloadDatabase(ctx context.Context, licenseKey string) error {
 	q := u.Query()
 	q.Set("license_key", licenseKey)
 	u.RawQuery = q.Encode()
+
+	log.Println(u.String())
 
 	hr, err := http.Get(u.String())
 	if err != nil {
@@ -245,16 +248,22 @@ func (l *local) GetDBPath(ctx context.Context) (string, error) {
 
 func (l *local) RestartApp(ctx context.Context, fixPermissions bool) error {
 	if fixPermissions {
-		for peerID, peer := range l.Peers() {
-			if peerID == rpc.GetRemoteID(ctx) {
-				confirm, nerr := peer.GetEscalationPermission(ctx, false)
-				if nerr != nil {
-					return nerr
-				}
+		var peer *remote
 
-				if !confirm {
-					return nil
-				}
+		_ = l.ForRemotes(func(remoteID string, remote remote) error {
+			peer = &remote
+
+			return nil
+		})
+
+		if peer != nil {
+			confirm, nerr := peer.GetEscalationPermission(ctx, false)
+			if nerr != nil {
+				return nerr
+			}
+
+			if !confirm {
+				return nil
 			}
 		}
 	}
@@ -529,15 +538,14 @@ func StartServer(ctx context.Context, addr string, heartbeat time.Duration, loca
 		dbPath:              dbPath,
 		dbDownloadURL:       "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City&suffix=tar.gz",
 	}
-	registry := rpc.NewRegistry(
+	registry := rpc.NewRegistry[remote, json.RawMessage](
 		l,
-		remote{},
 
 		time.Second*10,
 		ctx,
 		nil,
 	)
-	l.Peers = registry.Peers
+	l.ForRemotes = registry.ForRemotes
 
 	listener, err := net.Listen("tcp", addr)
 	if err != nil {
@@ -590,7 +598,29 @@ func StartServer(ctx context.Context, addr string, heartbeat time.Duration, loca
 				defer conn.Close()
 
 				go func() {
-					if err := registry.Link(conn); err != nil {
+					encoder := json.NewEncoder(conn)
+					decoder := json.NewDecoder(conn)
+
+					if err := registry.LinkStream(
+						func(v rpc.Message[json.RawMessage]) error {
+							return encoder.Encode(v)
+						},
+						func(v *rpc.Message[json.RawMessage]) error {
+							return decoder.Decode(v)
+						},
+
+						func(v any) (json.RawMessage, error) {
+							b, err := json.Marshal(v)
+							if err != nil {
+								return nil, err
+							}
+
+							return json.RawMessage(b), nil
+						},
+						func(data json.RawMessage, v any) error {
+							return json.Unmarshal([]byte(data), v)
+						},
+					); err != nil {
 						errs <- err
 
 						return

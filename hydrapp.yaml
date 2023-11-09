@@ -14,6 +14,11 @@ go:
   tests: go test ./...
   img: ghcr.io/pojntfx/hydrapp-build-tests:main
 releases:
+  - version: 0.1.3
+    date: 2023-11-09T16:04:45.500601485-06:00
+    description: Bump Hydrapp version
+    author: Felicitas Pojtinger
+    email: felicitas@pojtinger.com
   - version: 0.1.2
     date: 2023-03-01T03:48:18.891410607+01:00
     description: Bump Hydrapp version
@@ -47,18 +52,17 @@ dmg:
   packages:
     - libpcap
 # flatpak:
-#   - path: flatpak/x86_64
-#     architecture: amd64
+# - path: flatpak/x86_64
+#   architecture: amd64
 # msi:
-#   - path: msi/x86_64
-#     architecture: amd64
-#     include: ^\\b$
-#     packages:
-#       - mingw-w64-ucrt-x86_64-libpcap
+# - path: msi/x86_64
+#   architecture: amd64
+#   include: ^\\b$
+#   packages: []
 rpm:
-  - path: rpm/fedora/37/x86_64
-    trailer: 1.fc37
-    distro: fedora-37
+  - path: rpm/fedora/38/x86_64
+    trailer: 1.fc38
+    distro: fedora-38
     architecture: amd64
     packages:
       - name: libpcap-devel
@@ -67,7 +71,7 @@ rpm:
 #   path: apk
 # binaries:
 #   path: binaries
-#   exclude: (android/*|ios/*|plan9/*|aix/*|linux/loong64|js/wasm)
+#   exclude: (android/*|ios/*|plan9/*|aix/*|linux/loong64|freebsd/riscv64|wasip1/wasm|js/wasm|openbsd/mips64)
 #   packages: []
 docs:
   path: docs

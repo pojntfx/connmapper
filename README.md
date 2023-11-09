@@ -5,7 +5,7 @@
 System internet connection visualizer.
 
 [![hydrapp CI](https://github.com/pojntfx/connmapper/actions/workflows/hydrapp.yaml/badge.svg)](https://github.com/pojntfx/connmapper/actions/workflows/hydrapp.yaml)
-![Go Version](https://img.shields.io/badge/go%20version-%3E=1.19-61CFDD.svg)
+![Go Version](https://img.shields.io/badge/go%21version-%3E=1.19-61CFDD.svg)
 [![Go Reference](https://pkg.go.dev/badge/github.com/pojntfx/connmapper.svg)](https://pkg.go.dev/github.com/pojntfx/connmapper)
 [![Matrix](https://img.shields.io/matrix/connmapper:matrix.org)](https://matrix.to/#/#connmapper:matrix.org?via=matrix.org)
 
@@ -23,7 +23,7 @@ It enables you to ...
 
 ## Installation
 
-See [INSTALLATION.html](https://pojntfx.github.io/connmapper/docs/stable/INSTALLATION.html).
+See [INSTALLATION.html](https://pojntfx.github.io/connmapper//docs/stable/INSTALLATION.html).
 
 ## Usage
 

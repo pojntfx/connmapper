@@ -41,11 +41,11 @@ import {
   Tbody,
   Td,
   Th,
-  Thead,
   ThProps,
+  Thead,
   Tr,
 } from "@patternfly/react-table";
-import { bind } from "@pojntfx/dudirekta";
+import { linkWebSocket } from "@pojntfx/dudirekta";
 import Papa from "papaparse";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import ReactGlobeGl from "react-globe.gl";
@@ -153,38 +153,80 @@ const App = () => {
         );
 
         setCurrentLocation(pos.coords);
+
+        const socket = new WebSocket(
+          new URLSearchParams(window.location.search).get("socketURL") ||
+            "ws://localhost:1337"
+        );
+
+        socket.addEventListener("close", (e) => {
+          console.error("Disconnected with error:", e.reason);
+        });
+
+        await new Promise<void>((res, rej) => {
+          socket.addEventListener("open", () => res());
+          socket.addEventListener("error", rej);
+        });
+
+        setRemote(
+          linkWebSocket(
+            socket,
+            {
+              GetEscalationPermission: (restart: boolean) => {
+                if (restart) {
+                  // eslint-disable-next-line no-restricted-globals
+                  return confirm(
+                    "Connmapper requires admin privileges to capture packets. We'll ask you to authorize this in the next step, then restart the application."
+                  );
+                }
+
+                // eslint-disable-next-line no-restricted-globals
+                return confirm(
+                  "Connmapper requires admin privileges to capture packets. We'll ask you to authorize this in the next step."
+                );
+              },
+            },
+            {
+              OpenExternalLink: async (url: string): Promise<void> => {},
+              CheckDatabase: async (): Promise<boolean> => false,
+              DownloadDatabase: async (licenseKey: string): Promise<void> => {},
+              ListDevices: async (): Promise<string[]> => [],
+              TraceDevice: async (name: string): Promise<void> => {},
+              GetConnections: async (): Promise<ITracedConnection[]> => [],
+              GetPackets: async (): Promise<ITracedConnectionDetails[]> => [],
+              SetIsSummarized: async (summarized: boolean): Promise<void> => {},
+              SetMaxPacketCache: async (
+                packetCache: number
+              ): Promise<void> => {},
+              GetMaxPacketCache: async (): Promise<number> => 0,
+              SetMaxConnectionsCache: async (
+                maxConnectionsCache: number
+              ): Promise<void> => {},
+              GetMaxConnectionsCache: async (): Promise<number> => 0,
+              SetDBPath: async (dbPath: string): Promise<void> => {},
+              GetDBPath: async (): Promise<string> => "",
+              SetDBDownloadURL: async (
+                dbDownloadURL: string
+              ): Promise<void> => {},
+              GetDBDownloadURL: async (): Promise<string> => "",
+              RestartApp: async (fixPermissions: boolean): Promise<void> => {},
+            },
+
+            1000 * 1000, // Increased call timeout to make sure that the DB download works
+
+            JSON.stringify,
+            JSON.parse,
+
+            (v) => v,
+            (v) => v
+          )
+        );
+
+        setReady(true);
       } catch (e) {
         alert((e as Error).message);
       }
     })();
-
-    bind(
-      () =>
-        new WebSocket(
-          new URLSearchParams(window.location.search).get("socketURL") ||
-            "ws://localhost:1337"
-        ),
-      {
-        GetEscalationPermission: (restart: boolean) => {
-          if (restart) {
-            // eslint-disable-next-line no-restricted-globals
-            return confirm(
-              "Connmapper requires admin privileges to capture packets. We'll ask you to authorize this in the next step, then restart the application."
-            );
-          }
-
-          // eslint-disable-next-line no-restricted-globals
-          return confirm(
-            "Connmapper requires admin privileges to capture packets. We'll ask you to authorize this in the next step."
-          );
-        },
-      },
-      remote,
-      setRemote,
-      {
-        onOpen: () => setReady(true),
-      }
-    );
   }, []);
 
   const [devices, setDevices] = useState<string[]>([]);
