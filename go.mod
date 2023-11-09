@@ -1,8 +1,6 @@
 module github.com/pojntfx/connmapper
 
-go 1.21
-
-toolchain go1.21.1
+go 1.19
 
 require (
 	github.com/cli/browser v1.3.0
