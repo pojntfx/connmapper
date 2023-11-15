@@ -60,9 +60,9 @@ dmg:
 #   include: ^\\b$
 #   packages: []
 rpm:
-  - path: rpm/fedora/38/x86_64
-    trailer: 1.fc38
-    distro: fedora-38
+  - path: rpm/fedora/39/x86_64
+    trailer: 1.fc39
+    distro: fedora-39
     architecture: amd64
     packages:
       - name: libpcap-devel

@@ -1,13 +1,13 @@
 module github.com/pojntfx/connmapper
 
-go 1.19
+go 1.21.1
 
 require (
 	github.com/cli/browser v1.3.0
 	github.com/google/gopacket v1.1.19
 	github.com/oschwald/geoip2-golang v1.9.0
 	github.com/pojntfx/dudirekta v0.6.1
-	github.com/pojntfx/hydrapp/hydrapp v0.0.0-20231109220036-e83d6a1c4bb0
+	github.com/pojntfx/hydrapp/hydrapp v0.0.0-20231113222007-65dc474accfb
 	nhooyr.io/websocket v1.8.10
 )
 
