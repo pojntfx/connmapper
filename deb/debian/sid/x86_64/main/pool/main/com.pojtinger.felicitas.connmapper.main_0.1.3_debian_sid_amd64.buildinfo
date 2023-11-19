@@ -4,20 +4,20 @@ Binary: com.pojtinger.felicitas.connmapper.main com.pojtinger.felicitas.connmapp
 Architecture: amd64 source
 Version: 0.1.3
 Checksums-Md5:
- 6f6fedbc61b2b0182f49b4e5a543b8ad 1042 com.pojtinger.felicitas.connmapper.main_0.1.3.dsc
+ 85e9472fc38bc1070501baf279565d6b 1042 com.pojtinger.felicitas.connmapper.main_0.1.3.dsc
  4facd5f7c32c3dc96545a708b6988f78 3229884 com.pojtinger.felicitas.connmapper.main-dbgsym_0.1.3_amd64.deb
  a099934be43659670dfeb019054adf10 22483256 com.pojtinger.felicitas.connmapper.main_0.1.3_amd64.deb
 Checksums-Sha1:
- 87f5822bc500a5277fdc8b3ccd103fb94b0a26ef 1042 com.pojtinger.felicitas.connmapper.main_0.1.3.dsc
+ daea86debc597d61b944a055eef0ab218913b6d9 1042 com.pojtinger.felicitas.connmapper.main_0.1.3.dsc
  3694a7a5da2009e9dfdc0b355b8a84947a4aac0b 3229884 com.pojtinger.felicitas.connmapper.main-dbgsym_0.1.3_amd64.deb
  db9cc705a8106497da0020754252620697cbb2ae 22483256 com.pojtinger.felicitas.connmapper.main_0.1.3_amd64.deb
 Checksums-Sha256:
- 77717d60578a5ac43095e9e067a5a8406125029d73c68669fedbd2b87e97ae73 1042 com.pojtinger.felicitas.connmapper.main_0.1.3.dsc
+ 569888b656f083fbb8d2ea51bb304445a332aef22b3b7c6fa479e6104717d5ba 1042 com.pojtinger.felicitas.connmapper.main_0.1.3.dsc
  012b37aa3180f3153d4b7cf206384b60cc3e62c716721b36725c02891260aa86 3229884 com.pojtinger.felicitas.connmapper.main-dbgsym_0.1.3_amd64.deb
  11ea0ea254a7337fac794ccc324a131555c07bd6e48252c28e4c10cb53c821bb 22483256 com.pojtinger.felicitas.connmapper.main_0.1.3_amd64.deb
 Build-Origin: Debian
 Build-Architecture: amd64
-Build-Date: Thu, 16 Nov 2023 21:03:28 +0000
+Build-Date: Sun, 19 Nov 2023 00:37:25 +0000
 Build-Path: /build/com.pojtinger.felicitas.connmapper.main-0.1.3
 Build-Tainted-By:
  merged-usr-via-aliased-dirs
@@ -120,7 +120,7 @@ Installed-Build-Depends:
  libdebhelper-perl (= 13.11.8),
  libdeflate0 (= 1.18-1),
  libdpkg-perl (= 1.22.1),
- libelf1 (= 0.189-4),
+ libelf1 (= 0.190-1),
  liberror-perl (= 0.17029-2),
  libexpat1 (= 2.5.0-2),
  libffi8 (= 3.4.4-1),
@@ -139,7 +139,7 @@ Installed-Build-Depends:
  libgmp10 (= 2:6.3.0+dfsg-2),
  libgnutls30 (= 3.8.1-4+b1),
  libgomp1 (= 13.2.0-6),
- libgpg-error0 (= 1.47-2),
+ libgpg-error0 (= 1.47-3),
  libgprofng0 (= 2.41-6),
  libgssapi-krb5-2 (= 1.20.1-5),
  libheif-plugin-dav1d (= 1.17.1-1+b1),
@@ -302,11 +302,11 @@ Installed-Build-Depends:
  node-cacache (= 17.0.3+~cs10.3.7-1),
  node-camelcase (= 7.0.0-3),
  node-caniuse-lite (= 1.0.30001547+dfsg+~1.0.2-1),
- node-chalk (= 5.2.0-1),
+ node-chalk (= 5.3.0-1),
  node-chokidar (= 3.5.3-2),
  node-chownr (= 2.0.0-2),
  node-chrome-trace-event (= 1.0.3-2),
- node-ci-info (= 3.6.1+~cs1.1.0-1),
+ node-ci-info (= 4.0.0+~cs1.1.0-1),
  node-cjs-module-lexer (= 1.2.2+dfsg-5),
  node-cli-table (= 0.3.11+~cs0.13.4-3),
  node-cliui (= 7.0.4+repack+~cs3.1.0-4),
@@ -322,9 +322,9 @@ Installed-Build-Depends:
  node-console-control-strings (= 1.1.0-3),
  node-convert-source-map (= 1.9.0+~1.5.2-1),
  node-copy-concurrently (= 1.0.5-9),
- node-core-js (= 3.26.1-3),
- node-core-js-compat (= 3.26.1-3),
- node-core-js-pure (= 3.26.1-3),
+ node-core-js (= 3.33.2-1),
+ node-core-js-compat (= 3.33.2-1),
+ node-core-js-pure (= 3.33.2-1),
  node-core-util-is (= 1.0.3-1),
  node-css-loader (= 6.8.1+~cs14.0.17-1),
  node-css-selector-tokenizer (= 0.8.0+~cs4.8.3-1),
@@ -631,7 +631,7 @@ Installed-Build-Depends:
  webpack (= 5.76.1+dfsg1+~cs17.16.16-1),
  xml-core (= 0.18+nmu1),
  xz-utils (= 5.4.4-0.1),
- zlib1g (= 1:1.2.13.dfsg-3)
+ zlib1g (= 1:1.3.dfsg-2)
 Environment:
  DEB_BUILD_OPTIONS="parallel=4"
  LANG="C"
