@@ -47,10 +47,10 @@ deb:
     packages:
       - name: libpcap-dev
         version: "1.10.1"
-dmg:
-  path: dmg
-  packages:
-    - libpcap
+# dmg:
+#   path: dmg
+#   packages:
+#     - libpcap
 # flatpak:
 # - path: flatpak/x86_64
 #   architecture: amd64

@@ -25,12 +25,13 @@ jobs:
             exclude: apk|dmg|flatpak|msi|rpm|binaries|tests
             tag: main
             dst: out/*
-          - id: hydrapp-dmg.com.pojtinger.felicitas.connmapper
-            src: .
-            pkg: .
-            exclude: apk|deb|flatpak|msi|rpm|binaries|tests
-            tag: main
-            dst: out/*
+          # Disable macOS due to `libpcap` dependency
+          # - id: hydrapp-dmg.com.pojtinger.felicitas.connmapper
+          #   src: .
+          #   pkg: .
+          #   exclude: apk|deb|flatpak|msi|rpm|binaries|tests
+          #   tag: main
+          #   dst: out/*
           # Disable Flatpak due to `libpcap` dependency
           # - id: hydrapp-flatpak.com.pojtinger.felicitas.connmapper
           #   src: .
@@ -38,12 +39,13 @@ jobs:
           #   exclude: apk|deb|dmg|msi|rpm|binaries|tests
           #   tag: main
           #   dst: out/*
-          - id: hydrapp-msi.com.pojtinger.felicitas.connmapper
-            src: .
-            pkg: .
-            exclude: apk|deb|flatpak|dmg|rpm|binaries|tests
-            tag: main
-            dst: out/*
+          # Disable Windows due to `libpcap` dependency
+          # - id: hydrapp-msi.com.pojtinger.felicitas.connmapper
+          #   src: .
+          #   pkg: .
+          #   exclude: apk|deb|flatpak|dmg|rpm|binaries|tests
+          #   tag: main
+          #   dst: out/*
           - id: hydrapp-rpm.com.pojtinger.felicitas.connmapper
             src: .
             pkg: .
