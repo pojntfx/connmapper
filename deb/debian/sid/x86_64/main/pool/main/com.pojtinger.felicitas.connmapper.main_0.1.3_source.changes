@@ -12,14 +12,14 @@ Changes:
  .
    * Bump Hydrapp version
 Checksums-Sha1:
- 2a63bf2810b2ceb89cd60514ce89b011f59f14b6 1042 com.pojtinger.felicitas.connmapper.main_0.1.3.dsc
- 32b61f0f4a1780a131774050e3e35f29ae01d21b 32337600 com.pojtinger.felicitas.connmapper.main_0.1.3.tar.xz
- 287c62a8017d627db368dc5a3744127d27503c31 21607 com.pojtinger.felicitas.connmapper.main_0.1.3_amd64.buildinfo
+ 7c4db1c91cac88de99509bb11e4709c14b40cbd2 1042 com.pojtinger.felicitas.connmapper.main_0.1.3.dsc
+ 2d06e73c117f3526f5d1940533cc751a02768acc 32337604 com.pojtinger.felicitas.connmapper.main_0.1.3.tar.xz
+ 3445d1498b664a312893ce2fe77d8c97e97c799b 21705 com.pojtinger.felicitas.connmapper.main_0.1.3_amd64.buildinfo
 Checksums-Sha256:
- 87f7cbc66c45f90e54ef6e62926029fc502c6ae3bd6940828884fdff8077cf41 1042 com.pojtinger.felicitas.connmapper.main_0.1.3.dsc
- a73b3fa6d434b3e98bc90fbd0505fb11331eae739ee406e6248b17ad4849eb5d 32337600 com.pojtinger.felicitas.connmapper.main_0.1.3.tar.xz
- b86dc88c9dd6ddc5707e556f59a4945d76ea2ddbda92f3f9c5b34d4a04fb82a8 21607 com.pojtinger.felicitas.connmapper.main_0.1.3_amd64.buildinfo
+ 28d7554df4865ffd00c469afdf0152ffb3055e184a3d5b6803d852ff6d7eb1b6 1042 com.pojtinger.felicitas.connmapper.main_0.1.3.dsc
+ 88ee46c06083d8acb88a04c00c442886d0afd5f1779ab69960610cb5134cf413 32337604 com.pojtinger.felicitas.connmapper.main_0.1.3.tar.xz
+ ba94ea7914d8ea63f1fc7fe3571d116cb29a99748bb6bae68fb8e890f0ec0ce9 21705 com.pojtinger.felicitas.connmapper.main_0.1.3_amd64.buildinfo
 Files:
- fe85b717d1d8781be5514535ae415bfb 1042 utils optional com.pojtinger.felicitas.connmapper.main_0.1.3.dsc
- 2cff6c9bce2f9d1dc66b63f337849d51 32337600 utils optional com.pojtinger.felicitas.connmapper.main_0.1.3.tar.xz
- b2703e32ea7104687211b1b37776f3ff 21607 utils optional com.pojtinger.felicitas.connmapper.main_0.1.3_amd64.buildinfo
+ 70bc8d5d0622245bee221ec48a24a003 1042 utils optional com.pojtinger.felicitas.connmapper.main_0.1.3.dsc
+ 00e6b1baac897344eb7584b91d7d0707 32337604 utils optional com.pojtinger.felicitas.connmapper.main_0.1.3.tar.xz
+ 48938ece37468843e319bd6b3f88fba6 21705 utils optional com.pojtinger.felicitas.connmapper.main_0.1.3_amd64.buildinfo
