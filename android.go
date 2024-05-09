@@ -13,21 +13,26 @@ import (
 	"time"
 
 	_ "github.com/pojntfx/hydrapp/hydrapp/pkg/fixes"
+	"github.com/pojntfx/hydrapp/hydrapp/pkg/utils"
 
 	backend "github.com/pojntfx/connmapper/pkg/backend"
 	frontend "github.com/pojntfx/connmapper/pkg/frontend"
 )
 
 //export Java_com_pojtinger_felicitas_connmapper_MainActivity_LaunchBackend
-func Java_com_pojtinger_felicitas_connmapper_MainActivity_LaunchBackend(env *C.JNIEnv, activity C.jobject) C.jstring {
-	backendURL, _, err := backend.StartServer(context.Background(), "", time.Second*10, false, nil)
+func Java_com_pojtinger_felicitas_connmapper_MainActivity_LaunchBackend(env *C.JNIEnv, activity C.jobject, filesDir C.jstring) C.jstring {
+	if err := utils.PolyfillEnvironment(C.GoString(C.get_c_string(env, filesDir))); err != nil {
+		log.Fatalln("could not polyfill environment:", err)
+	}
+
+	backendURL, _, err := backend.StartServer(context.Background(), "", time.Second*10, true, nil)
 	if err != nil {
 		log.Fatalln("could not start backend:", err)
 	}
 
 	log.Println("Backend URL:", backendURL)
 
-	frontendURL, _, err := frontend.StartServer(context.Background(), "", backendURL, false)
+	frontendURL, _, err := frontend.StartServer(context.Background(), "", backendURL, true)
 	if err != nil {
 		log.Fatalln("could not start frontend:", err)
 	}

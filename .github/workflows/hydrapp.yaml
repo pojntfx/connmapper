@@ -9,63 +9,60 @@ on:
 jobs:
   build-linux:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     strategy:
       matrix:
         target:
-          # Disable APK due to `libpcap` dependency
-          # - id: hydrapp-apk.com.pojtinger.felicitas.connmapper
-          #   src: .
-          #   pkg: .
-          #   exclude: deb|dmg|flatpak|msi|rpm|binaries|tests
-          #   tag: main
-          #   dst: out/*
+          # com.pojtinger.felicitas.connmapper
+          - id: hydrapp-apk.com.pojtinger.felicitas.connmapper
+            src: .
+            pkg: .
+            exclude: deb|dmg|flatpak|msi|rpm|binaries|tests
+            tag: main
+            dst: out/*
           - id: hydrapp-deb.com.pojtinger.felicitas.connmapper
             src: .
             pkg: .
             exclude: apk|dmg|flatpak|msi|rpm|binaries|tests
             tag: main
             dst: out/*
-          # Disable macOS due to `libpcap` dependency
-          # - id: hydrapp-dmg.com.pojtinger.felicitas.connmapper
-          #   src: .
-          #   pkg: .
-          #   exclude: apk|deb|flatpak|msi|rpm|binaries|tests
-          #   tag: main
-          #   dst: out/*
-          # Disable Flatpak due to `libpcap` dependency
-          # - id: hydrapp-flatpak.com.pojtinger.felicitas.connmapper
-          #   src: .
-          #   pkg: .
-          #   exclude: apk|deb|dmg|msi|rpm|binaries|tests
-          #   tag: main
-          #   dst: out/*
-          # Disable Windows due to `libpcap` dependency
-          # - id: hydrapp-msi.com.pojtinger.felicitas.connmapper
-          #   src: .
-          #   pkg: .
-          #   exclude: apk|deb|flatpak|dmg|rpm|binaries|tests
-          #   tag: main
-          #   dst: out/*
+          - id: hydrapp-dmg.com.pojtinger.felicitas.connmapper
+            src: .
+            pkg: .
+            exclude: apk|deb|flatpak|msi|rpm|binaries|tests
+            tag: main
+            dst: out/*
+          - id: hydrapp-flatpak.com.pojtinger.felicitas.connmapper
+            src: .
+            pkg: .
+            exclude: apk|deb|dmg|msi|rpm|binaries|tests
+            tag: main
+            dst: out/*
+          - id: hydrapp-msi.com.pojtinger.felicitas.connmapper
+            src: .
+            pkg: .
+            exclude: apk|deb|flatpak|dmg|rpm|binaries|tests
+            tag: main
+            dst: out/*
           - id: hydrapp-rpm.com.pojtinger.felicitas.connmapper
             src: .
             pkg: .
             exclude: apk|deb|flatpak|dmg|msi|binaries|tests
             tag: main
             dst: out/*
-          # Disable binaries due to `libpcap` dependency
-          # - id: hydrapp-binaries.com.pojtinger.felicitas.connmapper
-          #   src: .
-          #   pkg: .
-          #   exclude: apk|deb|flatpak|dmg|msi|rpm|tests
-          #   tag: main
-          #   dst: out/*
-          # Disable tests due to `libpcap` dependency
-          # - id: hydrapp-tests.com.pojtinger.felicitas.connmapper
-          #   src: .
-          #   pkg: .
-          #   exclude: apk|deb|flatpak|dmg|msi|rpm|binaries
-          #   tag: main
-          #   dst: out/*
+          - id: hydrapp-binaries.com.pojtinger.felicitas.connmapper
+            src: .
+            pkg: .
+            exclude: apk|deb|flatpak|dmg|msi|rpm|tests
+            tag: main
+            dst: out/*
+          - id: hydrapp-tests.com.pojtinger.felicitas.connmapper
+            src: .
+            pkg: .
+            exclude: apk|deb|flatpak|dmg|msi|rpm|binaries
+            tag: main
+            dst: out/*
 
     steps:
       - name: Maximize build space
@@ -74,32 +71,35 @@ jobs:
           sudo rm -rf /usr/local/lib/android
           sudo rm -rf /opt/ghc
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Set up hydrapp
         run: |
-          curl -L -o /tmp/hydrapp "https://github.com/pojntfx/hydrapp/releases/latest/download/hydrapp.linux-$(uname -m)" 
+          curl -L -o /tmp/hydrapp "https://github.com/pojntfx/hydrapp/releases/download/release-main/hydrapp.linux-$(uname -m)" 
           sudo install /tmp/hydrapp /usr/local/bin
+      - name: Setup Java/APK keystore
+        working-directory: .
+        env:
+          JAVA_KEYSTORE: ${{ secrets.JAVA_KEYSTORE }}
+        run: echo "${JAVA_KEYSTORE}" | base64 -d >'/tmp/keystore.jks'
       - name: Setup PGP key
         working-directory: .
         env:
           PGP_KEY: ${{ secrets.PGP_KEY }}
         run: echo "${PGP_KEY}" | base64 -d >'/tmp/pgp.asc'
-      - name: Setup Android certificate
-        working-directory: .
-        env:
-          APK_CERT: ${{ secrets.APK_CERT }}
-        run: echo "${APK_CERT}" | base64 -d >'/tmp/keystore.jks'
       - name: Build with hydrapp
         working-directory: ${{ matrix.target.src }}
         env:
-          PGP_PASSWORD: ${{ secrets.PGP_PASSWORD }}
-          PGP_ID: ${{ secrets.PGP_ID }}
-          APK_STOREPASS: ${{ secrets.APK_STOREPASS }}
-          APK_KEYPASS: ${{ secrets.APK_KEYPASS }}
+          HYDRAPP_JAVA_KEYSTORE: /tmp/keystore.jks
+          HYDRAPP_JAVA_KEYSTORE_PASSWORD: ${{ secrets.JAVA_KEYSTORE_PASSWORD }}
+          HYDRAPP_JAVA_CERTIFICATE_PASSWORD: ${{ secrets.JAVA_CERTIFICATE_PASSWORD }}
+
+          HYDRAPP_PGP_KEY: /tmp/pgp.asc
+          HYDRAPP_PGP_KEY_PASSWORD: ${{ secrets.PGP_KEY_PASSWORD }}
+          HYDRAPP_PGP_KEY_ID: ${{ secrets.PGP_KEY_ID }}
         run: |
           export BRANCH_ID=""
           export BRANCH_NAME=""
@@ -111,27 +111,30 @@ jobs:
           hydrapp build --config='./${{ matrix.target.pkg }}/hydrapp.yaml' --exclude='${{ matrix.target.exclude }}' \
             --pull=true --tag='${{ matrix.target.tag }}' \
             --dst="${PWD}/out/${{ matrix.target.pkg }}" --src="${PWD}" \
-            --pgp-key='/tmp/pgp.asc' --pgp-password="${PGP_PASSWORD}" --pgp-id="${PGP_ID}" \
-            --apk-cert='/tmp/keystore.jks' --apk-storepass="${APK_STOREPASS}" --apk-keypass="${APK_KEYPASS}" \
             --concurrency="$(nproc)" \
             --branch-id="${BRANCH_ID}" --branch-name="${BRANCH_NAME}"
-      - name: Fix permissions for output
-        run: sudo chown -R $USER .
       - name: Upload output
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.target.id }}
           path: ${{ matrix.target.dst }}
 
   publish-linux:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
     needs: build-linux
+    environment:
+      name: github-pages
+      url: ${{ steps.publish.outputs.page_url }}
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Download output
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           path: /tmp/out
       - name: Isolate the repositories
@@ -140,6 +143,8 @@ jobs:
           for dir in /tmp/out/*/; do
             rsync -a "${dir}"/ /tmp/github-pages/
           done
+
+          touch /tmp/github-pages/.nojekyll
       - name: Add index for repositories
         run: |
           sudo apt update
@@ -147,11 +152,12 @@ jobs:
 
           cd /tmp/github-pages/
           tree --timefmt '%Y-%m-%dT%H:%M:%SZ' -T 'hydrapp Repositories' --du -h -D -H . -o 'index.html'
-      - name: Publish to GitHub pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: /tmp/github-pages/
-          keep_files: true
-          user_name: github-actions[bot]
-          user_email: github-actions[bot]@users.noreply.github.com
+          path: /tmp/github-pages/
+      - name: Publish to GitHub pages
+        id: publish
+        uses: actions/deploy-pages@v4
