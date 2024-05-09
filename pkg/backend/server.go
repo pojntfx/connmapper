@@ -27,9 +27,9 @@ import (
 	"github.com/google/gopacket/pcap"
 	"github.com/oschwald/geoip2-golang"
 	uutils "github.com/pojntfx/connmapper/pkg/utils"
-	"github.com/pojntfx/dudirekta/pkg/rpc"
 	"github.com/pojntfx/hydrapp/hydrapp/pkg/update"
 	"github.com/pojntfx/hydrapp/hydrapp/pkg/utils"
+	"github.com/pojntfx/panrpc/go/pkg/rpc"
 	"nhooyr.io/websocket"
 )
 
@@ -527,7 +527,7 @@ func StartServer(ctx context.Context, addr string, heartbeat time.Duration, loca
 
 	dbPath := filepath.Join(home, ".local", "share", "connmapper", "GeoLite2-City.mmdb")
 
-	l := &local{
+	service := &local{
 		connections:    map[string]tracedConnection{},
 		tracingDevices: map[string]struct{}{},
 		browserState:   browserState,
@@ -538,37 +538,45 @@ func StartServer(ctx context.Context, addr string, heartbeat time.Duration, loca
 		dbPath:              dbPath,
 		dbDownloadURL:       "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City&suffix=tar.gz",
 	}
-	registry := rpc.NewRegistry[remote, json.RawMessage](
-		l,
 
-		time.Second*10,
+	clients := 0
+	registry := rpc.NewRegistry[remote, json.RawMessage](
+		service,
+
 		ctx,
-		nil,
+
+		&rpc.Options{
+			OnClientConnect: func(remoteID string) {
+				clients++
+
+				log.Printf("%v clients connected", clients)
+			},
+			OnClientDisconnect: func(remoteID string) {
+				clients--
+
+				log.Printf("%v clients connected", clients)
+			},
+		},
 	)
-	l.ForRemotes = registry.ForRemotes
+	service.ForRemotes = registry.ForRemotes
 
 	listener, err := net.Listen("tcp", addr)
 	if err != nil {
-		return "", nil, err
+		panic(err)
 	}
 
-	clients := 0
+	log.Println("Listening on", listener.Addr())
+
 	go func() {
+		defer listener.Close()
+
 		if err := http.Serve(listener, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			clients++
-
-			log.Printf("%v clients connected", clients)
-
 			defer func() {
-				clients--
-
 				if err := recover(); err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
 
 					log.Printf("Client disconnected with error: %v", err)
 				}
-
-				log.Printf("%v clients connected", clients)
 			}()
 
 			switch r.Method {
@@ -597,10 +605,10 @@ func StartServer(ctx context.Context, addr string, heartbeat time.Duration, loca
 				conn := websocket.NetConn(ctx, c, websocket.MessageText)
 				defer conn.Close()
 
-				go func() {
-					encoder := json.NewEncoder(conn)
-					decoder := json.NewDecoder(conn)
+				encoder := json.NewEncoder(conn)
+				decoder := json.NewDecoder(conn)
 
+				go func() {
 					if err := registry.LinkStream(
 						func(v rpc.Message[json.RawMessage]) error {
 							return encoder.Encode(v)
