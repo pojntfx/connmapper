@@ -1,12 +1,12 @@
-@import "~@patternfly/patternfly/sass-utilities/all.scss";
+@import "../node_modules/@patternfly/patternfly/sass-utilities/all.scss";
 
-$pf-global--font-path: "~@patternfly/patternfly/assets/fonts";
-$fa-font-path: "~@patternfly/patternfly/assets/fonts/webfonts";
-$pf-global--fonticon-path: "~@patternfly/patternfly/assets/pficon";
-$pf-global--image-path: "~@patternfly/patternfly/assets/images";
+$pf-v5-global--font-path: "../node_modules/@patternfly/patternfly/assets/fonts";
+$fa-font-path: "../node_modules/@patternfly/patternfly/assets/fonts/webfonts";
+$pf-v5-global--fonticon-path: "../node_modules/@patternfly/patternfly/assets/pficon";
+$pf-v5-global--image-path: "data-url:../node_modules/@patternfly/patternfly/assets/images";
 
-@import "~@patternfly/patternfly/patternfly.scss";
-@import "~@patternfly/patternfly/patternfly-addons.scss";
+@import "../node_modules/@patternfly/patternfly/patternfly.scss";
+@import "../node_modules/@patternfly/patternfly/patternfly-addons.scss";
 
 body {
   margin: 0;
@@ -29,49 +29,49 @@ body {
   }
 }
 
-.pf-x-c-title {
+.pf-v5-x-c-title {
   z-index: 1;
-  color: var(--pf-global--Color--light-100);
+  color: var(--pf-v5-global--Color--light-100);
 }
 
-.pf-x-cta {
+.pf-v5-x-cta {
   z-index: 1;
   position: fixed !important;
   right: 1rem;
   bottom: 1rem;
-  background: rgba($pf-global--primary-color--100, 60%) !important;
+  background: rgba($pf-v5-global--primary-color--100, 60%) !important;
   transition: background-color 250ms ease-in-out;
   backdrop-filter: blur(7.5px);
   -webkit-backdrop-filter: blur(7.5px);
 
   &:hover {
-    background: $pf-global--primary-color--100 !important;
+    background: $pf-v5-global--primary-color--100 !important;
   }
 }
 
-.pf-x-settings {
+.pf-v5-x-settings {
   z-index: 1;
   position: fixed !important;
   right: 1rem;
   top: 1rem;
-  background: rgba($pf-color-white, 60%) !important;
+  background: rgba($pf-v5-color-white, 60%) !important;
   transition: background-color 250ms ease-in-out;
   backdrop-filter: blur(7.5px);
   -webkit-backdrop-filter: blur(7.5px);
-  color: $pf-color-black-900 !important;
+  color: $pf-v5-color-black-900 !important;
 
   &:hover {
-    background: $pf-color-white !important;
+    background: $pf-v5-color-white !important;
   }
 }
 
-.pf-c-backdrop {
+.pf-v5-c-backdrop {
   background: transparent !important;
   backdrop-filter: none;
   pointer-events: none;
 }
 
-.pf-c-modal-box {
+.pf-v5-c-modal-box {
   pointer-events: all;
   width: 100% !important;
   height: 33vh;
@@ -92,25 +92,25 @@ body {
   &--transparent {
     background: rgba(255, 255, 255, 85%) !important;
 
-    .pf-c-form-control {
+    .pf-v5-c-form-control {
       border-left-color: transparent;
       border-top-color: transparent;
       border-right-color: transparent;
     }
 
-    .pf-c-table thead th {
+    .pf-v5-c-table thead th {
       background: rgba(255, 255, 255, 50%) !important;
     }
   }
 
-  .pf-c-toolbar,
-  .pf-c-table,
-  .pf-c-toggle-group__button,
-  .pf-c-form-control {
+  .pf-v5-c-toolbar,
+  .pf-v5-c-table,
+  .pf-v5-c-toggle-group__button,
+  .pf-v5-c-form-control {
     background: transparent;
   }
 
-  .pf-c-table thead th {
+  .pf-v5-c-table thead th {
     transition: background-color 250ms ease-in-out;
     backdrop-filter: blur(7.5px);
     -webkit-backdrop-filter: blur(7.5px);
@@ -129,30 +129,30 @@ body {
   }
 }
 
-.pf-c-toggle-group__item--centered > .pf-c-toggle-group__button {
+.pf-v5-c-toggle-group__item--centered > .pf-v5-c-toggle-group__button {
   align-items: center !important;
 }
 
-.pf-c-modal-box__header {
+.pf-v5-c-modal-box__header {
   padding: 0 !important;
 }
 
-.pf-l-bullseye {
+.pf-v5-l-bullseye {
   padding-left: 1.5rem !important;
   padding-right: 1.5rem !important;
 }
 
-.pf-x-c-spinner-description--main {
+.pf-v5-x-c-spinner-description--main {
   position: relative;
-  color: var(--pf-global--Color--light-100);
+  color: var(--pf-v5-global--Color--light-100);
 }
 
-.pf-c-spinner--button {
-  --pf-c-spinner--Color: var(--pf-global--Color--light-100) !important;
+.pf-v5-c-spinner--button {
+  --pf-v5-c-spinner--Color: var(--pf-v5-global--Color--light-100) !important;
   height: 10pt !important;
   margin-left: -0.3rem !important;
 }
 
-.pf-x-c-logo {
+.pf-v5-x-c-logo {
   max-width: 25rem;
 }

@@ -9,9 +9,6 @@ import {
   FormGroup,
   Modal,
   ModalVariant,
-  Select,
-  SelectOption,
-  SelectVariant,
   Spinner,
   Text,
   TextContent,
@@ -25,6 +22,11 @@ import {
   ToolbarItem,
 } from "@patternfly/react-core";
 import {
+  Select,
+  SelectOption,
+  SelectVariant,
+} from "@patternfly/react-core/deprecated";
+import {
   CogIcon,
   CompressIcon,
   DownloadIcon,
@@ -36,8 +38,19 @@ import {
   TableIcon,
   TimesIcon,
 } from "@patternfly/react-icons";
+import { ILocalContext, IRemoteContext, Registry } from "@pojntfx/panrpc";
+import { JSONParser } from "@streamparser/json-whatwg";
+import Papa from "papaparse";
+import { useCallback, useEffect, useRef, useState } from "react";
+import ReactGlobeGl from "react-globe.gl";
+import useAsyncEffect from "use-async";
+import earthTexture from "./8k_earth_nightmap.jpg";
+import earthElevation from "./8k_earth_normal_map.png";
+import universeTexture from "./8k_stars_milky_way.jpg";
+import logoDark from "./logo-dark.png";
+import "./main.scss";
 import {
-  TableComposable,
+  Table,
   Tbody,
   Td,
   Th,
@@ -45,17 +58,8 @@ import {
   Thead,
   Tr,
 } from "@patternfly/react-table";
-import { linkWebSocket } from "@pojntfx/dudirekta";
-import Papa from "papaparse";
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import ReactGlobeGl from "react-globe.gl";
 import NewWindow from "react-new-window";
 import { useWindowSize } from "usehooks-ts";
-import earthTexture from "./8k_earth_nightmap.jpg";
-import earthElevation from "./8k_earth_normal_map.png";
-import universeTexture from "./8k_stars_milky_way.jpg";
-import logoDark from "./logo-dark.png";
-import "./main.scss";
 
 const MAX_PACKET_CACHE_KEY = "latensee.maxPacketCache";
 const MAX_CONNECTIONS_CACHE_KEY = "latensee.maxConnectionsCache";
@@ -103,30 +107,212 @@ const getTracedConnectionID = (connection: ITracedConnection) =>
   connection.dstIP +
   "-";
 
-const App = () => {
-  const [remote, setRemote] = useState({
-    OpenExternalLink: async (url: string): Promise<void> => {},
-    CheckDatabase: async (): Promise<boolean> => false,
-    DownloadDatabase: async (licenseKey: string): Promise<void> => {},
-    ListDevices: async (): Promise<string[]> => [],
-    TraceDevice: async (name: string): Promise<void> => {},
-    GetConnections: async (): Promise<ITracedConnection[]> => [],
-    GetPackets: async (): Promise<ITracedConnectionDetails[]> => [],
-    SetIsSummarized: async (summarized: boolean): Promise<void> => {},
-    SetMaxPacketCache: async (packetCache: number): Promise<void> => {},
-    GetMaxPacketCache: async (): Promise<number> => 0,
-    SetMaxConnectionsCache: async (
-      maxConnectionsCache: number
-    ): Promise<void> => {},
-    GetMaxConnectionsCache: async (): Promise<number> => 0,
-    SetDBPath: async (dbPath: string): Promise<void> => {},
-    GetDBPath: async (): Promise<string> => "",
-    SetDBDownloadURL: async (dbDownloadURL: string): Promise<void> => {},
-    GetDBDownloadURL: async (): Promise<string> => "",
-    RestartApp: async (fixPermissions: boolean): Promise<void> => {},
-  });
+class Local {
+  async GetEscalationPermission(ctx: ILocalContext, restart: boolean) {
+    if (restart) {
+      return confirm(
+        "Connmapper requires admin privileges to capture packets. We'll ask you to authorize this in the next step, then restart the application."
+      );
+    }
 
-  const [ready, setReady] = useState(false);
+    return confirm(
+      "Connmapper requires admin privileges to capture packets. We'll ask you to authorize this in the next step."
+    );
+  }
+}
+
+class Remote {
+  async OpenExternalLink(ctx: IRemoteContext, url: string): Promise<void> {
+    return;
+  }
+
+  async CheckDatabase(ctx: IRemoteContext): Promise<boolean> {
+    return false;
+  }
+
+  async DownloadDatabase(
+    ctx: IRemoteContext,
+    licenseKey: string
+  ): Promise<void> {
+    return;
+  }
+
+  async ListDevices(ctx: IRemoteContext): Promise<string[]> {
+    return [];
+  }
+
+  async TraceDevice(ctx: IRemoteContext, name: string): Promise<void> {}
+
+  async GetConnections(ctx: IRemoteContext): Promise<ITracedConnection[]> {
+    return [];
+  }
+
+  async GetPackets(ctx: IRemoteContext): Promise<ITracedConnectionDetails[]> {
+    return [];
+  }
+
+  async SetIsSummarized(
+    ctx: IRemoteContext,
+    summarized: boolean
+  ): Promise<void> {
+    return;
+  }
+
+  async SetMaxPacketCache(
+    ctx: IRemoteContext,
+    packetCache: number
+  ): Promise<void> {
+    return;
+  }
+
+  async GetMaxPacketCache(ctx: IRemoteContext): Promise<number> {
+    return 0;
+  }
+
+  async SetMaxConnectionsCache(
+    ctx: IRemoteContext,
+    maxConnectionsCache: number
+  ): Promise<void> {
+    return;
+  }
+
+  async GetMaxConnectionsCache(ctx: IRemoteContext): Promise<number> {
+    return 0;
+  }
+
+  async SetDBPath(ctx: IRemoteContext, dbPath: string): Promise<void> {
+    return;
+  }
+
+  async GetDBPath(ctx: IRemoteContext): Promise<string> {
+    return "";
+  }
+
+  async SetDBDownloadURL(
+    ctx: IRemoteContext,
+    dbDownloadURL: string
+  ): Promise<void> {
+    return;
+  }
+
+  async GetDBDownloadURL(ctx: IRemoteContext): Promise<string> {
+    return "";
+  }
+
+  async RestartApp(
+    ctx: IRemoteContext,
+    fixPermissions: boolean
+  ): Promise<void> {
+    return;
+  }
+}
+
+const App = () => {
+  const [clients, setClients] = useState(0);
+  useEffect(() => console.log(clients, "clients connected"), [clients]);
+
+  const [reconnect, setReconnect] = useState(false);
+  const [registry] = useState(
+    new Registry(
+      new Local(),
+      new Remote(),
+
+      {
+        onClientConnect: () => setClients((v) => v + 1),
+        onClientDisconnect: () =>
+          setClients((v) => {
+            if (v === 1) {
+              setReconnect(true);
+            }
+
+            return v - 1;
+          }),
+      }
+    )
+  );
+
+  useAsyncEffect(async () => {
+    if (reconnect) {
+      await new Promise((r) => {
+        setTimeout(r, 100);
+      });
+
+      setReconnect(false);
+
+      return () => {};
+    }
+
+    const addr =
+      new URLSearchParams(window.location.search).get("socketURL") ||
+      "ws://localhost:1337";
+
+    const socket = new WebSocket(addr);
+
+    socket.addEventListener("error", (e) => {
+      console.error("Disconnected with error, reconnecting:", e);
+
+      setReconnect(true);
+    });
+
+    await new Promise<void>((res, rej) => {
+      socket.addEventListener("open", () => res());
+      socket.addEventListener("error", rej);
+    });
+
+    const encoder = new WritableStream({
+      write(chunk) {
+        socket.send(JSON.stringify(chunk));
+      },
+    });
+
+    const parser = new JSONParser({
+      paths: ["$"],
+      separator: "",
+    });
+    const parserWriter = parser.writable.getWriter();
+    const parserReader = parser.readable.getReader();
+    const decoder = new ReadableStream({
+      start(controller) {
+        parserReader
+          .read()
+          .then(async function process({ done, value }) {
+            if (done) {
+              controller.close();
+
+              return;
+            }
+
+            controller.enqueue(value?.value);
+
+            parserReader
+              .read()
+              .then(process)
+              .catch((e) => controller.error(e));
+          })
+          .catch((e) => controller.error(e));
+      },
+    });
+    socket.addEventListener("message", (m) =>
+      parserWriter.write(m.data as string)
+    );
+    socket.addEventListener("close", () => {
+      parserReader.cancel();
+      parserWriter.abort();
+    });
+
+    registry.linkStream(
+      encoder,
+      decoder,
+
+      (v) => v,
+      (v) => v
+    );
+
+    console.log("Connected to", addr);
+
+    return () => socket.close();
+  }, [reconnect]);
+
   const [currentLocation, setCurrentLocation] =
     useState<GeolocationCoordinates>();
 
@@ -153,78 +339,8 @@ const App = () => {
         );
 
         setCurrentLocation(pos.coords);
-
-        const socket = new WebSocket(
-          new URLSearchParams(window.location.search).get("socketURL") ||
-            "ws://localhost:1337"
-        );
-
-        socket.addEventListener("close", (e) => {
-          console.error("Disconnected with error:", e.reason);
-        });
-
-        await new Promise<void>((res, rej) => {
-          socket.addEventListener("open", () => res());
-          socket.addEventListener("error", rej);
-        });
-
-        setRemote(
-          linkWebSocket(
-            socket,
-            {
-              GetEscalationPermission: (restart: boolean) => {
-                if (restart) {
-                  // eslint-disable-next-line no-restricted-globals
-                  return confirm(
-                    "Connmapper requires admin privileges to capture packets. We'll ask you to authorize this in the next step, then restart the application."
-                  );
-                }
-
-                // eslint-disable-next-line no-restricted-globals
-                return confirm(
-                  "Connmapper requires admin privileges to capture packets. We'll ask you to authorize this in the next step."
-                );
-              },
-            },
-            {
-              OpenExternalLink: async (url: string): Promise<void> => {},
-              CheckDatabase: async (): Promise<boolean> => false,
-              DownloadDatabase: async (licenseKey: string): Promise<void> => {},
-              ListDevices: async (): Promise<string[]> => [],
-              TraceDevice: async (name: string): Promise<void> => {},
-              GetConnections: async (): Promise<ITracedConnection[]> => [],
-              GetPackets: async (): Promise<ITracedConnectionDetails[]> => [],
-              SetIsSummarized: async (summarized: boolean): Promise<void> => {},
-              SetMaxPacketCache: async (
-                packetCache: number
-              ): Promise<void> => {},
-              GetMaxPacketCache: async (): Promise<number> => 0,
-              SetMaxConnectionsCache: async (
-                maxConnectionsCache: number
-              ): Promise<void> => {},
-              GetMaxConnectionsCache: async (): Promise<number> => 0,
-              SetDBPath: async (dbPath: string): Promise<void> => {},
-              GetDBPath: async (): Promise<string> => "",
-              SetDBDownloadURL: async (
-                dbDownloadURL: string
-              ): Promise<void> => {},
-              GetDBDownloadURL: async (): Promise<string> => "",
-              RestartApp: async (fixPermissions: boolean): Promise<void> => {},
-            },
-
-            1000 * 1000, // Increased call timeout to make sure that the DB download works
-
-            JSON.stringify,
-            JSON.parse,
-
-            (v) => v,
-            (v) => v
-          )
-        );
-
-        setReady(true);
       } catch (e) {
-        alert((e as Error).message);
+        alert(JSON.stringify((e as Error).message));
       }
     })();
   }, []);
@@ -244,82 +360,90 @@ const App = () => {
   );
 
   useEffect(() => {
-    if (!ready) {
+    if (clients <= 0) {
       return;
     }
 
-    (async () => {
-      // Rehydrate from localStorage
-      setMaxPacketCache(
-        parseInt(localStorage.getItem(MAX_PACKET_CACHE_KEY) || "0")
-      );
+    registry.forRemotes(async (_, remote) => {
+      try {
+        // Rehydrate from localStorage
+        setMaxPacketCache(
+          parseInt(localStorage.getItem(MAX_PACKET_CACHE_KEY) || "0")
+        );
 
-      setMaxConnectionsCache(
-        parseInt(localStorage.getItem(MAX_CONNECTIONS_CACHE_KEY) || "0")
-      );
+        setMaxConnectionsCache(
+          parseInt(localStorage.getItem(MAX_CONNECTIONS_CACHE_KEY) || "0")
+        );
 
-      setDbPath(localStorage.getItem(DB_PATH_KEY) || "");
+        setDbPath(localStorage.getItem(DB_PATH_KEY) || "");
 
-      setDBDownloadURL(localStorage.getItem(DB_DOWNLOAD_URL_KEY) || "");
+        setDBDownloadURL(localStorage.getItem(DB_DOWNLOAD_URL_KEY) || "");
 
-      // Rehydrate from server and fetch devices
-      const [
-        newDevices,
-        newDBPath,
-        newMaxConnectionsCache,
-        newMaxPacketCache,
-        newDBDownloadURL,
-        newIsDBDownloadRequired,
-      ] = await Promise.all([
-        remote.ListDevices(),
-        remote.GetDBPath(),
-        remote.GetMaxConnectionsCache(),
-        remote.GetMaxPacketCache(),
-        remote.GetDBDownloadURL(),
-        remote.CheckDatabase(),
-      ]);
+        // Rehydrate from server and fetch devices
+        const [
+          newDevices,
+          newDBPath,
+          newMaxConnectionsCache,
+          newMaxPacketCache,
+          newDBDownloadURL,
+          newIsDBDownloadRequired,
+        ] = await Promise.all([
+          remote.ListDevices(undefined),
+          remote.GetDBPath(undefined),
+          remote.GetMaxConnectionsCache(undefined),
+          remote.GetMaxPacketCache(undefined),
+          remote.GetDBDownloadURL(undefined),
+          remote.CheckDatabase(undefined),
+        ]);
 
-      setDevices(newDevices);
+        setDevices(newDevices);
 
-      // Set local values from server if they aren't set yet
-      if ((localStorage.getItem(DB_PATH_KEY) || "").trim().length <= 0) {
-        setDbPath(newDBPath);
+        // Set local values from server if they aren't set yet
+        if ((localStorage.getItem(DB_PATH_KEY) || "").trim().length <= 0) {
+          setDbPath(newDBPath);
+        }
+
+        if (
+          parseInt(localStorage.getItem(MAX_CONNECTIONS_CACHE_KEY) || "0") <= 0
+        ) {
+          setMaxConnectionsCache(newMaxConnectionsCache);
+        }
+
+        if (parseInt(localStorage.getItem(MAX_PACKET_CACHE_KEY) || "0") <= 0) {
+          setMaxPacketCache(newMaxPacketCache);
+        }
+
+        if (
+          (localStorage.getItem(DB_DOWNLOAD_URL_KEY) || "").trim().length <= 0
+        ) {
+          setDBDownloadURL(newDBDownloadURL);
+        }
+
+        setIsDBDownloadRequired(newIsDBDownloadRequired);
+      } catch (e) {
+        alert(JSON.stringify((e as Error).message));
       }
-
-      if (
-        parseInt(localStorage.getItem(MAX_CONNECTIONS_CACHE_KEY) || "0") <= 0
-      ) {
-        setMaxConnectionsCache(newMaxConnectionsCache);
-      }
-
-      if (parseInt(localStorage.getItem(MAX_PACKET_CACHE_KEY) || "0") <= 0) {
-        setMaxPacketCache(newMaxPacketCache);
-      }
-
-      if (
-        (localStorage.getItem(DB_DOWNLOAD_URL_KEY) || "").trim().length <= 0
-      ) {
-        setDBDownloadURL(newDBDownloadURL);
-      }
-
-      setIsDBDownloadRequired(newIsDBDownloadRequired);
-    })();
-  }, [ready]);
+    });
+  }, [clients]);
 
   useEffect(() => {
-    if (!ready || maxPacketCache <= 0) {
+    if (clients <= 0 || maxPacketCache <= 0) {
       return;
     }
 
     localStorage.setItem(MAX_PACKET_CACHE_KEY, maxPacketCache.toString());
 
-    (async () => {
-      await remote.SetMaxPacketCache(maxPacketCache);
-    })();
-  }, [ready, maxPacketCache]);
+    registry.forRemotes(async (_, remote) => {
+      try {
+        await remote.SetMaxPacketCache(undefined, maxPacketCache);
+      } catch (e) {
+        alert(JSON.stringify((e as Error).message));
+      }
+    });
+  }, [clients, maxPacketCache]);
 
   useEffect(() => {
-    if (!ready || maxConnectionsCache <= 0) {
+    if (clients <= 0 || maxConnectionsCache <= 0) {
       return;
     }
 
@@ -328,34 +452,46 @@ const App = () => {
       maxConnectionsCache.toString()
     );
 
-    (async () => {
-      await remote.SetMaxConnectionsCache(maxConnectionsCache);
-    })();
-  }, [ready, maxConnectionsCache]);
+    registry.forRemotes(async (_, remote) => {
+      try {
+        await remote.SetMaxConnectionsCache(undefined, maxConnectionsCache);
+      } catch (e) {
+        alert(JSON.stringify((e as Error).message));
+      }
+    });
+  }, [clients, maxConnectionsCache]);
 
   useEffect(() => {
-    if (!ready || dbPath.trim().length <= 0) {
+    if (clients <= 0 || dbPath.trim().length <= 0) {
       return;
     }
 
     localStorage.setItem(DB_PATH_KEY, dbPath);
 
-    (async () => {
-      await remote.SetDBPath(dbPath);
-    })();
-  }, [ready, dbPath]);
+    registry.forRemotes(async (_, remote) => {
+      try {
+        await remote.SetDBPath(undefined, dbPath);
+      } catch (e) {
+        alert(JSON.stringify((e as Error).message));
+      }
+    });
+  }, [clients, dbPath]);
 
   useEffect(() => {
-    if (!ready || dbDownloadURL.trim().length <= 0) {
+    if (clients <= 0 || dbDownloadURL.trim().length <= 0) {
       return;
     }
 
     localStorage.setItem(DB_DOWNLOAD_URL_KEY, dbDownloadURL);
 
-    (async () => {
-      await remote.SetDBDownloadURL(dbDownloadURL);
-    })();
-  }, [ready, dbDownloadURL]);
+    registry.forRemotes(async (_, remote) => {
+      try {
+        await remote.SetDBDownloadURL(undefined, dbDownloadURL);
+      } catch (e) {
+        alert(JSON.stringify((e as Error).message));
+      }
+    });
+  }, [clients, dbDownloadURL]);
 
   const [deviceSelectorIsOpen, setDeviceSelectorIsOpen] = useState(false);
   const [selectedDevice, setSelectedDevice] = useState("");
@@ -366,39 +502,49 @@ const App = () => {
   useEffect(() => {
     if (tracing) {
       const interval = setInterval(async () => {
-        const conns = await remote.GetConnections();
+        registry.forRemotes(async (_, remote) => {
+          try {
+            const conns = await remote.GetConnections(undefined);
 
-        setArcs((oldArcs) =>
-          conns.map((conn) => {
-            const oldArc = oldArcs.find(
-              (arc) => arc.id === getTracedConnectionID(conn)
+            setArcs((oldArcs) =>
+              conns.map((conn) => {
+                const oldArc = oldArcs.find(
+                  (arc) => arc.id === getTracedConnectionID(conn)
+                );
+
+                if (oldArc) {
+                  return oldArc;
+                }
+
+                addLocalLocation(conn);
+
+                return {
+                  id: getTracedConnectionID(conn),
+                  label: `${conn.layerType}/${conn.nextLayerType} ${
+                    conn.srcIP
+                  } (${
+                    conn.srcCountryName && conn.srcCityName
+                      ? conn.srcCountryName + ", " + conn.srcCityName
+                      : conn.srcCountryName || conn.srcCityName || "-"
+                  }, ${conn.srcLongitude}, ${conn.srcLatitude}) → ${
+                    conn.dstIP
+                  } (${
+                    conn.dstCountryName && conn.dstCityName
+                      ? conn.dstCountryName + ", " + conn.dstCityName
+                      : conn.dstCountryName || conn.dstCityName || "-"
+                  }, ${conn.dstLongitude}, ${conn.dstLatitude})`,
+                  coords: [
+                    [conn.srcLongitude, conn.srcLatitude],
+                    [conn.dstLongitude, conn.dstLatitude],
+                  ],
+                  incoming: conn.srcCountryName ? true : false,
+                };
+              })
             );
-
-            if (oldArc) {
-              return oldArc;
-            }
-
-            addLocalLocation(conn);
-
-            return {
-              id: getTracedConnectionID(conn),
-              label: `${conn.layerType}/${conn.nextLayerType} ${conn.srcIP} (${
-                conn.srcCountryName && conn.srcCityName
-                  ? conn.srcCountryName + ", " + conn.srcCityName
-                  : conn.srcCountryName || conn.srcCityName || "-"
-              }, ${conn.srcLongitude}, ${conn.srcLatitude}) → ${conn.dstIP} (${
-                conn.dstCountryName && conn.dstCityName
-                  ? conn.dstCountryName + ", " + conn.dstCityName
-                  : conn.dstCountryName || conn.dstCityName || "-"
-              }, ${conn.dstLongitude}, ${conn.dstLatitude})`,
-              coords: [
-                [conn.srcLongitude, conn.srcLatitude],
-                [conn.dstLongitude, conn.dstLatitude],
-              ],
-              incoming: conn.srcCountryName ? true : false,
-            };
-          })
-        );
+          } catch (e) {
+            alert(JSON.stringify((e as Error).message));
+          }
+        });
       }, connectionsInterval.current);
 
       return () => clearInterval(interval);
@@ -413,14 +559,18 @@ const App = () => {
   const [isSummarized, setIsSummarized] = useState(false);
 
   useEffect(() => {
-    if (!ready) {
+    if (clients <= 0) {
       return;
     }
 
-    (async () => {
-      await remote.SetIsSummarized(isSummarized);
-    })();
-  }, [ready, isSummarized]);
+    registry.forRemotes(async (_, remote) => {
+      try {
+        await remote.SetIsSummarized(undefined, isSummarized);
+      } catch (e) {
+        alert(JSON.stringify((e as Error).message));
+      }
+    });
+  }, [clients, isSummarized]);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [regexErr, setRegexErr] = useState(false);
@@ -447,17 +597,22 @@ const App = () => {
       e.preventDefault();
 
       (async () => {
-        try {
-          await remote.OpenExternalLink((e.target as HTMLAnchorElement).href);
-        } catch (e) {
-          alert((e as Error).message);
-        }
+        registry.forRemotes(async (_, remote) => {
+          try {
+            await remote.OpenExternalLink(
+              undefined,
+              (e.target as HTMLAnchorElement).href
+            );
+          } catch (e) {
+            alert(JSON.stringify((e as Error).message));
+          }
+        });
       })();
     },
-    [remote]
+    [registry]
   );
 
-  return ready ? (
+  return clients > 0 ? (
     <>
       <AlertGroup isToast isLiveRegion>
         {!(!showRestartWarning || isSettingsOpen) && (
@@ -476,10 +631,18 @@ const App = () => {
             the app.
             <Button
               variant="warning"
-              isSmall
+              size="sm"
               icon={<RedoIcon />}
-              onClick={() => remote.RestartApp(false)}
-              className="pf-u-mt-sm"
+              onClick={() =>
+                registry.forRemotes(async (_, remote) => {
+                  try {
+                    await remote.RestartApp(undefined, false);
+                  } catch (e) {
+                    alert(JSON.stringify((e as Error).message));
+                  }
+                })
+              }
+              className="pf-v5-u-mt-sm"
             >
               {" "}
               Restart app
@@ -503,10 +666,10 @@ const App = () => {
             reloading the app.
             <Button
               variant="primary"
-              isSmall
+              size="sm"
               icon={<RedoIcon />}
               onClick={() => window.location.reload()}
-              className="pf-u-mt-sm"
+              className="pf-v5-u-mt-sm"
             >
               {" "}
               Reload app
@@ -517,11 +680,11 @@ const App = () => {
 
       <Modal
         isOpen={isDBDownloadRequired}
-        className="pf-u-mt-0 pf-u-mb-0 pf-c-modal-box--db-download"
+        className="pf-v5-u-mt-0 pf-v5-u-mb-0 pf-v5-c-modal-box--db-download"
         showClose={false}
         aria-labelledby="db-download-modal-title"
         header={
-          <div className="pf-u-pl-lg pf-u-pt-md pf-u-pb-0 pf-u-pr-md">
+          <div className="pf-v5-u-pl-lg pf-v5-u-pt-md pf-v5-u-pb-0 pf-v5-u-pr-md">
             <Title id="db-download-modal-title" headingLevel="h1">
               Database Download
             </Title>
@@ -537,17 +700,16 @@ const App = () => {
           >
             {dbIsDownloading && (
               <Spinner
-                isSVG
                 size="md"
                 aria-label="Database download spinner"
-                className="pf-c-spinner--button"
+                className="pf-v5-c-spinner--button"
               />
             )}{" "}
             Download database
           </Button>,
         ]}
       >
-        <TextContent className="pf-u-mb-md">
+        <TextContent className="pf-v5-u-mb-md">
           <Text component={TextVariants.p}>
             Connmapper requires the GeoLite2 City database to resolve IP
             addresses to their physical location, which you have not downloaded
@@ -578,11 +740,17 @@ const App = () => {
               try {
                 setDBIsDownloading(true);
 
-                await remote.DownloadDatabase(licenseKey);
+                registry.forRemotes(async (_, remote) => {
+                  try {
+                    await remote.DownloadDatabase(undefined, licenseKey);
 
-                setDBIsDownloading(false);
+                    setDBIsDownloading(false);
 
-                setIsDBDownloadRequired(false);
+                    setIsDBDownloadRequired(false);
+                  } catch (e) {
+                    alert(JSON.stringify((e as Error).message));
+                  }
+                });
               } catch (e) {
                 alert((e as Error).message);
               }
@@ -597,7 +765,7 @@ const App = () => {
               id="license-id"
               name="license-id"
               value={licenseKey}
-              onChange={(e) => {
+              onChange={(_, e) => {
                 const v = e.trim();
 
                 if (v.length <= 0) {
@@ -617,7 +785,7 @@ const App = () => {
         <Button
           variant="plain"
           aria-label="Settings"
-          className="pf-x-settings"
+          className="pf-v5-x-settings"
           onClick={() => {
             setIsSettingsTransparent(false);
             setIsSettingsOpen(true);
@@ -631,14 +799,14 @@ const App = () => {
         isOpen={isSettingsOpen}
         onEscapePress={() => setIsSettingsOpen(false)}
         className={
-          "pf-u-mt-0 pf-u-mb-0 pf-c-modal-box--settings" +
-          (isSettingsTransparent ? "" : " pf-c-modal-box--transparent")
+          "pf-v5-u-mt-0 pf-v5-u-mb-0 pf-v5-c-modal-box--settings" +
+          (isSettingsTransparent ? "" : " pf-v5-c-modal-box--transparent")
         }
         showClose={false}
         aria-labelledby="settings-modal-title"
         header={
           <div
-            className="pf-u-pl-lg pf-u-pt-md pf-u-pb-0 pf-u-pr-md"
+            className="pf-v5-u-pl-lg pf-v5-u-pt-md pf-v5-u-pb-0 pf-v5-u-pr-md"
             onMouseEnter={() => setIsSettingsTransparent(true)}
             onMouseLeave={() => setIsSettingsTransparent(false)}
           >
@@ -699,7 +867,7 @@ const App = () => {
               id="max-packet-cache"
               name="max-packet-cache"
               value={maxPacketCache}
-              onChange={(e) => {
+              onChange={(_, e) => {
                 const v = parseInt(e);
 
                 if (isNaN(v)) {
@@ -724,7 +892,7 @@ const App = () => {
               id="max-connections-cache"
               name="max-connections-cache"
               value={maxConnectionsCache}
-              onChange={(e) => {
+              onChange={(_, e) => {
                 const v = parseInt(e);
 
                 if (isNaN(v)) {
@@ -745,7 +913,7 @@ const App = () => {
               id="db-path"
               name="db-path"
               value={dbPath}
-              onChange={(e) => {
+              onChange={(_, e) => {
                 const v = e.trim();
 
                 if (v.length <= 0) {
@@ -771,7 +939,7 @@ const App = () => {
               id="db-download-url"
               name="db-download-url"
               value={dbDownloadURL}
-              onChange={(e) => {
+              onChange={(_, e) => {
                 const v = e.trim();
 
                 if (v.length <= 0) {
@@ -797,7 +965,7 @@ const App = () => {
               id="packet-polling-interval"
               name="packet-polling-interval"
               defaultValue={packetsInterval.current}
-              onChange={(e) => {
+              onChange={(_, e) => {
                 const v = parseInt(e);
 
                 if (isNaN(v)) {
@@ -826,7 +994,7 @@ const App = () => {
               id="connections-polling-interval"
               name="connections-polling-interval"
               defaultValue={connectionsInterval.current}
-              onChange={(e) => {
+              onChange={(_, e) => {
                 const v = parseInt(e);
 
                 if (isNaN(v)) {
@@ -874,7 +1042,7 @@ const App = () => {
             <Button
               variant="primary"
               icon={<TableIcon />}
-              className="pf-x-cta"
+              className="pf-v5-x-cta"
               onClick={() => {
                 setIsInspectorTransparent(false);
                 setIsInspectorOpen(true);
@@ -917,7 +1085,7 @@ const App = () => {
                     <Title
                       id="traffic-inspector-title"
                       headingLevel="h1"
-                      className={inWindow ? "pf-u-ml-md" : ""}
+                      className="pf-v5-u-ml-md"
                     >
                       Traffic Inspector
                     </Title>
@@ -932,7 +1100,7 @@ const App = () => {
                             aria-label="Filter by regex"
                             placeholder="Filter by regex"
                             value={searchQuery}
-                            onChange={(e) => setSearchQuery(e)}
+                            onChange={(_, e) => setSearchQuery(e)}
                             validated={regexErr ? "error" : "default"}
                           />
                         </ToolbarItem>
@@ -944,7 +1112,7 @@ const App = () => {
                               text="Real-time"
                               isSelected={!isSummarized}
                               onChange={() => setIsSummarized(false)}
-                              className="pf-c-toggle-group__item--centered"
+                              className="pf-v5-c-toggle-group__item--centered"
                             />
 
                             <ToggleGroupItem
@@ -952,7 +1120,7 @@ const App = () => {
                               text="Summarized"
                               isSelected={isSummarized}
                               onChange={() => setIsSummarized(true)}
-                              className="pf-c-toggle-group__item--centered"
+                              className="pf-v5-c-toggle-group__item--centered"
                             />
                           </ToggleGroup>
                         </ToolbarItem>
@@ -1080,7 +1248,7 @@ const App = () => {
               }
             >
               <RealtimeTrafficTable
-                getPackets={remote.GetPackets}
+                registry={registry}
                 addLocalLocation={addLocalLocation}
                 searchQuery={searchQuery}
                 setRegexErr={setRegexErr}
@@ -1094,19 +1262,19 @@ const App = () => {
       ) : (
         !isDBDownloadRequired && (
           <Flex
-            className="pf-u-p-lg pf-u-h-100"
+            className="pf-v5-u-p-lg pf-v5-u-h-100"
             spaceItems={{ default: "spaceItemsMd" }}
             direction={{ default: "column" }}
             justifyContent={{ default: "justifyContentCenter" }}
             alignItems={{ default: "alignItemsCenter" }}
           >
-            <FlexItem className="pf-x-c-title">
+            <FlexItem className="pf-v5-x-c-title">
               {/* <Title headingLevel="h1">Connmapper</Title> */}
 
               <img
                 src={logoDark}
                 alt="Connmapper logo"
-                className="pf-u-mb-xs pf-x-c-logo"
+                className="pf-v5-u-mb-xs pf-v5-x-c-logo"
               />
             </FlexItem>
 
@@ -1116,7 +1284,7 @@ const App = () => {
                   <Select
                     variant={SelectVariant.single}
                     isOpen={deviceSelectorIsOpen}
-                    onToggle={(isOpen) => setDeviceSelectorIsOpen(isOpen)}
+                    onToggle={(_, isOpen) => setDeviceSelectorIsOpen(isOpen)}
                     selections={selectedDevice}
                     onSelect={(_, selection) => {
                       setSelectedDevice(selection.toString());
@@ -1136,15 +1304,18 @@ const App = () => {
                     variant="primary"
                     onClick={() => {
                       (async () => {
-                        try {
-                          await remote.TraceDevice(
-                            selectedDevice || devices[0]
-                          );
+                        registry.forRemotes(async (_, remote) => {
+                          try {
+                            await remote.TraceDevice(
+                              undefined,
+                              selectedDevice || devices[0]
+                            );
 
-                          setTracing(true);
-                        } catch (e) {
-                          alert((e as Error).message);
-                        }
+                            setTracing(true);
+                          } catch (e) {
+                            alert(JSON.stringify((e as Error).message));
+                          }
+                        });
                       })();
                     }}
                   >
@@ -1159,17 +1330,17 @@ const App = () => {
     </>
   ) : (
     <Flex
-      className="pf-u-p-md pf-u-h-100"
+      className="pf-v5-u-p-md pf-v5-u-h-100"
       spaceItems={{ default: "spaceItemsMd" }}
       direction={{ default: "column" }}
       justifyContent={{ default: "justifyContentCenter" }}
       alignItems={{ default: "alignItemsCenter" }}
     >
       <FlexItem>
-        <Spinner isSVG aria-label="Loading spinner" />
+        <Spinner aria-label="Loading spinner" />
       </FlexItem>
 
-      <FlexItem className="pf-x-c-spinner-description--main">
+      <FlexItem className="pf-v5-x-c-spinner-description--main">
         <Title headingLevel="h1">Connecting to backend ...</Title>
       </FlexItem>
     </Flex>
@@ -1188,7 +1359,7 @@ const sortableKeys = [
 ];
 
 interface ITrafficTableProps {
-  getPackets: () => Promise<ITracedConnectionDetails[]>;
+  registry: Registry<Local, Remote>;
   addLocalLocation: (packet: ITracedConnection) => void;
   searchQuery: string;
   setRegexErr: (err: boolean) => void;
@@ -1198,7 +1369,7 @@ interface ITrafficTableProps {
 }
 
 const RealtimeTrafficTable: React.FC<ITrafficTableProps> = ({
-  getPackets,
+  registry,
   addLocalLocation,
   searchQuery,
   setRegexErr,
@@ -1210,15 +1381,21 @@ const RealtimeTrafficTable: React.FC<ITrafficTableProps> = ({
 
   useEffect(() => {
     const interval = setInterval(async () => {
-      const packets = await getPackets();
+      registry.forRemotes(async (_, remote) => {
+        try {
+          const packets = await remote.GetPackets(undefined);
 
-      setPackets(
-        packets.map((p) => {
-          addLocalLocation(p);
+          setPackets(
+            packets.map((p) => {
+              addLocalLocation(p);
 
-          return p;
-        })
-      );
+              return p;
+            })
+          );
+        } catch (e) {
+          alert(JSON.stringify((e as Error).message));
+        }
+      });
     }, packetsInterval.current);
 
     return () => clearInterval(interval);
@@ -1297,7 +1474,7 @@ const RealtimeTrafficTable: React.FC<ITrafficTableProps> = ({
   }, [activeSortDirection, activeSortIndex, packets, searchQuery, setRegexErr]);
 
   return (
-    <TableComposable
+    <Table
       aria-label="Simple table"
       variant="compact"
       borders={false}
@@ -1322,7 +1499,7 @@ const RealtimeTrafficTable: React.FC<ITrafficTableProps> = ({
       </Thead>
       <Tbody>
         {filteredPackets.map((packet, i) => (
-          <Tr isHoverable key={i}>
+          <Tr isClickable key={i}>
             <Td>
               <code>{packet.timestamp}</code>
             </Td>
@@ -1363,7 +1540,7 @@ const RealtimeTrafficTable: React.FC<ITrafficTableProps> = ({
           </Tr>
         ))}
       </Tbody>
-    </TableComposable>
+    </Table>
   );
 };
 
