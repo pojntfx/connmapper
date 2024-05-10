@@ -15,12 +15,13 @@ jobs:
       matrix:
         target:
           # com.pojtinger.felicitas.connmapper
-          - id: hydrapp-apk.com.pojtinger.felicitas.connmapper
-            src: .
-            pkg: .
-            exclude: deb|dmg|flatpak|msi|rpm|binaries|tests
-            tag: main
-            dst: out/*
+          # Disable due to `libpcap` dependency
+          # - id: hydrapp-apk.com.pojtinger.felicitas.connmapper
+          #   src: .
+          #   pkg: .
+          #   exclude: deb|dmg|flatpak|msi|rpm|binaries|tests
+          #   tag: main
+          #   dst: out/*
           - id: hydrapp-deb.com.pojtinger.felicitas.connmapper
             src: .
             pkg: .
@@ -33,12 +34,13 @@ jobs:
             exclude: apk|deb|flatpak|msi|rpm|binaries|tests
             tag: main
             dst: out/*
-          - id: hydrapp-flatpak.com.pojtinger.felicitas.connmapper
-            src: .
-            pkg: .
-            exclude: apk|deb|dmg|msi|rpm|binaries|tests
-            tag: main
-            dst: out/*
+          # Disable due to `libpcap` dependency
+          # - id: hydrapp-flatpak.com.pojtinger.felicitas.connmapper
+          #   src: .
+          #   pkg: .
+          #   exclude: apk|deb|dmg|msi|rpm|binaries|tests
+          #   tag: main
+          #   dst: out/*
           - id: hydrapp-msi.com.pojtinger.felicitas.connmapper
             src: .
             pkg: .
@@ -51,18 +53,20 @@ jobs:
             exclude: apk|deb|flatpak|dmg|msi|binaries|tests
             tag: main
             dst: out/*
-          - id: hydrapp-binaries.com.pojtinger.felicitas.connmapper
-            src: .
-            pkg: .
-            exclude: apk|deb|flatpak|dmg|msi|rpm|tests
-            tag: main
-            dst: out/*
-          - id: hydrapp-tests.com.pojtinger.felicitas.connmapper
-            src: .
-            pkg: .
-            exclude: apk|deb|flatpak|dmg|msi|rpm|binaries
-            tag: main
-            dst: out/*
+          # Disable due to `libpcap` dependency
+          # - id: hydrapp-binaries.com.pojtinger.felicitas.connmapper
+          #   src: .
+          #   pkg: .
+          #   exclude: apk|deb|flatpak|dmg|msi|rpm|tests
+          #   tag: main
+          #   dst: out/*
+          # Disable due to `libpcap` dependency
+          # - id: hydrapp-tests.com.pojtinger.felicitas.connmapper
+          #   src: .
+          #   pkg: .
+          #   exclude: apk|deb|flatpak|dmg|msi|rpm|binaries
+          #   tag: main
+          #   dst: out/*
 
     steps:
       - name: Maximize build space
