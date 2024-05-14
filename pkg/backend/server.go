@@ -127,7 +127,7 @@ func (l *local) CheckDatabase(ctx context.Context) (bool, error) {
 }
 
 func (l *local) DownloadDatabase(ctx context.Context, licenseKey string) error {
-	if err := os.MkdirAll(path.Dir(l.dbPath), os.ModePerm); err != nil {
+	if err := os.MkdirAll(filepath.Dir(l.dbPath), os.ModePerm); err != nil {
 		return err
 	}
 
