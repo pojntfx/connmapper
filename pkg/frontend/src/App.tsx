@@ -121,6 +121,11 @@ class Local {
   }
 }
 
+interface IDevice {
+  Name: string;
+  IPAddresses: string[];
+}
+
 class Remote {
   async OpenExternalLink(ctx: IRemoteContext, url: string): Promise<void> {
     return;
@@ -137,11 +142,11 @@ class Remote {
     return;
   }
 
-  async ListDevices(ctx: IRemoteContext): Promise<string[]> {
+  async ListDevices(ctx: IRemoteContext): Promise<IDevice[]> {
     return [];
   }
 
-  async TraceDevice(ctx: IRemoteContext, name: string): Promise<void> {}
+  async TraceDevice(ctx: IRemoteContext, device: IDevice): Promise<void> {}
 
   async GetConnections(ctx: IRemoteContext): Promise<ITracedConnection[]> {
     return [];
@@ -345,7 +350,7 @@ const App = () => {
     })();
   }, []);
 
-  const [devices, setDevices] = useState<string[]>([]);
+  const [devices, setDevices] = useState<IDevice[]>([]);
   const [dbPath, setDbPath] = useState("");
   const [maxConnectionsCache, setMaxConnectionsCache] = useState(0);
   const [maxPacketCache, setMaxPacketCache] = useState(0);
@@ -1292,8 +1297,8 @@ const App = () => {
                     }}
                   >
                     {devices.map((d, i) => (
-                      <SelectOption value={d} key={i}>
-                        {d}
+                      <SelectOption value={d.Name} key={i}>
+                        {d.Name}
                       </SelectOption>
                     ))}
                   </Select>
@@ -1308,7 +1313,8 @@ const App = () => {
                           try {
                             await remote.TraceDevice(
                               undefined,
-                              selectedDevice || devices[0]
+                              devices.find((d) => d.Name === selectedDevice) ||
+                                devices[0]
                             );
 
                             setTracing(true);
