@@ -439,6 +439,10 @@ const App = () => {
 
         setDevices(newDevices);
 
+        if (newDevices.length > 0) {
+          setSelectedDevice(newDevices[0].Name);
+        }
+
         // Set local values from server if they aren't set yet
         if ((localStorage.getItem(DB_PATH_KEY) || "").trim().length <= 0) {
           setDbPath(newDBPath);
@@ -1298,7 +1302,7 @@ const App = () => {
               <Flex direction={{ default: "row" }}>
                 <FlexItem>
                   <Select
-                    variant={SelectVariant.single}
+                    variant={SelectVariant.typeahead}
                     isOpen={deviceSelectorIsOpen}
                     onToggle={(_, isOpen) => setDeviceSelectorIsOpen(isOpen)}
                     selections={selectedDevice}
@@ -1306,6 +1310,7 @@ const App = () => {
                       setSelectedDevice(selection.toString());
                       setDeviceSelectorIsOpen(false);
                     }}
+                    maxHeight={250}
                   >
                     {devices.map((d, i) => (
                       <SelectOption value={d.Name} key={i}>
