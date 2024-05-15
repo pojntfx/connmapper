@@ -7,8 +7,13 @@ import {
   FlexItem,
   Form,
   FormGroup,
+  MenuToggle,
   Modal,
   ModalVariant,
+  Select,
+  SelectList,
+  SelectOption,
+  SelectOptionProps,
   Spinner,
   Text,
   TextContent,
@@ -22,11 +27,6 @@ import {
   ToolbarItem,
 } from "@patternfly/react-core";
 import {
-  Select,
-  SelectOption,
-  SelectVariant,
-} from "@patternfly/react-core/deprecated";
-import {
   CogIcon,
   CompressIcon,
   DownloadIcon,
@@ -38,17 +38,6 @@ import {
   TableIcon,
   TimesIcon,
 } from "@patternfly/react-icons";
-import { ILocalContext, IRemoteContext, Registry } from "@pojntfx/panrpc";
-import { JSONParser } from "@streamparser/json-whatwg";
-import Papa from "papaparse";
-import { useCallback, useEffect, useRef, useState } from "react";
-import ReactGlobeGl from "react-globe.gl";
-import useAsyncEffect from "use-async";
-import earthTexture from "./8k_earth_nightmap.jpg";
-import earthElevation from "./8k_earth_normal_map.png";
-import universeTexture from "./8k_stars_milky_way.jpg";
-import logoDark from "./logo-dark.png";
-import "./main.scss";
 import {
   Table,
   Tbody,
@@ -58,8 +47,19 @@ import {
   Thead,
   Tr,
 } from "@patternfly/react-table";
+import { ILocalContext, IRemoteContext, Registry } from "@pojntfx/panrpc";
+import { JSONParser } from "@streamparser/json-whatwg";
+import Papa from "papaparse";
+import { useCallback, useEffect, useRef, useState } from "react";
+import ReactGlobeGl from "react-globe.gl";
 import NewWindow from "react-new-window";
+import useAsyncEffect from "use-async";
 import { useWindowSize } from "usehooks-ts";
+import earthTexture from "./8k_earth_nightmap.jpg";
+import earthElevation from "./8k_earth_normal_map.png";
+import universeTexture from "./8k_stars_milky_way.jpg";
+import logoDark from "./logo-dark.png";
+import "./main.scss";
 
 const MAX_PACKET_CACHE_KEY = "latensee.maxPacketCache";
 const MAX_CONNECTIONS_CACHE_KEY = "latensee.maxConnectionsCache";
@@ -67,7 +67,7 @@ const DB_PATH_KEY = "latensee.dbPath";
 const DB_DOWNLOAD_URL_KEY = "latensee.dbDownloadUrl";
 const CONNECTIONS_INTERVAL_KEY = "latensee.connectionsInterval";
 const PACKETS_INTERVAL_KEY = "latensee.packetsInterval";
-const DARK_THEME_CLASS_NAME = "pf-v5-theme-dark";
+const DARK_THEME_CLASS_NAME = "pf-v6-theme-dark";
 
 interface ITracedConnection {
   layerType: string;
@@ -540,6 +540,57 @@ const App = () => {
 
   const [deviceSelectorIsOpen, setDeviceSelectorIsOpen] = useState(false);
   const [selectedDevice, setSelectedDevice] = useState("");
+  const [deviceSelectorInput, setDeviceSelectorInput] = useState("");
+
+  const [visibleDevices, setVisibleDevices] = useState<SelectOptionProps[]>([]);
+  useEffect(() => {
+    setVisibleDevices(
+      devices.map((device) => ({
+        value: device.Name,
+      }))
+    );
+  }, [devices]);
+
+  const [deviceSelectorFilter, setDeviceSelectorFilter] = useState("");
+  useEffect(() => {
+    let newSelectOptions: SelectOptionProps[] = devices.map((device) => ({
+      value: device.Name,
+    }));
+
+    if (deviceSelectorFilter) {
+      newSelectOptions = devices
+        .map((device) => ({
+          value: device.Name,
+        }))
+        .filter((menuItem) =>
+          String(menuItem.value)
+            .toLowerCase()
+            .includes(deviceSelectorFilter.toLowerCase())
+        );
+
+      if (!newSelectOptions.length) {
+        newSelectOptions = [
+          {
+            isDisabled: false,
+            children: `No devices found for "${deviceSelectorFilter}"`,
+            value: "",
+          },
+        ];
+      }
+
+      if (!deviceSelectorIsOpen) {
+        setDeviceSelectorIsOpen(true);
+      }
+    }
+
+    setVisibleDevices(newSelectOptions);
+    setActiveDevice(null);
+    setFocusedDevice(null);
+  }, [deviceSelectorFilter, devices]);
+
+  const [focusedDevice, setFocusedDevice] = useState<number | null>(null);
+  const [activeDevice, setActiveDevice] = useState<string | null>(null);
+  const deviceSelectorInputRef = useRef<HTMLInputElement>();
   const [tracing, setTracing] = useState(false);
 
   const [arcs, setArcs] = useState<IArc[]>([]);
@@ -684,7 +735,7 @@ const App = () => {
                   }
                 })
               }
-              className="pf-v5-u-mt-sm"
+              className="pf-v6-u-mt-sm"
             >
               {" "}
               Restart app
@@ -711,7 +762,7 @@ const App = () => {
               size="sm"
               icon={<RedoIcon />}
               onClick={() => window.location.reload()}
-              className="pf-v5-u-mt-sm"
+              className="pf-v6-u-mt-sm"
             >
               {" "}
               Reload app
@@ -722,11 +773,11 @@ const App = () => {
 
       <Modal
         isOpen={isDBDownloadRequired}
-        className="pf-v5-u-mt-0 pf-v5-u-mb-0 pf-v5-c-modal-box--db-download"
+        className="pf-v6-u-mt-0 pf-v6-u-mb-0 pf-v6-c-modal-box--db-download"
         showClose={false}
         aria-labelledby="db-download-modal-title"
         header={
-          <div className="pf-v5-u-pl-lg pf-v5-u-pt-md pf-v5-u-pb-0 pf-v5-u-pr-md">
+          <div className="pf-v6-u-pl-lg pf-v6-u-pt-md pf-v6-u-pb-0 pf-v6-u-pr-md">
             <Title id="db-download-modal-title" headingLevel="h1">
               Database Download
             </Title>
@@ -744,14 +795,14 @@ const App = () => {
               <Spinner
                 size="md"
                 aria-label="Database download spinner"
-                className="pf-v5-c-spinner--button"
+                className="pf-v6-c-spinner--button"
               />
             )}{" "}
             Download database
           </Button>,
         ]}
       >
-        <TextContent className="pf-v5-u-mb-md">
+        <TextContent className="pf-v6-u-mb-md">
           <Text component={TextVariants.p}>
             Connmapper requires the GeoLite2 City database to resolve IP
             addresses to their physical location, which you have not downloaded
@@ -827,7 +878,7 @@ const App = () => {
         <Button
           variant="control"
           aria-label="Settings"
-          className="pf-v5-x-settings"
+          className="pf-v6-x-settings"
           onClick={() => setIsSettingsOpen(true)}
         >
           <CogIcon />
@@ -837,11 +888,11 @@ const App = () => {
       <Modal
         isOpen={isSettingsOpen}
         onEscapePress={() => setIsSettingsOpen(false)}
-        className="pf-v5-u-mt-0 pf-v5-u-mb-0 pf-v5-c-modal-box--settings"
+        className="pf-v6-u-mt-0 pf-v6-u-mb-0 pf-v6-c-modal-box--settings"
         showClose={false}
         aria-labelledby="settings-modal-title"
         header={
-          <div className="pf-v5-u-pl-lg pf-v5-u-pt-md pf-v5-u-pb-0 pf-v5-u-pr-md">
+          <div className="pf-v6-u-pl-lg pf-v6-u-pt-md pf-v6-u-pb-0 pf-v6-u-pr-md">
             <Flex
               spaceItems={{ default: "spaceItemsMd" }}
               direction={{ default: "row" }}
@@ -1072,7 +1123,7 @@ const App = () => {
             <Button
               variant="primary"
               icon={<TableIcon />}
-              className="pf-v5-x-cta"
+              className="pf-v6-x-cta"
               onClick={() => setIsInspectorOpen(true)}
             >
               {" "}
@@ -1093,9 +1144,10 @@ const App = () => {
               }}
               setInWindow={(inWindow) => setInWindow(inWindow)}
               minimized={isInspectorMinimized}
-              className={
-                "pf-v5-x-new-window " + (darkMode ? DARK_THEME_CLASS_NAME : "")
+              windowClassName={
+                "pf-v6-x-new-window " + (darkMode ? DARK_THEME_CLASS_NAME : "")
               }
+              modalClassName="pf-v6-c-modal--inspector"
               header={
                 <Flex
                   spaceItems={{ default: "spaceItemsMd" }}
@@ -1108,8 +1160,8 @@ const App = () => {
                       id="traffic-inspector-title"
                       headingLevel="h1"
                       className={
-                        "pf-v5-u-ml-md " +
-                        (inWindow ? "" : "pf-v5-u-mt-md pf-v5-u-mt-0-on-lg")
+                        "pf-v6-u-ml-md " +
+                        (inWindow ? "" : "pf-v6-u-mt-md pf-v6-u-mt-0-on-lg")
                       }
                     >
                       Traffic Inspector
@@ -1137,7 +1189,7 @@ const App = () => {
                               text="Real-time"
                               isSelected={!isSummarized}
                               onChange={() => setIsSummarized(false)}
-                              className="pf-v5-c-toggle-group__item--centered"
+                              className="pf-v6-c-toggle-group__item--centered"
                             />
 
                             <ToggleGroupItem
@@ -1145,7 +1197,7 @@ const App = () => {
                               text="Summarized"
                               isSelected={isSummarized}
                               onChange={() => setIsSummarized(true)}
-                              className="pf-v5-c-toggle-group__item--centered"
+                              className="pf-v6-c-toggle-group__item--centered"
                             />
                           </ToggleGroup>
                         </ToolbarItem>
@@ -1284,17 +1336,17 @@ const App = () => {
       ) : (
         !isDBDownloadRequired && (
           <Flex
-            className="pf-v5-u-p-lg pf-v5-u-h-100"
+            className="pf-v6-u-p-lg pf-v6-u-h-100"
             spaceItems={{ default: "spaceItemsMd" }}
             direction={{ default: "column" }}
             justifyContent={{ default: "justifyContentCenter" }}
             alignItems={{ default: "alignItemsCenter" }}
           >
-            <FlexItem className="pf-v5-x-c-title">
+            <FlexItem className="pf-v6-x-c-title">
               <img
                 src={logoDark}
                 alt="Connmapper logo"
-                className="pf-v5-u-mb-xs pf-v5-x-c-logo"
+                className="pf-v6-u-mb-xs pf-v6-x-c-logo"
               />
             </FlexItem>
 
@@ -1302,21 +1354,31 @@ const App = () => {
               <Flex direction={{ default: "row" }}>
                 <FlexItem>
                   <Select
-                    variant={SelectVariant.typeahead}
                     isOpen={deviceSelectorIsOpen}
-                    onToggle={(_, isOpen) => setDeviceSelectorIsOpen(isOpen)}
-                    selections={selectedDevice}
-                    onSelect={(_, selection) => {
-                      setSelectedDevice(selection.toString());
+                    selected={selectedDevice}
+                    onSelect={(_, e) => {
+                      setSelectedDevice(e as string);
                       setDeviceSelectorIsOpen(false);
                     }}
-                    maxHeight={250}
+                    onOpenChange={() => setDeviceSelectorIsOpen((v) => !v)}
+                    toggle={(toggleRef) => (
+                      <MenuToggle
+                        ref={toggleRef}
+                        onClick={() => setDeviceSelectorIsOpen((v) => !v)}
+                        isExpanded={deviceSelectorIsOpen}
+                      >
+                        {selectedDevice}
+                      </MenuToggle>
+                    )}
+                    shouldFocusToggleOnSelect
                   >
-                    {devices.map((d, i) => (
-                      <SelectOption value={d.Name} key={i}>
-                        {d.Name}
-                      </SelectOption>
-                    ))}
+                    <SelectList>
+                      {devices.map((d, i) => (
+                        <SelectOption key={i} value={d.Name}>
+                          {d.Name}
+                        </SelectOption>
+                      ))}
+                    </SelectList>
                   </Select>
                 </FlexItem>
 
@@ -1352,7 +1414,7 @@ const App = () => {
     </>
   ) : (
     <Flex
-      className="pf-v5-u-p-md pf-v5-u-h-100"
+      className="pf-v6-u-p-md pf-v6-u-h-100"
       spaceItems={{ default: "spaceItemsMd" }}
       direction={{ default: "column" }}
       justifyContent={{ default: "justifyContentCenter" }}
@@ -1362,7 +1424,7 @@ const App = () => {
         <Spinner aria-label="Loading spinner" />
       </FlexItem>
 
-      <FlexItem className="pf-v5-x-c-spinner-description--main">
+      <FlexItem className="pf-v6-x-c-spinner-description--main">
         <Title headingLevel="h1">Connecting to backend ...</Title>
       </FlexItem>
     </Flex>
@@ -1497,7 +1559,7 @@ const RealtimeTrafficTable: React.FC<ITrafficTableProps> = ({
 
   return (
     <Table
-      aria-label="Simple table"
+      aria-label="Traffic"
       variant="compact"
       borders={false}
       isStickyHeader
@@ -1577,7 +1639,8 @@ interface IInWindowOrModalProps {
   header: React.ReactNode;
   children: React.ReactNode;
 
-  className?: string;
+  windowClassName?: string;
+  modalClassName?: string;
 }
 
 const InWindowOrModal: React.FC<IInWindowOrModalProps> = ({
@@ -1612,7 +1675,7 @@ const InWindowOrModal: React.FC<IInWindowOrModalProps> = ({
           }, 100);
         }}
       >
-        <div {...rest}>
+        <div className={rest?.windowClassName}>
           {header}
           {children}
         </div>
@@ -1627,12 +1690,11 @@ const InWindowOrModal: React.FC<IInWindowOrModalProps> = ({
       showClose={false}
       onEscapePress={() => setOpen(false)}
       aria-labelledby="traffic-inspector-title"
-      header={
-        <div className="pf-u-pl-lg pf-u-pt-md pf-u-pb-0 pf-u-pr-md">
-          {header}
-        </div>
+      header={header}
+      className={
+        (minimized ? "pf-c-modal-box " : "pf-c-modal-box--fullscreen ") +
+        (rest?.modalClassName || "")
       }
-      className={minimized ? "pf-c-modal-box" : "pf-c-modal-box--fullscreen"}
     >
       {children}
     </Modal>

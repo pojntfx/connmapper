@@ -1,9 +1,9 @@
-@import "../node_modules/@patternfly/patternfly/sass-utilities/all.scss";
+@import "../node_modules/@patternfly/patternfly/sass-utilities";
 
-$pf-v5-global--font-path: "../node_modules/@patternfly/patternfly/assets/fonts";
+$pf-v6-global--font-path: "../node_modules/@patternfly/patternfly/assets/fonts";
 $fa-font-path: "../node_modules/@patternfly/patternfly/assets/fonts/webfonts";
-$pf-v5-global--fonticon-path: "../node_modules/@patternfly/patternfly/assets/pficon";
-$pf-v5-global--image-path: "data-url:../node_modules/@patternfly/patternfly/assets/images";
+$pf-v6-global--fonticon-path: "../node_modules/@patternfly/patternfly/assets/pficon";
+$pf-v6-global--image-path: "data-url:../node_modules/@patternfly/patternfly/assets/images";
 
 @import "../node_modules/@patternfly/patternfly/patternfly.scss";
 @import "../node_modules/@patternfly/patternfly/patternfly-addons.scss";
@@ -28,33 +28,33 @@ body {
   }
 }
 
-.pf-v5-x-c-title {
+.pf-v6-x-c-title {
   z-index: 1;
-  color: var(--pf-v5-global--Color--light-100);
+  color: var(--pf-v6-global--Color--light-100);
 }
 
-.pf-v5-x-cta,
-.pf-v5-x-settings {
+.pf-v6-x-cta,
+.pf-v6-x-settings {
   z-index: 1;
   position: fixed !important;
   right: 1rem;
 }
 
-.pf-v5-x-cta {
+.pf-v6-x-cta {
   bottom: 1rem;
 }
 
-.pf-v5-x-settings {
+.pf-v6-x-settings {
   top: 1rem;
 }
 
-.pf-v5-c-backdrop {
+.pf-v6-c-backdrop {
   background: transparent !important;
   backdrop-filter: none;
   pointer-events: none;
 }
 
-.pf-v5-c-modal-box {
+.pf-v6-c-modal-box {
   pointer-events: all;
   width: 100% !important;
   height: 33vh;
@@ -66,13 +66,6 @@ body {
     margin-top: 0;
     margin-bottom: 0;
     max-width: 100% !important;
-  }
-
-  .pf-v5-c-toolbar,
-  .pf-v5-c-table,
-  .pf-v5-c-toggle-group__button,
-  .pf-v5-c-form-control {
-    background: transparent;
   }
 
   &--settings {
@@ -88,33 +81,39 @@ body {
   }
 }
 
-.pf-v5-c-toggle-group__item--centered > .pf-v5-c-toggle-group__button {
+.pf-v6-c-toggle-group__item--centered > .pf-v6-c-toggle-group__button {
   align-items: center !important;
 }
 
-.pf-v5-c-modal-box__header {
+.pf-v6-c-modal-box__header,
+.pf-v6-c-modal--inspector .pf-v6-c-modal-box__body {
   padding: 0 !important;
 }
 
-.pf-v5-x-c-spinner-description--main {
+.pf-v6-x-c-spinner-description--main {
   position: relative;
-  color: var(--pf-v5-global--Color--light-100);
+  color: #ffffff; // PatternFly V6 doesn't seem to export a constant white color yet
 }
 
-.pf-v5-c-spinner--button {
-  --pf-v5-c-spinner--Color: var(--pf-v5-global--Color--light-100) !important;
+.pf-v6-c-spinner--button {
+  --pf-v6-c-spinner--Color: var(--pf-v6-global--Color--light-100) !important;
   height: 10pt !important;
   margin-left: -0.3rem !important;
 }
 
-.pf-v5-x-c-logo {
+.pf-v6-x-c-logo {
   max-width: 25rem;
 }
 
-.pf-v5-x-new-window {
-  background: var(--pf-v5-global--BackgroundColor--100);
+.pf-v6-x-new-window {
+  background: var(--pf-v6-global--BackgroundColor--100);
 
-  .pf-v5-c-title {
-    color: var(--pf-v5-global--Color--100);
+  .pf-v6-c-title {
+    color: var(--pf-v6-global--Color--100);
   }
+}
+
+// There seems to be a bug in PatternFly V6 that renders a phantom `<ToolbarContent>`
+.pf-m-hidden {
+  display: none;
 }
