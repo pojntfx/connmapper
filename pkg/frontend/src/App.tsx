@@ -67,6 +67,7 @@ const DB_PATH_KEY = "latensee.dbPath";
 const DB_DOWNLOAD_URL_KEY = "latensee.dbDownloadUrl";
 const CONNECTIONS_INTERVAL_KEY = "latensee.connectionsInterval";
 const PACKETS_INTERVAL_KEY = "latensee.packetsInterval";
+const DARK_THEME_CLASS_NAME = "pf-v5-theme-dark";
 
 interface ITracedConnection {
   layerType: string;
@@ -213,6 +214,41 @@ class Remote {
 }
 
 const App = () => {
+  const [darkMode, setDarkMode] = useState(false);
+  useEffect(() => {
+    const darkModeMediaQuery = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    );
+
+    const updateTheme = () => {
+      if (darkModeMediaQuery.matches) {
+        setDarkMode(true);
+
+        return;
+      }
+
+      setDarkMode(false);
+    };
+
+    darkModeMediaQuery.addEventListener("change", updateTheme);
+
+    updateTheme();
+
+    return () => {
+      darkModeMediaQuery.removeEventListener("change", updateTheme);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add(DARK_THEME_CLASS_NAME);
+
+      return;
+    }
+
+    document.documentElement.classList.remove(DARK_THEME_CLASS_NAME);
+  }, [darkMode]);
+
   const [clients, setClients] = useState(0);
   useEffect(() => console.log(clients, "clients connected"), [clients]);
 
@@ -582,14 +618,11 @@ const App = () => {
 
   const [inWindow, setInWindow] = useState(false);
 
-  const [isInspectorTransparent, setIsInspectorTransparent] = useState(true);
-
   const [filteredPackets, setFilteredPackets] = useState<
     ITracedConnectionDetails[]
   >([]);
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [isSettingsTransparent, setIsSettingsTransparent] = useState(true);
 
   const [showRestartWarning, setShowRestartWarning] = useState(false);
   const [showReloadWarning, setShowReloadWarning] = useState(false);
@@ -788,13 +821,10 @@ const App = () => {
 
       {!isDBDownloadRequired && !isSettingsOpen && (
         <Button
-          variant="plain"
+          variant="control"
           aria-label="Settings"
           className="pf-v5-x-settings"
-          onClick={() => {
-            setIsSettingsTransparent(false);
-            setIsSettingsOpen(true);
-          }}
+          onClick={() => setIsSettingsOpen(true)}
         >
           <CogIcon />
         </Button>
@@ -803,18 +833,11 @@ const App = () => {
       <Modal
         isOpen={isSettingsOpen}
         onEscapePress={() => setIsSettingsOpen(false)}
-        className={
-          "pf-v5-u-mt-0 pf-v5-u-mb-0 pf-v5-c-modal-box--settings" +
-          (isSettingsTransparent ? "" : " pf-v5-c-modal-box--transparent")
-        }
+        className="pf-v5-u-mt-0 pf-v5-u-mb-0 pf-v5-c-modal-box--settings"
         showClose={false}
         aria-labelledby="settings-modal-title"
         header={
-          <div
-            className="pf-v5-u-pl-lg pf-v5-u-pt-md pf-v5-u-pb-0 pf-v5-u-pr-md"
-            onMouseEnter={() => setIsSettingsTransparent(true)}
-            onMouseLeave={() => setIsSettingsTransparent(false)}
-          >
+          <div className="pf-v5-u-pl-lg pf-v5-u-pt-md pf-v5-u-pb-0 pf-v5-u-pr-md">
             <Flex
               spaceItems={{ default: "spaceItemsMd" }}
               direction={{ default: "row" }}
@@ -849,8 +872,6 @@ const App = () => {
             OK
           </Button>,
         ]}
-        onMouseEnter={() => setIsSettingsTransparent(true)}
-        onMouseLeave={() => setIsSettingsTransparent(false)}
       >
         <Form
           id="settings"
@@ -1043,15 +1064,12 @@ const App = () => {
             height={height}
           />
 
-          {!isInspectorOpen && (
+          {!isInspectorOpen && !isSettingsOpen && (
             <Button
               variant="primary"
               icon={<TableIcon />}
               className="pf-v5-x-cta"
-              onClick={() => {
-                setIsInspectorTransparent(false);
-                setIsInspectorOpen(true);
-              }}
+              onClick={() => setIsInspectorOpen(true)}
             >
               {" "}
               Inspect Traffic
@@ -1061,7 +1079,7 @@ const App = () => {
           {isInspectorOpen && (
             <InWindowOrModal
               inWindow={inWindow}
-              open={isInspectorOpen}
+              open={isInspectorOpen && !isSettingsOpen}
               setOpen={(open) => {
                 if (!open) {
                   setInWindow(false);
@@ -1069,16 +1087,11 @@ const App = () => {
 
                 setIsInspectorOpen(open);
               }}
-              setInWindow={(inWindow) => {
-                if (!inWindow) {
-                  setIsInspectorTransparent(false);
-                }
-
-                setInWindow(inWindow);
-              }}
+              setInWindow={(inWindow) => setInWindow(inWindow)}
               minimized={isInspectorMinimized}
-              modalTransparent={isInspectorTransparent}
-              setModalTransparent={setIsInspectorTransparent}
+              className={
+                "pf-v5-x-new-window " + (darkMode ? DARK_THEME_CLASS_NAME : "")
+              }
               header={
                 <Flex
                   spaceItems={{ default: "spaceItemsMd" }}
@@ -1090,7 +1103,10 @@ const App = () => {
                     <Title
                       id="traffic-inspector-title"
                       headingLevel="h1"
-                      className="pf-v5-u-ml-md"
+                      className={
+                        "pf-v5-u-ml-md " +
+                        (inWindow ? "" : "pf-v5-u-mt-md pf-v5-u-mt-0-on-lg")
+                      }
                     >
                       Traffic Inspector
                     </Title>
@@ -1227,10 +1243,7 @@ const App = () => {
                                 <Button
                                   variant="plain"
                                   aria-label="Compress"
-                                  onClick={() => {
-                                    setIsInspectorMinimized(true);
-                                    setIsInspectorTransparent(false);
-                                  }}
+                                  onClick={() => setIsInspectorMinimized(true)}
                                 >
                                   <CompressIcon />
                                 </Button>
@@ -1274,8 +1287,6 @@ const App = () => {
             alignItems={{ default: "alignItemsCenter" }}
           >
             <FlexItem className="pf-v5-x-c-title">
-              {/* <Title headingLevel="h1">Connmapper</Title> */}
-
               <img
                 src={logoDark}
                 alt="Connmapper logo"
@@ -1557,11 +1568,11 @@ interface IInWindowOrModalProps {
   setOpen: (open: boolean) => void;
   setInWindow: (open: boolean) => void;
   minimized: boolean;
-  modalTransparent: boolean;
-  setModalTransparent: (modalTransparent: boolean) => void;
 
   header: React.ReactNode;
   children: React.ReactNode;
+
+  className?: string;
 }
 
 const InWindowOrModal: React.FC<IInWindowOrModalProps> = ({
@@ -1571,11 +1582,11 @@ const InWindowOrModal: React.FC<IInWindowOrModalProps> = ({
   setOpen,
   setInWindow,
   minimized,
-  modalTransparent,
-  setModalTransparent,
 
   header,
   children,
+
+  ...rest
 }) => {
   if (inWindow) {
     return (
@@ -1596,8 +1607,10 @@ const InWindowOrModal: React.FC<IInWindowOrModalProps> = ({
           }, 100);
         }}
       >
-        {header}
-        {children}
+        <div {...rest}>
+          {header}
+          {children}
+        </div>
       </NewWindow>
     );
   }
@@ -1607,26 +1620,14 @@ const InWindowOrModal: React.FC<IInWindowOrModalProps> = ({
       variant={ModalVariant.large}
       isOpen={open}
       showClose={false}
-      onEscapePress={() => {
-        setOpen(false);
-        setModalTransparent(true);
-      }}
+      onEscapePress={() => setOpen(false)}
       aria-labelledby="traffic-inspector-title"
       header={
-        <div
-          className="pf-u-pl-lg pf-u-pt-md pf-u-pb-0 pf-u-pr-md"
-          onMouseEnter={() => setModalTransparent(true)}
-          onMouseLeave={() => setModalTransparent(false)}
-        >
+        <div className="pf-u-pl-lg pf-u-pt-md pf-u-pb-0 pf-u-pr-md">
           {header}
         </div>
       }
-      className={
-        (minimized ? "pf-c-modal-box" : "pf-c-modal-box--fullscreen") +
-        (modalTransparent ? "" : " pf-c-modal-box--transparent")
-      }
-      onMouseEnter={() => setModalTransparent(true)}
-      onMouseLeave={() => setModalTransparent(false)}
+      className={minimized ? "pf-c-modal-box" : "pf-c-modal-box--fullscreen"}
     >
       {children}
     </Modal>

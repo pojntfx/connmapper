@@ -34,35 +34,19 @@ body {
   color: var(--pf-v5-global--Color--light-100);
 }
 
-.pf-v5-x-cta {
-  z-index: 1;
-  position: fixed !important;
-  right: 1rem;
-  bottom: 1rem;
-  background: rgba($pf-v5-global--primary-color--100, 60%) !important;
-  transition: background-color 250ms ease-in-out;
-  backdrop-filter: blur(7.5px);
-  -webkit-backdrop-filter: blur(7.5px);
-
-  &:hover {
-    background: $pf-v5-global--primary-color--100 !important;
-  }
-}
-
+.pf-v5-x-cta,
 .pf-v5-x-settings {
   z-index: 1;
   position: fixed !important;
   right: 1rem;
-  top: 1rem;
-  background: rgba($pf-v5-color-white, 60%) !important;
-  transition: background-color 250ms ease-in-out;
-  backdrop-filter: blur(7.5px);
-  -webkit-backdrop-filter: blur(7.5px);
-  color: $pf-v5-color-black-900 !important;
+}
 
-  &:hover {
-    background: $pf-v5-color-white !important;
-  }
+.pf-v5-x-cta {
+  bottom: 1rem;
+}
+
+.pf-v5-x-settings {
+  top: 1rem;
 }
 
 .pf-v5-c-backdrop {
@@ -76,31 +60,13 @@ body {
   width: 100% !important;
   height: 33vh;
   margin-top: auto;
-  margin-bottom: 1.5rem;
-  transition: background-color 250ms ease-in-out;
-  backdrop-filter: blur(7.5px);
-  -webkit-backdrop-filter: blur(7.5px);
-  max-width: 1600px !important;
+  margin-bottom: 1rem;
 
   &--fullscreen {
     height: 100%;
     margin-top: 0;
     margin-bottom: 0;
     max-width: 100% !important;
-  }
-
-  &--transparent {
-    background: rgba(255, 255, 255, 85%) !important;
-
-    .pf-v5-c-form-control {
-      border-left-color: transparent;
-      border-top-color: transparent;
-      border-right-color: transparent;
-    }
-
-    .pf-v5-c-table thead th {
-      background: rgba(255, 255, 255, 50%) !important;
-    }
   }
 
   .pf-v5-c-toolbar,
@@ -110,17 +76,11 @@ body {
     background: transparent;
   }
 
-  .pf-v5-c-table thead th {
-    transition: background-color 250ms ease-in-out;
-    backdrop-filter: blur(7.5px);
-    -webkit-backdrop-filter: blur(7.5px);
-  }
-
   &--settings {
-    margin-top: 1.5rem !important;
-    margin-bottom: auto !important;
+    margin: 1rem !important;
     max-width: 60rem !important;
     height: auto !important;
+    z-index: 10;
   }
 
   &--db-download {
@@ -137,11 +97,6 @@ body {
   padding: 0 !important;
 }
 
-.pf-v5-l-bullseye {
-  padding-left: 1.5rem !important;
-  padding-right: 1.5rem !important;
-}
-
 .pf-v5-x-c-spinner-description--main {
   position: relative;
   color: var(--pf-v5-global--Color--light-100);
@@ -155,4 +110,12 @@ body {
 
 .pf-v5-x-c-logo {
   max-width: 25rem;
+}
+
+.pf-v5-x-new-window {
+  background: var(--pf-v5-global--BackgroundColor--100);
+
+  .pf-v5-c-title {
+    color: var(--pf-v5-global--Color--100);
+  }
 }
