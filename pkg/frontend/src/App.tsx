@@ -1692,7 +1692,7 @@ const InWindowOrModal: React.FC<IInWindowOrModalProps> = ({
       aria-labelledby="traffic-inspector-title"
       header={header}
       className={
-        (minimized ? "pf-c-modal-box " : "pf-c-modal-box--fullscreen ") +
+        (minimized ? "pf-v6-c-modal-box " : "pf-v6-c-modal-box--fullscreen ") +
         (rest?.modalClassName || "")
       }
     >

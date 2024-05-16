@@ -62,9 +62,8 @@ body {
   margin-bottom: 1rem;
 
   &--fullscreen {
+    margin: 1rem !important;
     height: 100%;
-    margin-top: 0;
-    margin-bottom: 0;
     max-width: 100% !important;
   }
 
@@ -76,6 +75,7 @@ body {
   }
 
   &--db-download {
+    margin: 1rem !important;
     height: auto !important;
     max-width: 40rem !important;
   }
