@@ -1317,7 +1317,9 @@ const App = () => {
                         onClick={() => setDeviceSelectorIsOpen((v) => !v)}
                         isExpanded={deviceSelectorIsOpen}
                       >
-                        {selectedDevicePcapName}
+                        {devices.find(
+                          (d) => d.PcapName === selectedDevicePcapName
+                        )?.NetName || ""}
                       </MenuToggle>
                     )}
                     shouldFocusToggleOnSelect
