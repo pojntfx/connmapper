@@ -106,10 +106,13 @@ body {
 }
 
 .pf-v6-x-new-window {
-  background: var(--pf-v6-global--BackgroundColor--100);
+  min-height: 100%;
+  background: var(--pf-t--global--background--color--floating--default);
 
   .pf-v6-c-title {
-    color: var(--pf-v6-global--Color--100);
+    @media (prefers-color-scheme: dark) {
+      color: #ffffff; // PatternFly V6 doesn't seem to export a constant white color yet
+    }
   }
 }
 
