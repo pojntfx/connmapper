@@ -123,8 +123,9 @@ class Local {
 }
 
 interface IDevice {
-  Name: string;
-  IPAddresses: string[];
+  PcapName: string;
+  NetName: string;
+  MTU: number;
 }
 
 class Remote {
@@ -440,7 +441,7 @@ const App = () => {
         setDevices(newDevices);
 
         if (newDevices.length > 0) {
-          setSelectedDevice(newDevices[0].Name);
+          setSelectedDevicePcapName(newDevices[0]?.PcapName || "");
         }
 
         // Set local values from server if they aren't set yet
@@ -539,58 +540,7 @@ const App = () => {
   }, [clients, dbDownloadURL]);
 
   const [deviceSelectorIsOpen, setDeviceSelectorIsOpen] = useState(false);
-  const [selectedDevice, setSelectedDevice] = useState("");
-  const [deviceSelectorInput, setDeviceSelectorInput] = useState("");
-
-  const [visibleDevices, setVisibleDevices] = useState<SelectOptionProps[]>([]);
-  useEffect(() => {
-    setVisibleDevices(
-      devices.map((device) => ({
-        value: device.Name,
-      }))
-    );
-  }, [devices]);
-
-  const [deviceSelectorFilter, setDeviceSelectorFilter] = useState("");
-  useEffect(() => {
-    let newSelectOptions: SelectOptionProps[] = devices.map((device) => ({
-      value: device.Name,
-    }));
-
-    if (deviceSelectorFilter) {
-      newSelectOptions = devices
-        .map((device) => ({
-          value: device.Name,
-        }))
-        .filter((menuItem) =>
-          String(menuItem.value)
-            .toLowerCase()
-            .includes(deviceSelectorFilter.toLowerCase())
-        );
-
-      if (!newSelectOptions.length) {
-        newSelectOptions = [
-          {
-            isDisabled: false,
-            children: `No devices found for "${deviceSelectorFilter}"`,
-            value: "",
-          },
-        ];
-      }
-
-      if (!deviceSelectorIsOpen) {
-        setDeviceSelectorIsOpen(true);
-      }
-    }
-
-    setVisibleDevices(newSelectOptions);
-    setActiveDevice(null);
-    setFocusedDevice(null);
-  }, [deviceSelectorFilter, devices]);
-
-  const [focusedDevice, setFocusedDevice] = useState<number | null>(null);
-  const [activeDevice, setActiveDevice] = useState<string | null>(null);
-  const deviceSelectorInputRef = useRef<HTMLInputElement>();
+  const [selectedDevicePcapName, setSelectedDevicePcapName] = useState("");
   const [tracing, setTracing] = useState(false);
 
   const [arcs, setArcs] = useState<IArc[]>([]);
@@ -1355,9 +1305,9 @@ const App = () => {
                 <FlexItem>
                   <Select
                     isOpen={deviceSelectorIsOpen}
-                    selected={selectedDevice}
+                    selected={selectedDevicePcapName}
                     onSelect={(_, e) => {
-                      setSelectedDevice(e as string);
+                      setSelectedDevicePcapName(e as string);
                       setDeviceSelectorIsOpen(false);
                     }}
                     onOpenChange={() => setDeviceSelectorIsOpen((v) => !v)}
@@ -1367,15 +1317,15 @@ const App = () => {
                         onClick={() => setDeviceSelectorIsOpen((v) => !v)}
                         isExpanded={deviceSelectorIsOpen}
                       >
-                        {selectedDevice}
+                        {selectedDevicePcapName}
                       </MenuToggle>
                     )}
                     shouldFocusToggleOnSelect
                   >
                     <SelectList>
                       {devices.map((d, i) => (
-                        <SelectOption key={i} value={d.Name}>
-                          {d.Name}
+                        <SelectOption key={i} value={d.PcapName}>
+                          {d.NetName}
                         </SelectOption>
                       ))}
                     </SelectList>
@@ -1391,8 +1341,9 @@ const App = () => {
                           try {
                             await remote.TraceDevice(
                               undefined,
-                              devices.find((d) => d.Name === selectedDevice) ||
-                                devices[0]
+                              devices.find(
+                                (d) => d.PcapName === selectedDevicePcapName
+                              ) || devices[0]
                             );
 
                             setTracing(true);

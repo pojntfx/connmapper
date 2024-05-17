@@ -35,7 +35,6 @@ import (
 
 var (
 	ErrDatabaseNotInArchive = errors.New("database not in archive")
-	ErrDeviceNotFound       = errors.New("device not found")
 )
 
 const (
@@ -94,8 +93,9 @@ func getTracedConnectionID(connection tracedConnection) string {
 }
 
 type Device struct {
-	Name        string
-	IPAddresses []string
+	PcapName string
+	NetName  string
+	MTU      int
 }
 
 type local struct {
@@ -199,22 +199,56 @@ func (l *local) DownloadDatabase(ctx context.Context, licenseKey string) error {
 }
 
 func (l *local) ListDevices(ctx context.Context) ([]Device, error) {
-	ifaces, err := pcap.FindAllDevs()
+	pcapDevices, err := pcap.FindAllDevs()
+	if err != nil {
+		return []Device{}, err
+	}
+
+	netIfaces, err := net.Interfaces()
 	if err != nil {
 		return []Device{}, err
 	}
 
 	devices := []Device{}
-	for _, iface := range ifaces {
-		device := Device{
-			Name:        iface.Name,
-			IPAddresses: []string{},
-		}
-		for _, cidr := range iface.Addresses {
-			device.IPAddresses = append(device.IPAddresses, cidr.IP.String())
+	for _, pcapDevice := range pcapDevices {
+		pcapAddresses := []string{}
+		for _, cidr := range pcapDevice.Addresses {
+			pcapAddresses = append(pcapAddresses, cidr.IP.String())
 		}
 
-		devices = append(devices, device)
+		var netIface *net.Interface
+		for _, candidate := range netIfaces {
+			rawNetAddresses, err := candidate.Addrs()
+			if err != nil {
+				return []Device{}, err
+			}
+
+			netAddresses := []string{}
+			for _, rawCandidateAddress := range rawNetAddresses {
+				ip, _, err := net.ParseCIDR(rawCandidateAddress.String())
+				if err != nil {
+					return []Device{}, err
+				}
+
+				netAddresses = append(netAddresses, ip.String())
+			}
+
+			if slices.EqualFunc(netAddresses, pcapAddresses, func(a string, b string) bool {
+				return a == b
+			}) {
+				netIface = &candidate
+
+				break
+			}
+		}
+
+		if netIface != nil {
+			devices = append(devices, Device{
+				PcapName: pcapDevice.Name,
+				NetName:  netIface.Name,
+				MTU:      netIface.MTU,
+			})
+		}
 	}
 
 	return devices, nil
@@ -325,7 +359,7 @@ func (l *local) TraceDevice(ctx context.Context, device Device) error {
 	l.tracingDevicesLock.Lock()
 	defer l.tracingDevicesLock.Unlock()
 
-	_, ok := l.tracingDevices[device.Name]
+	_, ok := l.tracingDevices[device.PcapName]
 	if ok {
 		return nil
 	}
@@ -339,42 +373,7 @@ func (l *local) TraceDevice(ctx context.Context, device Device) error {
 		return err
 	}
 
-	ifaces, err := net.Interfaces()
-	if err != nil {
-		return err
-	}
-
-	var iface *net.Interface
-	for _, candidate := range ifaces {
-		rawCandidateAddresses, err := candidate.Addrs()
-		if err != nil {
-			return err
-		}
-
-		candidateAddresses := []string{}
-		for _, rawCandidateAddress := range rawCandidateAddresses {
-			ip, _, err := net.ParseCIDR(rawCandidateAddress.String())
-			if err != nil {
-				return err
-			}
-
-			candidateAddresses = append(candidateAddresses, ip.String())
-		}
-
-		if slices.EqualFunc(candidateAddresses, device.IPAddresses, func(a string, b string) bool {
-			return a == b
-		}) {
-			iface = &candidate
-
-			break
-		}
-	}
-
-	if iface == nil {
-		return ErrDeviceNotFound
-	}
-
-	handle, err := pcap.OpenLive(device.Name, int32(iface.MTU), true, pcap.BlockForever)
+	handle, err := pcap.OpenLive(device.PcapName, int32(device.MTU), true, pcap.BlockForever)
 	if err != nil {
 		if strings.HasSuffix(err.Error(), "(socket: Operation not permitted)") {
 			if err := l.RestartApp(ctx, true); err != nil {
@@ -392,7 +391,7 @@ func (l *local) TraceDevice(ctx context.Context, device Device) error {
 			_ = db.Close()
 
 			l.tracingDevicesLock.Lock()
-			delete(l.tracingDevices, device.Name)
+			delete(l.tracingDevices, device.PcapName)
 			l.tracingDevicesLock.Unlock()
 		}()
 
@@ -520,7 +519,7 @@ func (l *local) TraceDevice(ctx context.Context, device Device) error {
 		}
 	}()
 
-	l.tracingDevices[device.Name] = struct{}{}
+	l.tracingDevices[device.PcapName] = struct{}{}
 
 	return nil
 }
