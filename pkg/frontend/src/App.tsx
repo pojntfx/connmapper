@@ -13,8 +13,8 @@ import {
   Select,
   SelectList,
   SelectOption,
-  SelectOptionProps,
   Spinner,
+  Switch,
   Text,
   TextContent,
   TextInput,
@@ -67,6 +67,8 @@ const DB_PATH_KEY = "latensee.dbPath";
 const DB_DOWNLOAD_URL_KEY = "latensee.dbDownloadUrl";
 const CONNECTIONS_INTERVAL_KEY = "latensee.connectionsInterval";
 const PACKETS_INTERVAL_KEY = "latensee.packetsInterval";
+const CYBERPUNK_MODE_KEY = "latensee.cyberpunkMode";
+
 const DARK_THEME_CLASS_NAME = "pf-v6-theme-dark";
 
 interface ITracedConnection {
@@ -215,8 +217,18 @@ class Remote {
 }
 
 const App = () => {
+  const [cyberpunkMode, setCyberpunkMode] = useState(
+    (localStorage.getItem(CYBERPUNK_MODE_KEY) || "false") === "true"
+  );
+
   const [darkMode, setDarkMode] = useState(false);
   useEffect(() => {
+    if (cyberpunkMode) {
+      setDarkMode(true);
+
+      return;
+    }
+
     const darkModeMediaQuery = window.matchMedia(
       "(prefers-color-scheme: dark)"
     );
@@ -238,7 +250,7 @@ const App = () => {
     return () => {
       darkModeMediaQuery.removeEventListener("change", updateTheme);
     };
-  }, []);
+  }, [cyberpunkMode]);
 
   useEffect(() => {
     if (darkMode) {
@@ -1039,6 +1051,22 @@ const App = () => {
                 localStorage.setItem(CONNECTIONS_INTERVAL_KEY, v.toString());
 
                 setShowReloadWarning(true);
+              }}
+            />
+          </FormGroup>
+
+          <FormGroup label="Visual tweaks" fieldId="cyberpunk-mode">
+            <Switch
+              id="cyberpunk-mode"
+              name="cyberpunk-mode"
+              label="Cyberpunk mode"
+              isChecked={cyberpunkMode}
+              onChange={(_, e) => {
+                const v = e;
+
+                setCyberpunkMode(e);
+
+                localStorage.setItem(CYBERPUNK_MODE_KEY, v.toString());
               }}
             />
           </FormGroup>
