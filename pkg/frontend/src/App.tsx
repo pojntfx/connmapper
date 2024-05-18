@@ -59,6 +59,7 @@ import earthTexture from "./8k_earth_nightmap.jpg";
 import earthElevation from "./8k_earth_normal_map.png";
 import universeTexture from "./8k_stars_milky_way.jpg";
 import logoDark from "./logo-dark.png";
+import logoDarkCyberpunk from "./logo-dark-cyberpunk.png";
 import "./main.scss";
 
 const MAX_PACKET_CACHE_KEY = "latensee.maxPacketCache";
@@ -1338,7 +1339,7 @@ const App = () => {
           >
             <FlexItem className="pf-v6-x-c-title">
               <img
-                src={logoDark}
+                src={cyberpunkMode ? logoDarkCyberpunk : logoDark}
                 alt="Connmapper logo"
                 className="pf-v6-u-mb-xs pf-v6-x-c-logo"
               />
