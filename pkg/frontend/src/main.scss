@@ -10,15 +10,6 @@ $pf-v6-global--image-path: "data-url:../node_modules/@patternfly/patternfly/asse
 @import "../node_modules/@patternfly/patternfly/patternfly.scss";
 @import "../node_modules/@patternfly/patternfly/patternfly-addons.scss";
 
-.pf-v6-x-theme-cyberpunk {
-  --pf-t--global--font--family--100: "Oxanium", helvetica, arial, sans-serif;
-  --pf-t--global--font--family--200: "Oxanium", helvetica, arial, sans-serif;
-  --pf-t--global--font--family--body--legacy: "Oxanium", helvetica, arial,
-    sans-serif;
-  --pf-t--global--font--family--heading--legacy: "Oxanium", helvetica, arial,
-    sans-serif;
-}
-
 body {
   margin: 0;
 }
@@ -135,4 +126,53 @@ body {
 // There seems to be a bug in PatternFly V6 that renders a phantom `<ToolbarContent>`
 .pf-m-hidden {
   display: none;
+}
+
+.pf-v6-x-theme-cyberpunk {
+  --pf-t--global--font--family--100: "Oxanium", helvetica, arial, sans-serif;
+  --pf-t--global--font--family--200: "Oxanium", helvetica, arial, sans-serif;
+  --pf-t--global--font--family--body--legacy: "Oxanium", helvetica, arial,
+    sans-serif;
+  --pf-t--global--font--family--heading--legacy: "Oxanium", helvetica, arial,
+    sans-serif;
+
+  .pf-v6-c-modal-box {
+    background: rgba(0, 0, 0, 33%);
+    backdrop-filter: blur(0.5rem);
+    border: var(--pf-t--global--border--color--default) solid
+      var(--pf-t--global--border--width--box--default);
+
+    .pf-v6-c-table {
+      background: transparent;
+    }
+  }
+
+  .pf-v6-c-modal-box {
+    transition: all 0.5s ease-in-out;
+    transform: scale(0.95) perspective(100vw) rotate3d(1, 0, 0, 0deg);
+
+    &:hover {
+      transform: scale(1) perspective(100vw) rotate3d(1, 0, 0, 0deg);
+    }
+
+    &.pf-v6-c-modal-box--settings.pf-v6-c-modal-box--settings--secondary {
+      transform: scale(0.95) perspective(100vw) rotate3d(1, 0, 0, -15deg);
+
+      &:hover {
+        transform: scale(1) perspective(100vw) rotate3d(1, 0, 0, 0deg);
+      }
+    }
+
+    &.pf-v6-c-modal--inspector:not(.pf-v6-c-modal-box--fullscreen) {
+      transform: scale(0.95) perspective(100vw) rotate3d(1, 0, 0, 15deg);
+
+      &:hover {
+        transform: scale(1) perspective(100vw) rotate3d(1, 0, 0, 0deg);
+      }
+    }
+
+    &.pf-v6-c-modal-box--fullscreen {
+      transform: scale(1) perspective(100vw) rotate3d(1, 0, 0, 0deg);
+    }
+  }
 }
