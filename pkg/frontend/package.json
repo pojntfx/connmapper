@@ -20,6 +20,7 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
+    "@fontsource/oxanium": "^5.0.20",
     "@patternfly/patternfly": "^6.0.0-alpha.134",
     "@patternfly/react-core": "^6.0.0-alpha.57",
     "@patternfly/react-icons": "^6.0.0-alpha.20",

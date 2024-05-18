@@ -70,6 +70,7 @@ const PACKETS_INTERVAL_KEY = "latensee.packetsInterval";
 const CYBERPUNK_MODE_KEY = "latensee.cyberpunkMode";
 
 const DARK_THEME_CLASS_NAME = "pf-v6-theme-dark";
+const CYBERPUNK_THEME_CLASS_NAME = "pf-v6-x-theme-cyberpunk";
 
 interface ITracedConnection {
   layerType: string;
@@ -261,6 +262,16 @@ const App = () => {
 
     document.documentElement.classList.remove(DARK_THEME_CLASS_NAME);
   }, [darkMode]);
+
+  useEffect(() => {
+    if (cyberpunkMode) {
+      document.documentElement.classList.add(CYBERPUNK_THEME_CLASS_NAME);
+
+      return;
+    }
+
+    document.documentElement.classList.remove(CYBERPUNK_THEME_CLASS_NAME);
+  }, [cyberpunkMode]);
 
   const [clients, setClients] = useState(0);
   useEffect(() => console.log(clients, "clients connected"), [clients]);
@@ -1123,7 +1134,9 @@ const App = () => {
               setInWindow={(inWindow) => setInWindow(inWindow)}
               minimized={isInspectorMinimized}
               windowClassName={
-                "pf-v6-x-new-window " + (darkMode ? DARK_THEME_CLASS_NAME : "")
+                "pf-v6-x-new-window " +
+                (darkMode ? `${DARK_THEME_CLASS_NAME} ` : "") +
+                (cyberpunkMode ? `${CYBERPUNK_THEME_CLASS_NAME} ` : "")
               }
               modalClassName="pf-v6-c-modal--inspector"
               header={
