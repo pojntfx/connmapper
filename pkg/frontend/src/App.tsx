@@ -1326,7 +1326,15 @@ const App = () => {
                   >
                     <SelectList>
                       {devices.map((d, i) => (
-                        <SelectOption key={i} value={d.PcapName}>
+                        <SelectOption
+                          key={i}
+                          value={d.PcapName}
+                          description={
+                            d.PcapName === d.NetName
+                              ? undefined
+                              : `ID: ${d.PcapName}`
+                          }
+                        >
                           {d.NetName}
                         </SelectOption>
                       ))}
