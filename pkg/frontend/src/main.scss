@@ -83,6 +83,12 @@ body {
     max-width: 60rem !important;
     height: auto !important;
     z-index: 10;
+
+    &.pf-v6-c-modal-box--settings--secondary {
+      margin-top: 1rem !important;
+      margin-bottom: auto !important;
+      max-height: calc(66vh - 2rem);
+    }
   }
 
   &--db-download {

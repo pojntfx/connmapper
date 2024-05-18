@@ -861,7 +861,10 @@ const App = () => {
       <Modal
         isOpen={isSettingsOpen}
         onEscapePress={() => setIsSettingsOpen(false)}
-        className="pf-v6-u-mt-0 pf-v6-u-mb-0 pf-v6-c-modal-box--settings"
+        className={
+          "pf-v6-u-mt-0 pf-v6-u-mb-0 pf-v6-c-modal-box--settings " +
+          (isInspectorOpen ? "pf-v6-c-modal-box--settings--secondary" : "")
+        }
         showClose={false}
         aria-labelledby="settings-modal-title"
         header={
@@ -1108,7 +1111,7 @@ const App = () => {
             height={height}
           />
 
-          {!isInspectorOpen && !isSettingsOpen && (
+          {!isInspectorOpen && (
             <Button
               variant="primary"
               icon={<TableIcon />}
@@ -1123,7 +1126,7 @@ const App = () => {
           {isInspectorOpen && (
             <InWindowOrModal
               inWindow={inWindow}
-              open={isInspectorOpen && !isSettingsOpen}
+              open={isInspectorOpen}
               setOpen={(open) => {
                 if (!open) {
                   setInWindow(false);
