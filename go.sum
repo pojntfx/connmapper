@@ -51,8 +51,12 @@ github.com/pojntfx/hydrapp/hydrapp v0.0.0-20240508201908-a7b7ce03805c h1:jUIX/zF
 github.com/pojntfx/hydrapp/hydrapp v0.0.0-20240508201908-a7b7ce03805c/go.mod h1:C/VKml8TJlmwGjbSCNaIcWKUilZXwtcD8vHCkD48q+w=
 github.com/pojntfx/hydrapp/hydrapp v0.0.0-20240512070742-0c2683657f84 h1:c6PpZpNdgqHwlnFNyDAulFvU/necmeYqKVzssqTrsEY=
 github.com/pojntfx/hydrapp/hydrapp v0.0.0-20240512070742-0c2683657f84/go.mod h1:c2C4z4iOKpQhbQbwt2JF9kqc+lQsWpImdEXTgpXqXic=
+github.com/pojntfx/hydrapp/hydrapp v0.0.0-20240516002902-d08759d6ca9f h1:M85fPgB4zXxwClH+LHwr/ZfjbQ8TI51EcdkqD9fCWjw=
+github.com/pojntfx/hydrapp/hydrapp v0.0.0-20240516002902-d08759d6ca9f/go.mod h1:c2C4z4iOKpQhbQbwt2JF9kqc+lQsWpImdEXTgpXqXic=
 github.com/pojntfx/panrpc/go v0.0.0-20240322210047-6a6b3c04a7c1 h1:ig4y1o3XbiIrr8r8QLtFD9JroItXv0Hs4ncz0VLz9LQ=
 github.com/pojntfx/panrpc/go v0.0.0-20240322210047-6a6b3c04a7c1/go.mod h1:qHyKsrQMPKgkOhvGk6xNo9dpS++GIlsh9svE/26lnnM=
+github.com/pojntfx/panrpc/go v0.0.0-20240524001500-8e9422e1086a h1:m8PV0i7EXFN5v9F97hDDMcYI9dLwCsE6cHVdhawnlD4=
+github.com/pojntfx/panrpc/go v0.0.0-20240524001500-8e9422e1086a/go.mod h1:qHyKsrQMPKgkOhvGk6xNo9dpS++GIlsh9svE/26lnnM=
 github.com/randall77/makefat v0.0.0-20210315173500-7ddd0e42c844 h1:GranzK4hv1/pqTIhMTXt2X8MmMOuH3hMeUR0o9SP5yc=
 github.com/randall77/makefat v0.0.0-20210315173500-7ddd0e42c844/go.mod h1:T1TLSfyWVBRXVGzWd0o9BI4kfoO9InEgfQe4NV3mLz8=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
