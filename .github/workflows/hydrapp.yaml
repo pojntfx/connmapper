@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-linux:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.target.runner }}
     permissions:
       contents: read
     strategy:
@@ -22,37 +22,64 @@ jobs:
           #   exclude: deb|dmg|flatpak|msi|rpm|binaries|tests
           #   tag: main
           #   dst: out/*
-          - id: hydrapp-deb.com.pojtinger.felicitas.connmapper
+          #   runner: ubuntu-latest
+          - id: hydrapp-deb-amd64.com.pojtinger.felicitas.connmapper
             src: .
             pkg: .
-            exclude: apk|dmg|flatpak|msi|rpm|binaries|tests
+            exclude: deb/arm64|apk|dmg|flatpak|msi|rpm|binaries|tests
             tag: main
             dst: out/*
+            runner: ubuntu-latest
+          - id: hydrapp-deb-arm64.com.pojtinger.felicitas.connmapper
+            src: .
+            pkg: .
+            exclude: deb/amd64|apk|dmg|flatpak|msi|rpm|binaries|tests
+            tag: main
+            dst: out/*
+            runner: ubicloud-standard-4-arm
           - id: hydrapp-dmg.com.pojtinger.felicitas.connmapper
             src: .
             pkg: .
             exclude: apk|deb|flatpak|msi|rpm|binaries|tests
             tag: main
             dst: out/*
+            runner: ubuntu-latest
           # Disable due to `libpcap` dependency
-          # - id: hydrapp-flatpak.com.pojtinger.felicitas.connmapper
+          # - id: hydrapp-flatpak-amd64.com.pojtinger.felicitas.connmapper
           #   src: .
           #   pkg: .
-          #   exclude: apk|deb|dmg|msi|rpm|binaries|tests
+          #   exclude: apk|deb|flatpak/arm64|dmg|msi|rpm|binaries|tests
           #   tag: main
           #   dst: out/*
+          #   runner: ubuntu-latest
+          # - id: hydrapp-flatpak-arm64.com.pojtinger.felicitas.connmapper
+          #   src: .
+          #   pkg: .
+          #   exclude: apk|deb|flatpak/amd64|dmg|msi|rpm|binaries|tests
+          #   tag: main
+          #   dst: out/*
+          #   runner: ubicloud-standard-4-arm
           - id: hydrapp-msi.com.pojtinger.felicitas.connmapper
             src: .
             pkg: .
             exclude: apk|deb|flatpak|dmg|rpm|binaries|tests
             tag: main
             dst: out/*
-          - id: hydrapp-rpm.com.pojtinger.felicitas.connmapper
+            runner: ubuntu-latest
+          - id: hydrapp-rpm-amd64.com.pojtinger.felicitas.connmapper
             src: .
             pkg: .
-            exclude: apk|deb|flatpak|dmg|msi|binaries|tests
+            exclude: apk|deb|flatpak|dmg|rpm/arm64|msi|binaries|tests
             tag: main
             dst: out/*
+            runner: ubuntu-latest
+          - id: hydrapp-rpm-arm64.com.pojtinger.felicitas.connmapper
+            src: .
+            pkg: .
+            exclude: apk|deb|flatpak|dmg|rpm/amd64|msi|binaries|tests
+            tag: main
+            dst: out/*
+            runner: ubicloud-standard-4-arm
           # Disable due to `libpcap` dependency
           # - id: hydrapp-binaries.com.pojtinger.felicitas.connmapper
           #   src: .
@@ -60,6 +87,7 @@ jobs:
           #   exclude: apk|deb|flatpak|dmg|msi|rpm|tests
           #   tag: main
           #   dst: out/*
+          #   runner: ubuntu-latest
           # Disable due to `libpcap` dependency
           # - id: hydrapp-tests.com.pojtinger.felicitas.connmapper
           #   src: .
@@ -67,6 +95,7 @@ jobs:
           #   exclude: apk|deb|flatpak|dmg|msi|rpm|binaries
           #   tag: main
           #   dst: out/*
+          #   runner: ubuntu-latest
 
     steps:
       - name: Maximize build space
