@@ -7,10 +7,10 @@ import (
 	"strconv"
 	"syscall"
 
-	"github.com/pojntfx/hydrapp/hydrapp/pkg/update"
+	"github.com/pojntfx/hydrapp/hydrapp/pkg/ui"
 )
 
-func KillBrowser(browserState *update.BrowserState) error {
+func KillBrowser(browserState *ui.BrowserState) error {
 	if browserState != nil && browserState.Cmd != nil && browserState.Cmd.Process != nil {
 		// Windows does not support the `SIGTERM` signal
 		if runtime.GOOS == "windows" {

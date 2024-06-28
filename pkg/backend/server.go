@@ -27,7 +27,7 @@ import (
 	"github.com/google/gopacket/pcap"
 	"github.com/oschwald/geoip2-golang"
 	uutils "github.com/pojntfx/connmapper/pkg/utils"
-	"github.com/pojntfx/hydrapp/hydrapp/pkg/update"
+	"github.com/pojntfx/hydrapp/hydrapp/pkg/ui"
 	"github.com/pojntfx/hydrapp/hydrapp/pkg/utils"
 	"github.com/pojntfx/panrpc/go/pkg/rpc"
 	"nhooyr.io/websocket"
@@ -105,7 +105,7 @@ type local struct {
 	tracingDevices     map[string]struct{}
 	tracingDevicesLock sync.Mutex
 
-	browserState *update.BrowserState
+	browserState *ui.BrowserState
 
 	packetCache      []tracedConnection
 	packetsCacheLock sync.Mutex
@@ -558,7 +558,7 @@ type remote struct {
 	GetEscalationPermission func(ctx context.Context, restart bool) (bool, error)
 }
 
-func StartServer(ctx context.Context, addr string, heartbeat time.Duration, localhostize bool, browserState *update.BrowserState) (string, func() error, error) {
+func StartServer(ctx context.Context, addr string, heartbeat time.Duration, localhostize bool, browserState *ui.BrowserState) (string, func() error, error) {
 	if strings.TrimSpace(addr) == "" {
 		addr = ":0"
 	}
