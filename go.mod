@@ -6,8 +6,8 @@ require (
 	github.com/cli/browser v1.3.0
 	github.com/google/gopacket v1.1.19
 	github.com/oschwald/geoip2-golang v1.11.0
-	github.com/pojntfx/hydrapp/hydrapp v0.0.0-20240710073435-7070440dd355
-	github.com/pojntfx/panrpc/go v0.0.0-20240702184342-b89dd0c1dde5
+	github.com/pojntfx/hydrapp/hydrapp v0.0.0-20240807225249-46f23eed592e
+	github.com/pojntfx/panrpc/go v0.0.0-20240727035459-583758c47d9f
 	nhooyr.io/websocket v1.8.11
 )
 
@@ -32,10 +32,10 @@ require (
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/randall77/makefat v0.0.0-20210315173500-7ddd0e42c844 // indirect
 	github.com/rogpeppe/go-internal v1.11.0 // indirect
-	golang.org/x/crypto v0.25.0 // indirect
-	golang.org/x/image v0.18.0 // indirect
-	golang.org/x/sys v0.22.0 // indirect
-	golang.org/x/text v0.16.0 // indirect
+	golang.org/x/crypto v0.26.0 // indirect
+	golang.org/x/image v0.19.0 // indirect
+	golang.org/x/sys v0.24.0 // indirect
+	golang.org/x/text v0.17.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	yrh.dev/icns v0.0.0-20210608051050-de3ea6a57b33 // indirect

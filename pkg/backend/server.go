@@ -19,6 +19,7 @@ import (
 	"slices"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/cli/browser"
@@ -582,7 +583,7 @@ func StartServer(ctx context.Context, addr string, heartbeat time.Duration, loca
 		dbDownloadURL:       "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City&suffix=tar.gz",
 	}
 
-	clients := 0
+	var clients atomic.Int64
 	registry := rpc.NewRegistry[remote, json.RawMessage](
 		service,
 
@@ -590,14 +591,10 @@ func StartServer(ctx context.Context, addr string, heartbeat time.Duration, loca
 
 		&rpc.RegistryHooks{
 			OnClientConnect: func(remoteID string) {
-				clients++
-
-				log.Printf("%v clients connected", clients)
+				log.Printf("%v clients connected", clients.Add(1))
 			},
 			OnClientDisconnect: func(remoteID string) {
-				clients--
-
-				log.Printf("%v clients connected", clients)
+				log.Printf("%v clients connected", clients.Add(-1))
 			},
 		},
 	)
