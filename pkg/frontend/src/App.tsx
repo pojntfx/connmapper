@@ -325,6 +325,8 @@ const App = () => {
       socket.addEventListener("error", rej);
     });
 
+    const linkSignal = new AbortController();
+
     const encoder = new WritableStream({
       write(chunk) {
         socket.send(JSON.stringify(chunk));
@@ -364,9 +366,12 @@ const App = () => {
     socket.addEventListener("close", () => {
       parserReader.cancel();
       parserWriter.abort();
+      linkSignal.abort();
     });
 
     registry.linkStream(
+      linkSignal.signal,
+
       encoder,
       decoder,
 
