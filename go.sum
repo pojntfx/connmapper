@@ -54,10 +54,10 @@ github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINE
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 h1:Jamvg5psRIccs7FGNTlIRMkT8wgtp5eCXdBlqhYGL6U=
 github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
-github.com/pojntfx/hydrapp/hydrapp v0.0.0-20240807225249-46f23eed592e h1:ciU0MrlBKRyQtZPGICkRVkT3p9RljI+ngfUFYW6gUlI=
-github.com/pojntfx/hydrapp/hydrapp v0.0.0-20240807225249-46f23eed592e/go.mod h1:STH543zGexAUq9X/P0reiLTBak/A1cI23Ru+nHhYQDs=
-github.com/pojntfx/panrpc/go v0.0.0-20240727035459-583758c47d9f h1:p7S+CWrOTh9M+QADrmedIuLevSmkbJTeNJvMOzTf8eY=
-github.com/pojntfx/panrpc/go v0.0.0-20240727035459-583758c47d9f/go.mod h1:G9YawT9jiXDf6z7WEv7KMIca+A41mjm8KL8AfBxN37U=
+github.com/pojntfx/hydrapp/hydrapp v0.0.0-20240816012316-6930f6fca3dd h1:R/ESG/eyN8ljfJVRXhkkWD7+/NePsvVOEzjagEF6r4o=
+github.com/pojntfx/hydrapp/hydrapp v0.0.0-20240816012316-6930f6fca3dd/go.mod h1:cMqpRL/EG4CvGaYlrEosyoHwkm54vDcL5r8d6/2G1SU=
+github.com/pojntfx/panrpc/go v0.0.0-20240816011753-7169be8c89fb h1:2vU/ZbsJ1uZhR2BCjc3mIfzR9GVuAWHSIUrw8jnLK9g=
+github.com/pojntfx/panrpc/go v0.0.0-20240816011753-7169be8c89fb/go.mod h1:G9YawT9jiXDf6z7WEv7KMIca+A41mjm8KL8AfBxN37U=
 github.com/randall77/makefat v0.0.0-20210315173500-7ddd0e42c844 h1:GranzK4hv1/pqTIhMTXt2X8MmMOuH3hMeUR0o9SP5yc=
 github.com/randall77/makefat v0.0.0-20210315173500-7ddd0e42c844/go.mod h1:T1TLSfyWVBRXVGzWd0o9BI4kfoO9InEgfQe4NV3mLz8=
 github.com/rogpeppe/go-internal v1.9.0/go.mod h1:WtVeX8xhTBvf0smdhujwtBcq4Qrzq/fJaraNFVN+nFs=
@@ -91,8 +91,8 @@ golang.org/x/net v0.0.0-20220722155237-a158d28d115b/go.mod h1:XRhObCWvk6IyKnWLug
 golang.org/x/net v0.2.0/go.mod h1:KqCZLdyyvdV855qA2rE3GC2aiw5xGR5TEjj8smXukLY=
 golang.org/x/net v0.6.0/go.mod h1:2Tu9+aMcznHK/AK1HMvgo6xiTLG5rD5rZLDS+rp2Bjs=
 golang.org/x/net v0.8.0/go.mod h1:QVkue5JL9kW//ek3r6jTKnTFis1tRmNAW2P1shuFdJc=
-golang.org/x/net v0.27.0 h1:5K3Njcw06/l2y9vpGCSdcxWOYHOUk3dVNGDXN+FvAys=
-golang.org/x/net v0.27.0/go.mod h1:dDi0PyhWNoiUOrAS8uXv/vnScO4wnHQO4mj9fn/RytE=
+golang.org/x/net v0.28.0 h1:a9JDOJc5GMUJ0+UDqmLT86WiEy7iWyIhz8gz8E4e5hE=
+golang.org/x/net v0.28.0/go.mod h1:yqtgsTWOOnlGLG9GFRrK3++bGOUEkNBoHZc8MEDWPNg=
 golang.org/x/sync v0.0.0-20190423024810-112230192c58/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sync v0.1.0/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
@@ -135,7 +135,7 @@ gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c/go.mod h1:JHkPIbrfpd72SG/EV
 gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
 gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
 gopkg.in/yaml.v3 v3.0.1/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
-nhooyr.io/websocket v1.8.11 h1:f/qXNc2/3DpoSZkHt1DQu6rj4zGC8JmkkLkWss0MgN0=
-nhooyr.io/websocket v1.8.11/go.mod h1:rN9OFWIUwuxg4fR5tELlYC04bXYowCP9GX47ivo2l+c=
+nhooyr.io/websocket v1.8.17 h1:KEVeLJkUywCKVsnLIDlD/5gtayKp8VoCkksHCGGfT9Y=
+nhooyr.io/websocket v1.8.17/go.mod h1:rN9OFWIUwuxg4fR5tELlYC04bXYowCP9GX47ivo2l+c=
 yrh.dev/icns v0.0.0-20210608051050-de3ea6a57b33 h1:2m/rasFrPAs8JJa7GxQK4p8otNO3S/b/xqOv94WeLB0=
 yrh.dev/icns v0.0.0-20210608051050-de3ea6a57b33/go.mod h1:Fr7EwNr4JGuM4jXG3BGbxw5tDHqc7snQ/+fN1KASjZo=
