@@ -20,28 +20,28 @@ jobs:
           #   src: .
           #   pkg: .
           #   exclude: deb|dmg|flatpak|msi|rpm|binaries|tests
-          #   tag: main
+          #   tag: latest
           #   dst: out/*
           #   runner: ubuntu-latest
           - id: hydrapp-deb-amd64.com.pojtinger.felicitas.connmapper
             src: .
             pkg: .
             exclude: deb/arm64|apk|dmg|flatpak|msi|rpm|binaries|tests
-            tag: main
+            tag: latest
             dst: out/*
             runner: ubuntu-latest
           - id: hydrapp-deb-arm64.com.pojtinger.felicitas.connmapper
             src: .
             pkg: .
             exclude: deb/amd64|apk|dmg|flatpak|msi|rpm|binaries|tests
-            tag: main
+            tag: latest
             dst: out/*
             runner: ubicloud-standard-4-arm
           - id: hydrapp-dmg.com.pojtinger.felicitas.connmapper
             src: .
             pkg: .
             exclude: apk|deb|flatpak|msi|rpm|binaries|tests
-            tag: main
+            tag: latest
             dst: out/*
             runner: ubuntu-latest
           # Disable due to `libpcap` dependency
@@ -49,35 +49,35 @@ jobs:
           #   src: .
           #   pkg: .
           #   exclude: apk|deb|flatpak/arm64|dmg|msi|rpm|binaries|tests
-          #   tag: main
+          #   tag: latest
           #   dst: out/*
           #   runner: ubuntu-latest
           # - id: hydrapp-flatpak-arm64.com.pojtinger.felicitas.connmapper
           #   src: .
           #   pkg: .
           #   exclude: apk|deb|flatpak/amd64|dmg|msi|rpm|binaries|tests
-          #   tag: main
+          #   tag: latest
           #   dst: out/*
           #   runner: ubicloud-standard-4-arm
           - id: hydrapp-msi.com.pojtinger.felicitas.connmapper
             src: .
             pkg: .
             exclude: apk|deb|flatpak|dmg|rpm|binaries|tests
-            tag: main
+            tag: latest
             dst: out/*
             runner: ubuntu-latest
           - id: hydrapp-rpm-amd64.com.pojtinger.felicitas.connmapper
             src: .
             pkg: .
             exclude: apk|deb|flatpak|dmg|rpm/arm64|msi|binaries|tests
-            tag: main
+            tag: latest
             dst: out/*
             runner: ubuntu-latest
           - id: hydrapp-rpm-arm64.com.pojtinger.felicitas.connmapper
             src: .
             pkg: .
             exclude: apk|deb|flatpak|dmg|rpm/amd64|msi|binaries|tests
-            tag: main
+            tag: latest
             dst: out/*
             runner: ubicloud-standard-4-arm
           # Disable due to `libpcap` dependency
@@ -85,7 +85,7 @@ jobs:
           #   src: .
           #   pkg: .
           #   exclude: apk|deb|flatpak|dmg|msi|rpm|tests
-          #   tag: main
+          #   tag: latest
           #   dst: out/*
           #   runner: ubuntu-latest
           # Disable due to `libpcap` dependency
@@ -93,7 +93,7 @@ jobs:
           #   src: .
           #   pkg: .
           #   exclude: apk|deb|flatpak|dmg|msi|rpm|binaries
-          #   tag: main
+          #   tag: latest
           #   dst: out/*
           #   runner: ubuntu-latest
 
@@ -111,7 +111,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
       - name: Set up hydrapp
         run: |
-          curl -L -o /tmp/hydrapp "https://github.com/pojntfx/hydrapp/releases/download/release-main/hydrapp.linux-$(uname -m)" 
+          curl -L -o /tmp/hydrapp "https://github.com/pojntfx/hydrapp/releases/latest/download/hydrapp.linux-$(uname -m)" 
           sudo install /tmp/hydrapp /usr/local/bin
       - name: Setup Java/APK keystore
         working-directory: .
@@ -153,7 +153,7 @@ jobs:
     needs: build-linux
     environment:
       name: github-pages
-      url: ${{ steps.publish.outputs.page_url }}
+      url: ${{ steps.setup.outputs.base_url }}
 
     steps:
       - name: Checkout
@@ -178,11 +178,13 @@ jobs:
           cd /tmp/github-pages/
           tree --timefmt '%Y-%m-%dT%H:%M:%SZ' -T 'hydrapp Repositories' --du -h -D -H . -o 'index.html'
       - name: Setup GitHub Pages
+        id: setup
         uses: actions/configure-pages@v5
-      - name: Upload GitHub Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: /tmp/github-pages/
       - name: Publish to GitHub pages
-        id: publish
-        uses: actions/deploy-pages@v4
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: /tmp/github-pages/
+          keep_files: true
+          user_name: github-actions[bot]
+          user_email: github-actions[bot]@users.noreply.github.com
