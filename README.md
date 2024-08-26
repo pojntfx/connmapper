@@ -68,7 +68,7 @@ Here you can also download the collected data as a CSV file for further analysis
 
 ### Settings
 
-You can open the settings through the settings button in the top right; here you can configure many aspects of the application such as cache sizes or polling intervals:
+You can open the settings through the settings button in the top right; here you can configure many aspects of the application such as cache sizes or polling intervals (and enable "Cyberpunk mode" as an alternative theme):
 
 ![A screenshot of the settings dialog](./docs/screenshot-settings.png)
 
