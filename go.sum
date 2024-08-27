@@ -15,8 +15,8 @@ github.com/bwesterb/go-ristretto v1.2.3/go.mod h1:fUIoIZaG73pV5biE2Blr2xEzDoMj7N
 github.com/cli/browser v1.3.0 h1:LejqCrpWr+1pRqmEPDGnTZOjsMe7sehifLynZJuqJpo=
 github.com/cli/browser v1.3.0/go.mod h1:HH8s+fOAxjhQoBUAsKuPCbqUuxZDhQ2/aD+SzsEfBTk=
 github.com/cloudflare/circl v1.3.3/go.mod h1:5XYMA4rFBvNIrhs50XuiBJ15vF2pZn4nnUKZrLbUZFA=
-github.com/cloudflare/circl v1.3.9 h1:QFrlgFYf2Qpi8bSpVPK1HBvWpx16v/1TZivyo7pGuBE=
-github.com/cloudflare/circl v1.3.9/go.mod h1:PDRU+oXvdD7KCtgKxW95M5Z8BpSCJXQORiZFnBQS5QU=
+github.com/cloudflare/circl v1.4.0 h1:BV7h5MgrktNzytKmWjpOtdYrf0lkkbF8YMlBGPhJQrY=
+github.com/cloudflare/circl v1.4.0/go.mod h1:PDRU+oXvdD7KCtgKxW95M5Z8BpSCJXQORiZFnBQS5QU=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
@@ -54,8 +54,8 @@ github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINE
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 h1:Jamvg5psRIccs7FGNTlIRMkT8wgtp5eCXdBlqhYGL6U=
 github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
-github.com/pojntfx/hydrapp/hydrapp v0.0.0-20240816012316-6930f6fca3dd h1:R/ESG/eyN8ljfJVRXhkkWD7+/NePsvVOEzjagEF6r4o=
-github.com/pojntfx/hydrapp/hydrapp v0.0.0-20240816012316-6930f6fca3dd/go.mod h1:cMqpRL/EG4CvGaYlrEosyoHwkm54vDcL5r8d6/2G1SU=
+github.com/pojntfx/hydrapp/hydrapp v0.0.0-20240827002308-22c8dc1ea9b8 h1:RMkBO5th+2LG9amOGkrgxU5CicoPKNujaiGH7MeSMzg=
+github.com/pojntfx/hydrapp/hydrapp v0.0.0-20240827002308-22c8dc1ea9b8/go.mod h1:cMqpRL/EG4CvGaYlrEosyoHwkm54vDcL5r8d6/2G1SU=
 github.com/pojntfx/panrpc/go v0.0.0-20240816011753-7169be8c89fb h1:2vU/ZbsJ1uZhR2BCjc3mIfzR9GVuAWHSIUrw8jnLK9g=
 github.com/pojntfx/panrpc/go v0.0.0-20240816011753-7169be8c89fb/go.mod h1:G9YawT9jiXDf6z7WEv7KMIca+A41mjm8KL8AfBxN37U=
 github.com/randall77/makefat v0.0.0-20210315173500-7ddd0e42c844 h1:GranzK4hv1/pqTIhMTXt2X8MmMOuH3hMeUR0o9SP5yc=
