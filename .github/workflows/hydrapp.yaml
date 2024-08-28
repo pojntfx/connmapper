@@ -44,21 +44,20 @@ jobs:
             tag: latest
             dst: out/*
             runner: ubuntu-latest
-          # Disable due to `libpcap` dependency
-          # - id: hydrapp-flatpak-amd64.com.pojtinger.felicitas.connmapper
-          #   src: .
-          #   pkg: .
-          #   exclude: apk|deb|flatpak/arm64|dmg|msi|rpm|binaries|tests
-          #   tag: latest
-          #   dst: out/*
-          #   runner: ubuntu-latest
-          # - id: hydrapp-flatpak-arm64.com.pojtinger.felicitas.connmapper
-          #   src: .
-          #   pkg: .
-          #   exclude: apk|deb|flatpak/amd64|dmg|msi|rpm|binaries|tests
-          #   tag: latest
-          #   dst: out/*
-          #   runner: ubicloud-standard-4-arm
+          - id: hydrapp-flatpak-amd64.com.pojtinger.felicitas.connmapper
+            src: .
+            pkg: .
+            exclude: apk|deb|flatpak/arm64|dmg|msi|rpm|binaries|tests
+            tag: latest
+            dst: out/*
+            runner: ubuntu-latest
+          - id: hydrapp-flatpak-arm64.com.pojtinger.felicitas.connmapper
+            src: .
+            pkg: .
+            exclude: apk|deb|flatpak/amd64|dmg|msi|rpm|binaries|tests
+            tag: latest
+            dst: out/*
+            runner: ubicloud-standard-4-arm
           - id: hydrapp-msi.com.pojtinger.felicitas.connmapper
             src: .
             pkg: .
