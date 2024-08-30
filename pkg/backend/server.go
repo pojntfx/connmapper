@@ -40,6 +40,10 @@ var (
 
 const (
 	flatpakSpawnCmd = "flatpak-spawn"
+
+	EnvTrace = "CONNMAPPER_TRACE"
+
+	PermissionDeniedExitCode = 13
 )
 
 func lookupLocation(db *geoip2.Reader, ip net.IP) (
@@ -97,6 +101,12 @@ type Device struct {
 	PcapName string
 	NetName  string
 	MTU      int
+}
+
+type Packet struct {
+	Data          []byte                 `json:"data"`
+	LinkType      layers.LinkType        `json:"linkType"`
+	DecodeOptions gopacket.DecodeOptions `json:"decodeOptions"`
 }
 
 type local struct {
@@ -374,21 +384,23 @@ func (l *local) TraceDevice(ctx context.Context, device Device) error {
 		return err
 	}
 
-	handle, err := pcap.OpenLive(device.PcapName, int32(device.MTU), true, pcap.BlockForever)
+	cmd := exec.Command(os.Args[0], device.PcapName, fmt.Sprintf("%v", device.MTU))
+	cmd.Env = append(cmd.Env, EnvTrace+"=true")
+
+	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		if strings.HasSuffix(err.Error(), "(socket: Operation not permitted)") {
-			if err := l.RestartApp(ctx, true); err != nil {
-				return err
-			}
-		} else {
-			return err
-		}
+		return errors.Join(err, cmd.Process.Kill())
 	}
 
-	source := gopacket.NewPacketSource(handle, handle.LinkType())
+	if err := cmd.Start(); err != nil {
+		return err
+	}
+
 	go func() {
 		defer func() {
-			handle.Close()
+			if cmd.Process != nil {
+				_ = cmd.Process.Kill()
+			}
 			_ = db.Close()
 
 			l.tracingDevicesLock.Lock()
@@ -396,7 +408,31 @@ func (l *local) TraceDevice(ctx context.Context, device Device) error {
 			l.tracingDevicesLock.Unlock()
 		}()
 
-		for packet := range source.Packets() {
+		decoder := json.NewDecoder(stdout)
+		for {
+			var rawPacket Packet
+			if err := decoder.Decode(&rawPacket); err != nil {
+				if cmd.Process != nil {
+					_ = cmd.Process.Kill()
+
+					_ = cmd.Wait()
+				}
+
+				if cmd.ProcessState.ExitCode() == PermissionDeniedExitCode {
+					if err := l.RestartApp(ctx, true); err != nil {
+						log.Println("Could not restart app:", err)
+
+						return
+					}
+				}
+
+				log.Println("Could not capture:", err)
+
+				return
+			}
+
+			packet := gopacket.NewPacket(rawPacket.Data, rawPacket.LinkType, rawPacket.DecodeOptions)
+
 			layerType := ""
 			nextLayerType := ""
 			var srcIP net.IP

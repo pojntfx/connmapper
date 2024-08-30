@@ -7,12 +7,18 @@ import (
 	"bytes"
 	"context"
 	_ "embed"
+	"encoding/json"
 	"errors"
+	"flag"
 	"fmt"
 	"log"
 	"os"
+	"strconv"
+	"strings"
 	"time"
 
+	"github.com/google/gopacket"
+	"github.com/google/gopacket/pcap"
 	"github.com/pojntfx/connmapper/pkg/backend"
 	"github.com/pojntfx/connmapper/pkg/frontend"
 	"github.com/pojntfx/hydrapp/hydrapp/pkg/config"
@@ -23,7 +29,54 @@ import (
 //go:embed hydrapp.yaml
 var configFile []byte
 
+var (
+	ErrNotEnoughArguments = errors.New("not enough arguments")
+)
+
 func main() {
+	if trace := os.Getenv(backend.EnvTrace); trace == "true" {
+		flag.Parse()
+
+		if flag.NArg() < 2 {
+			panic(ErrNotEnoughArguments)
+		}
+
+		mtu, err := strconv.Atoi(flag.Arg(1))
+		if err != nil {
+			panic(err)
+		}
+
+		handle, err := pcap.OpenLive(flag.Arg(0), int32(mtu), true, pcap.BlockForever)
+		if err != nil {
+			// GoPacket doesn't export the permission error, so we need to compare error strings
+			if strings.HasSuffix(err.Error(), "(socket: Operation not permitted)") {
+				fmt.Println(errors.Join(errors.New("could not start capturing, capture permission denied"), err))
+
+				os.Exit(backend.PermissionDeniedExitCode)
+			} else {
+				panic(err)
+			}
+		}
+		defer handle.Close()
+
+		source := gopacket.NewPacketSource(handle, handle.LinkType())
+
+		encoder := json.NewEncoder(os.Stdout)
+		for packet := range source.Packets() {
+			rawPacket := &backend.Packet{
+				Data:          packet.Data(),
+				LinkType:      handle.LinkType(),
+				DecodeOptions: source.DecodeOptions,
+			}
+
+			if err := encoder.Encode(rawPacket); err != nil {
+				panic(err)
+			}
+		}
+
+		return
+	}
+
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
