@@ -34,7 +34,7 @@ var (
 )
 
 func main() {
-	if trace := os.Getenv(backend.EnvTrace); trace == "true" {
+	if trace := os.Getenv(backend.TraceCommandEnv); trace == "true" {
 		flag.Parse()
 
 		if flag.NArg() < 2 {
@@ -50,14 +50,16 @@ func main() {
 		if err != nil {
 			// GoPacket doesn't export the permission error, so we need to compare error strings
 			if strings.HasSuffix(err.Error(), "(socket: Operation not permitted)") {
-				fmt.Println(errors.Join(errors.New("could not start capturing, capture permission denied"), err))
-
-				os.Exit(backend.PermissionDeniedExitCode)
+				fmt.Print(backend.TraceCommandHandshakeHandlePermissionDenied)
 			} else {
-				panic(err)
+				fmt.Print(backend.TraceCommandHandshakeHandleUnexpectedError)
 			}
+
+			panic(err)
 		}
 		defer handle.Close()
+
+		fmt.Print(backend.TraceCommandHandshakeHandleAcquired)
 
 		source := gopacket.NewPacketSource(handle, handle.LinkType())
 
