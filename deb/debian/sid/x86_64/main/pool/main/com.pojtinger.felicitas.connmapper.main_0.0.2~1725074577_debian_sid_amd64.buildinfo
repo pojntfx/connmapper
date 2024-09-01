@@ -4,20 +4,20 @@ Binary: com.pojtinger.felicitas.connmapper.main com.pojtinger.felicitas.connmapp
 Architecture: amd64 source
 Version: 0.0.2~1725074577
 Checksums-Md5:
- 307f699b86112fac5884b3f57be0fc87 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1725074577.dsc
+ d70a783157784303327e063f00373ee2 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1725074577.dsc
  47241616ecbd1093cac05f8b01c800ac 3787264 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.2~1725074577_amd64.deb
  1f78fd7d2e3f9c0bc4d411980535c750 18754456 com.pojtinger.felicitas.connmapper.main_0.0.2~1725074577_amd64.deb
 Checksums-Sha1:
- 4c9073dba9111a2da1d409b59f7dea5e1a29d1ac 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1725074577.dsc
+ d9e268761dad0539ead779cd11c649f0a0f16c03 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1725074577.dsc
  992940a139bf8419103969befbcb834bf8a9180a 3787264 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.2~1725074577_amd64.deb
  19c27cc37124f63c5be691dbd721d925beda3cc8 18754456 com.pojtinger.felicitas.connmapper.main_0.0.2~1725074577_amd64.deb
 Checksums-Sha256:
- a248c832156ca14645e52a26029f8a330d226c41cde6d65cdc0f0a0a96bd4875 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1725074577.dsc
+ f3ba3c5624fae9bf2bf32ebcc1648975bed3be27d5c63c77f685b984b32c9d9e 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1725074577.dsc
  afb6476f4bebb481658b1b788c5e82c1e8ee2ceaa07169cec900e97ce9092ceb 3787264 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.2~1725074577_amd64.deb
  59e3db55b3d62886dda2560152de1dee5d4d85c181e6045103ed469c8a63062a 18754456 com.pojtinger.felicitas.connmapper.main_0.0.2~1725074577_amd64.deb
 Build-Origin: Debian
 Build-Architecture: amd64
-Build-Date: Sat, 31 Aug 2024 03:28:38 +0000
+Build-Date: Sun, 01 Sep 2024 00:33:15 +0000
 Build-Path: /build/com.pojtinger.felicitas.connmapper.main-0.0.2~1725074577
 Build-Tainted-By:
  merged-usr-via-aliased-dirs
@@ -118,7 +118,7 @@ Installed-Build-Depends:
  libdpkg-perl (= 1.22.11),
  libelf1t64 (= 0.191-2),
  liberror-perl (= 0.17029-2),
- libexpat1 (= 2.6.2-1),
+ libexpat1 (= 2.6.2-2),
  libffi8 (= 3.4.6-1),
  libfile-stripnondeterminism-perl (= 1.14.0-1),
  libgcc-14-dev (= 14.2.0-4),
