@@ -210,10 +210,7 @@ class Remote {
     return "";
   }
 
-  async RestartApp(
-    ctx: IRemoteContext,
-    fixPermissions: boolean
-  ): Promise<void> {
+  async RestartApp(ctx: IRemoteContext): Promise<void> {
     return;
   }
 }
@@ -708,7 +705,7 @@ const App = () => {
               onClick={() =>
                 registry.forRemotes(async (_, remote) => {
                   try {
-                    await remote.RestartApp(undefined, false);
+                    await remote.RestartApp(undefined);
                   } catch (e) {
                     alert(JSON.stringify((e as Error).message));
                   }

@@ -37,6 +37,7 @@ import (
 var (
 	ErrDatabaseNotInArchive                     = errors.New("database not in archive")
 	ErrUnexpectedErrorWhileStartingTraceCommand = errors.New("unexpected error while starting trace command")
+	ErrUserDeniedEscalationPermission           = errors.New("user denied escalation permission")
 )
 
 const (
@@ -310,49 +311,10 @@ func (l *local) GetDBPath(ctx context.Context) (string, error) {
 	return l.dbPath, nil
 }
 
-func (l *local) RestartApp(ctx context.Context, fixPermissions bool) error {
-	if fixPermissions {
-		var peer *remote
-
-		_ = l.ForRemotes(func(remoteID string, remote remote) error {
-			peer = &remote
-
-			return nil
-		})
-
-		if peer != nil {
-			confirm, nerr := peer.GetEscalationPermission(ctx, false)
-			if nerr != nil {
-				return nerr
-			}
-
-			if !confirm {
-				return nil
-			}
-		}
-	}
-
+func (l *local) RestartApp(ctx context.Context) error {
 	bin, err := os.Executable()
 	if err != nil {
 		return err
-	}
-
-	if fixPermissions {
-		switch runtime.GOOS {
-		case "linux":
-			cmd := fmt.Sprintf("setcap cap_net_raw,cap_net_admin=eip %v", bin)
-			if _, err := exec.LookPath(flatpakSpawnCmd); err == nil {
-				cmd = flatpakSpawnCmd + " --host " + cmd
-			}
-
-			if err := uutils.RunElevatedCommand(cmd); err != nil {
-				return err
-			}
-		default:
-			if err := uutils.RunElevatedCommand(fmt.Sprintf("%v %v", bin, strings.Join(os.Args, " "))); err != nil {
-				return err
-			}
-		}
 	}
 
 	if err := utils.ForkExec(
@@ -362,7 +324,7 @@ func (l *local) RestartApp(ctx context.Context, fixPermissions bool) error {
 		return err
 	}
 
-	if err := uutils.KillBrowser(l.browserState); err != nil {
+	if err := uutils.KillBrowser(ctx, l.browserState); err != nil {
 		return err
 	}
 
@@ -389,7 +351,13 @@ func (l *local) TraceDevice(ctx context.Context, device Device) error {
 		return err
 	}
 
-	cmd := exec.Command(os.Args[0], device.PcapName, fmt.Sprintf("%v", device.MTU))
+restartTraceCommand:
+	bin, err := os.Executable()
+	if err != nil {
+		return err
+	}
+
+	cmd := exec.CommandContext(ctx, bin, device.PcapName, fmt.Sprintf("%v", device.MTU))
 	cmd.Env = append(cmd.Env, TraceCommandEnv+"=true")
 
 	stdout, err := cmd.StdoutPipe()
@@ -423,7 +391,42 @@ func (l *local) TraceDevice(ctx context.Context, device Device) error {
 			_ = cmd.Wait()
 		}
 
-		return l.RestartApp(ctx, true)
+		var peer *remote
+
+		_ = l.ForRemotes(func(remoteID string, remote remote) error {
+			peer = &remote
+
+			return nil
+		})
+
+		if peer != nil {
+			confirm, nerr := peer.GetEscalationPermission(ctx, false)
+			if nerr != nil {
+				return nerr
+			}
+
+			if !confirm {
+				return ErrUserDeniedEscalationPermission
+			}
+		}
+
+		switch runtime.GOOS {
+		case "linux":
+			cmd := fmt.Sprintf("setcap cap_net_raw,cap_net_admin=eip %v", bin)
+			if _, err := exec.LookPath(flatpakSpawnCmd); err == nil {
+				cmd = flatpakSpawnCmd + " --host " + cmd
+			}
+
+			if err := uutils.RunElevatedCommand(ctx, cmd); err != nil {
+				return err
+			}
+		default:
+			if err := uutils.RunElevatedCommand(ctx, fmt.Sprintf("%v %v", bin, strings.Join(os.Args, " "))); err != nil {
+				return err
+			}
+		}
+
+		goto restartTraceCommand
 
 	default:
 		if cmd.Process != nil {

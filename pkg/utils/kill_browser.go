@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"context"
 	"fmt"
 	"os/exec"
 	"runtime"
@@ -10,11 +11,11 @@ import (
 	"github.com/pojntfx/hydrapp/hydrapp/pkg/ui"
 )
 
-func KillBrowser(browserState *ui.BrowserState) error {
+func KillBrowser(ctx context.Context, browserState *ui.BrowserState) error {
 	if browserState != nil && browserState.Cmd != nil && browserState.Cmd.Process != nil {
 		// Windows does not support the `SIGTERM` signal
 		if runtime.GOOS == "windows" {
-			if output, err := exec.Command("taskkill", "/pid", strconv.Itoa(browserState.Cmd.Process.Pid)).CombinedOutput(); err != nil {
+			if output, err := exec.CommandContext(ctx, "taskkill", "/pid", strconv.Itoa(browserState.Cmd.Process.Pid)).CombinedOutput(); err != nil {
 				return fmt.Errorf("could not close old version: %v: %v", string(output), err)
 			}
 		} else {
