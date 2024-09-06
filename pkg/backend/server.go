@@ -41,8 +41,6 @@ var (
 )
 
 const (
-	flatpakSpawnCmd = "flatpak-spawn"
-
 	TraceCommandEnv = "CONNMAPPER_TRACE"
 
 	traceCommandHandshakeLen = 2
@@ -412,16 +410,11 @@ restartTraceCommand:
 
 		switch runtime.GOOS {
 		case "linux":
-			cmd := fmt.Sprintf("setcap cap_net_raw,cap_net_admin=eip %v", bin)
-			if _, err := exec.LookPath(flatpakSpawnCmd); err == nil {
-				cmd = flatpakSpawnCmd + " --host " + cmd
-			}
-
-			if err := uutils.RunElevatedCommand(ctx, cmd); err != nil {
+			if err := uutils.RunElevatedCommand(ctx, "Authentication Required", "Authentication is needed to capture packets.", fmt.Sprintf(`setcap cap_net_raw,cap_net_admin=eip '%v'`, bin)); err != nil {
 				return err
 			}
 		default:
-			if err := uutils.RunElevatedCommand(ctx, fmt.Sprintf("%v %v", bin, strings.Join(os.Args, " "))); err != nil {
+			if err := uutils.RunElevatedCommand(ctx, "Authentication Required", "Authentication is needed to capture packets.", fmt.Sprintf("%v %v", bin, strings.Join(os.Args, " "))); err != nil {
 				return err
 			}
 		}
