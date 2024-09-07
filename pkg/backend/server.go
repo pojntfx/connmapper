@@ -16,16 +16,14 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
-	"slices"
 	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
 
 	"github.com/cli/browser"
-	"github.com/google/gopacket"
-	"github.com/google/gopacket/layers"
-	"github.com/google/gopacket/pcap"
+	"github.com/gopacket/gopacket"
+	"github.com/gopacket/gopacket/layers"
 	"github.com/oschwald/geoip2-golang"
 	uutils "github.com/pojntfx/connmapper/pkg/utils"
 	"github.com/pojntfx/hydrapp/hydrapp/pkg/ui"
@@ -44,10 +42,6 @@ const (
 	TraceCommandEnv = "CONNMAPPER_TRACE"
 
 	traceCommandHandshakeLen = 2
-
-	TraceCommandHandshakeHandleAcquired         = "AQ"
-	TraceCommandHandshakeHandlePermissionDenied = "PD"
-	TraceCommandHandshakeHandleUnexpectedError  = "UE"
 )
 
 func lookupLocation(db *geoip2.Reader, ip net.IP) (
@@ -99,18 +93,6 @@ func getTracedConnectionID(connection tracedConnection) string {
 		connection.NextLayerType + "-" +
 		connection.SrcIP + "-" +
 		connection.DstIP + "-"
-}
-
-type Device struct {
-	PcapName string
-	NetName  string
-	MTU      int
-}
-
-type Packet struct {
-	Data          []byte                 `json:"data"`
-	LinkType      layers.LinkType        `json:"linkType"`
-	DecodeOptions gopacket.DecodeOptions `json:"decodeOptions"`
 }
 
 type local struct {
@@ -213,60 +195,8 @@ func (l *local) DownloadDatabase(ctx context.Context, licenseKey string) error {
 	return nil
 }
 
-func (l *local) ListDevices(ctx context.Context) ([]Device, error) {
-	pcapDevices, err := pcap.FindAllDevs()
-	if err != nil {
-		return []Device{}, err
-	}
-
-	netIfaces, err := net.Interfaces()
-	if err != nil {
-		return []Device{}, err
-	}
-
-	devices := []Device{}
-	for _, pcapDevice := range pcapDevices {
-		pcapAddresses := []string{}
-		for _, cidr := range pcapDevice.Addresses {
-			pcapAddresses = append(pcapAddresses, cidr.IP.String())
-		}
-
-		var netIface *net.Interface
-		for _, candidate := range netIfaces {
-			rawNetAddresses, err := candidate.Addrs()
-			if err != nil {
-				return []Device{}, err
-			}
-
-			netAddresses := []string{}
-			for _, rawCandidateAddress := range rawNetAddresses {
-				ip, _, err := net.ParseCIDR(rawCandidateAddress.String())
-				if err != nil {
-					return []Device{}, err
-				}
-
-				netAddresses = append(netAddresses, ip.String())
-			}
-
-			if slices.EqualFunc(netAddresses, pcapAddresses, func(a string, b string) bool {
-				return a == b
-			}) {
-				netIface = &candidate
-
-				break
-			}
-		}
-
-		if netIface != nil {
-			devices = append(devices, Device{
-				PcapName: pcapDevice.Name,
-				NetName:  netIface.Name,
-				MTU:      netIface.MTU,
-			})
-		}
-	}
-
-	return devices, nil
+func (l *local) ListDevices(ctx context.Context) ([]uutils.Device, error) {
+	return uutils.ListDevices(ctx)
 }
 
 func (l *local) SetMaxPacketCache(ctx context.Context, packetCache int) error {
@@ -331,7 +261,7 @@ func (l *local) RestartApp(ctx context.Context) error {
 	return nil
 }
 
-func (l *local) TraceDevice(ctx context.Context, device Device) error {
+func (l *local) TraceDevice(ctx context.Context, device uutils.Device) error {
 	l.tracingDevicesLock.Lock()
 	defer l.tracingDevicesLock.Unlock()
 
@@ -379,10 +309,10 @@ restartTraceCommand:
 	}
 
 	switch string(handshake) {
-	case TraceCommandHandshakeHandleAcquired:
+	case uutils.TraceCommandHandshakeHandleAcquired:
 		break
 
-	case TraceCommandHandshakeHandlePermissionDenied:
+	case uutils.TraceCommandHandshakeHandlePermissionDenied:
 		if cmd.Process != nil {
 			_ = cmd.Process.Kill()
 
@@ -447,7 +377,7 @@ restartTraceCommand:
 
 		decoder := json.NewDecoder(stdout)
 		for {
-			var rawPacket Packet
+			var rawPacket uutils.Packet
 			if err := decoder.Decode(&rawPacket); err != nil {
 
 				log.Println("Could not continue capturing:", err)

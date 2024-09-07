@@ -89,7 +89,7 @@ All arguments passed to the binary will be forwarded to the browser used to disp
 ## Acknowledgements
 
 - [pojntfx/hydrapp](https://github.com/pojntfx/hydrapp) provides the application framework.
-- [google/gopacket](https://github.com/google/gopacket) provides the library that the packets are being parsed with.
+- [gopacket/gopacket](https://github.com/gopacket/gopacket) provides the library that the packets are being parsed with.
 - [oschwald/geoip2-golang](https://github.com/oschwald/geoip2-golang) provides the library for reading the GeoIP2 database.
 
 ## Contributing

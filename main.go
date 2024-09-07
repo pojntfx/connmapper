@@ -7,20 +7,17 @@ import (
 	"bytes"
 	"context"
 	_ "embed"
-	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
 	"log"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 
-	"github.com/google/gopacket"
-	"github.com/google/gopacket/pcap"
 	"github.com/pojntfx/connmapper/pkg/backend"
 	"github.com/pojntfx/connmapper/pkg/frontend"
+	"github.com/pojntfx/connmapper/pkg/utils"
 	"github.com/pojntfx/hydrapp/hydrapp/pkg/config"
 	_ "github.com/pojntfx/hydrapp/hydrapp/pkg/fixes"
 	"github.com/pojntfx/hydrapp/hydrapp/pkg/ui"
@@ -46,34 +43,8 @@ func main() {
 			panic(err)
 		}
 
-		handle, err := pcap.OpenLive(flag.Arg(0), int32(mtu), true, pcap.BlockForever)
-		if err != nil {
-			// GoPacket doesn't export the permission error, so we need to compare error strings
-			if strings.HasSuffix(err.Error(), "(socket: Operation not permitted)") {
-				fmt.Print(backend.TraceCommandHandshakeHandlePermissionDenied)
-			} else {
-				fmt.Print(backend.TraceCommandHandshakeHandleUnexpectedError)
-			}
-
+		if err := utils.TraceDevice(mtu, flag.Arg(0)); err != nil {
 			panic(err)
-		}
-		defer handle.Close()
-
-		fmt.Print(backend.TraceCommandHandshakeHandleAcquired)
-
-		source := gopacket.NewPacketSource(handle, handle.LinkType())
-
-		encoder := json.NewEncoder(os.Stdout)
-		for packet := range source.Packets() {
-			rawPacket := &backend.Packet{
-				Data:          packet.Data(),
-				LinkType:      handle.LinkType(),
-				DecodeOptions: source.DecodeOptions,
-			}
-
-			if err := encoder.Encode(rawPacket); err != nil {
-				panic(err)
-			}
 		}
 
 		return

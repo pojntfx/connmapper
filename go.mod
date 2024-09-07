@@ -4,7 +4,7 @@ go 1.21.1
 
 require (
 	github.com/cli/browser v1.3.0
-	github.com/google/gopacket v1.1.19
+	github.com/gopacket/gopacket v1.2.0
 	github.com/oschwald/geoip2-golang v1.11.0
 	github.com/pojntfx/hydrapp/hydrapp v0.0.0-20240827002308-22c8dc1ea9b8
 	github.com/pojntfx/panrpc/go v0.0.0-20240816011753-7169be8c89fb
@@ -34,6 +34,7 @@ require (
 	github.com/rogpeppe/go-internal v1.11.0 // indirect
 	golang.org/x/crypto v0.26.0 // indirect
 	golang.org/x/image v0.19.0 // indirect
+	golang.org/x/net v0.28.0 // indirect
 	golang.org/x/sys v0.24.0 // indirect
 	golang.org/x/text v0.17.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
