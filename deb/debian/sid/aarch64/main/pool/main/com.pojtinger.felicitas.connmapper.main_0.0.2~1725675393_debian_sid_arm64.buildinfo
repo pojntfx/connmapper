@@ -4,20 +4,20 @@ Binary: com.pojtinger.felicitas.connmapper.main com.pojtinger.felicitas.connmapp
 Architecture: arm64 source
 Version: 0.0.2~1725675393
 Checksums-Md5:
- 1a95f0c626a8371fdf7538cb15f95420 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1725675393.dsc
+ 75843f80892b3da95e3966b8f28b43d0 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1725675393.dsc
  a05d0ad368907090409f2c0928c2f417 3595076 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.2~1725675393_arm64.deb
  d83628a7cf223d1beaf5a482cfbfb026 18316856 com.pojtinger.felicitas.connmapper.main_0.0.2~1725675393_arm64.deb
 Checksums-Sha1:
- aad411983aa8d31add8d541ec3cbfed96aa5202a 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1725675393.dsc
+ 2cf717bb58eb33995d2d50dc4c8985550a7eb71e 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1725675393.dsc
  ed40a33bbd05b6d6803e3d729a9775486abb70d6 3595076 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.2~1725675393_arm64.deb
  fe338e177daae1fc7109bf249475b37288aa33b3 18316856 com.pojtinger.felicitas.connmapper.main_0.0.2~1725675393_arm64.deb
 Checksums-Sha256:
- 99cb8e09fb32c9613c86b710398557e3f5a2f1aaedb3173dd0f760c6b9604fcd 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1725675393.dsc
+ 05658b13160b4558e9c2e33c8619a2de6a997dbd59d0f7e7fb4c7e932994ef42 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1725675393.dsc
  dc2d8118bb3d4bcd9e4d5c7a77557155af8d48e107a1d9778d5d92d6638c94f9 3595076 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.2~1725675393_arm64.deb
  0ee1d90cd833523bc68b713613b127784e08bb89d0d5bb84ab0985c8633a7288 18316856 com.pojtinger.felicitas.connmapper.main_0.0.2~1725675393_arm64.deb
 Build-Origin: Debian
 Build-Architecture: arm64
-Build-Date: Sat, 07 Sep 2024 02:24:03 +0000
+Build-Date: Sun, 08 Sep 2024 00:32:10 +0000
 Build-Path: /build/com.pojtinger.felicitas.connmapper.main-0.0.2~1725675393
 Build-Tainted-By:
  merged-usr-via-aliased-dirs

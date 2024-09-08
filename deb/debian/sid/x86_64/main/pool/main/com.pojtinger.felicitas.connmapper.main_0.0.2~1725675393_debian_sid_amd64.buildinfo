@@ -4,20 +4,20 @@ Binary: com.pojtinger.felicitas.connmapper.main com.pojtinger.felicitas.connmapp
 Architecture: amd64 source
 Version: 0.0.2~1725675393
 Checksums-Md5:
- b36660815312b0eb3fd09ac6819c7d5a 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1725675393.dsc
+ bd0ceaa30948039ad13398c427ef65ab 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1725675393.dsc
  7faace1fed1fa0611b693bae4e1d1bf4 3832712 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.2~1725675393_amd64.deb
  75c55c95ddd1106b42132c731859b239 18836648 com.pojtinger.felicitas.connmapper.main_0.0.2~1725675393_amd64.deb
 Checksums-Sha1:
- 043c9066c1b1a5592dc999dc0bbc9b80d187a7c5 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1725675393.dsc
+ acc0895e1c85fe8752cdbc7ecf6feb17eed0d648 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1725675393.dsc
  a560fcb31c38be0a0c52002cfa1753bec306191a 3832712 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.2~1725675393_amd64.deb
  cb90d49cae99aa2562dcff48d9c2b53862b84879 18836648 com.pojtinger.felicitas.connmapper.main_0.0.2~1725675393_amd64.deb
 Checksums-Sha256:
- 037ed476d68bb3293bce00d6c135e9d2f74de34e89752fc8db081638b42d07a4 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1725675393.dsc
+ 4672426bccfd840b5241a568d125f83b0147b32b72e94ad839ced917bb63578e 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1725675393.dsc
  544d7433cfcc07bf5b13183d83b8a4ac06f91d2cd1eda3f242e9d3af024be017 3832712 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.2~1725675393_amd64.deb
  65eaf264fcaa4c7a3433910c855b578ba3d65d68f485465fd737f1288988ad17 18836648 com.pojtinger.felicitas.connmapper.main_0.0.2~1725675393_amd64.deb
 Build-Origin: Debian
 Build-Architecture: amd64
-Build-Date: Sat, 07 Sep 2024 02:22:06 +0000
+Build-Date: Sun, 08 Sep 2024 00:32:27 +0000
 Build-Path: /build/com.pojtinger.felicitas.connmapper.main-0.0.2~1725675393
 Build-Tainted-By:
  merged-usr-via-aliased-dirs
@@ -191,8 +191,8 @@ Installed-Build-Depends:
  libpng16-16t64 (= 1.6.43-5),
  libpsl5t64 (= 0.21.2-1.1),
  libpython3-stdlib (= 3.12.5-1),
- libpython3.12-minimal (= 3.12.5-4),
- libpython3.12-stdlib (= 3.12.5-4),
+ libpython3.12-minimal (= 3.12.6-1),
+ libpython3.12-stdlib (= 3.12.6-1),
  libquadmath0 (= 14.2.0-4),
  libreadline8t64 (= 8.2-5),
  librtmp1 (= 2.4+20151223.gitfa8646d.1-2+b4),
@@ -600,8 +600,8 @@ Installed-Build-Depends:
  python3-pkg-resources (= 73.0.1-1),
  python3-typeguard (= 4.3.0-1),
  python3-typing-extensions (= 4.12.2-2),
- python3.12 (= 3.12.5-4),
- python3.12-minimal (= 3.12.5-4),
+ python3.12 (= 3.12.6-1),
+ python3.12-minimal (= 3.12.6-1),
  readline-common (= 8.2-5),
  rpcsvc-proto (= 1.4.3-1),
  sed (= 4.9-2),
