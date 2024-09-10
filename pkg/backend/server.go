@@ -42,6 +42,7 @@ const (
 	TraceCommandEnv = "CONNMAPPER_TRACE"
 
 	traceCommandHandshakeLen = 2
+	flatpakIDEnv             = "FLATPAK_ID"
 )
 
 func lookupLocation(db *geoip2.Reader, ip net.IP) (
@@ -340,7 +341,26 @@ restartTraceCommand:
 
 		switch runtime.GOOS {
 		case "linux":
-			if err := uutils.RunElevatedCommand(ctx, "Authentication Required", "Authentication is needed to capture packets.", fmt.Sprintf(`setcap cap_net_raw,cap_net_admin=eip '%v'`, bin)); err != nil {
+			appBinLocation := bin
+			if _, err := exec.LookPath(uutils.FlatpakSpawnCmd); err == nil {
+				output, err := exec.CommandContext(
+					ctx,
+
+					uutils.FlatpakSpawnCmd,
+					"--host",
+					"flatpak",
+					"info",
+					"--show-location",
+					os.Getenv(flatpakIDEnv),
+				).CombinedOutput()
+				if err != nil {
+					return errors.Join(fmt.Errorf("could not query app location with output: %s", output), err)
+				}
+
+				appBinLocation = filepath.Join(string(output), "files", appBinLocation)
+			}
+
+			if err := uutils.RunElevatedCommand(ctx, "Authentication Required", "Authentication is needed to capture packets.", fmt.Sprintf(`setcap cap_net_raw,cap_net_admin=eip '%v'`, appBinLocation)); err != nil {
 				return err
 			}
 		default:

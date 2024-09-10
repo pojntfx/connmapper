@@ -15,7 +15,7 @@ var (
 )
 
 const (
-	flatpakSpawnCmd = "flatpak-spawn"
+	FlatpakSpawnCmd = "flatpak-spawn"
 )
 
 // RunElevatedCommand runs a command with elevated (e.g. administrator or root) permissions
@@ -47,8 +47,8 @@ func RunElevatedCommand(ctx context.Context, title, body, command string) error 
 			binaryName string
 			prefix     = []string{}
 		)
-		if _, err := exec.LookPath(flatpakSpawnCmd); err == nil {
-			binaryName = flatpakSpawnCmd
+		if _, err := exec.LookPath(FlatpakSpawnCmd); err == nil {
+			binaryName = FlatpakSpawnCmd
 			prefix = append(prefix, "--host")
 		} else {
 			binaryName = "sh"
