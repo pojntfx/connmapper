@@ -36,6 +36,8 @@ var (
 	ErrDatabaseNotInArchive                     = errors.New("database not in archive")
 	ErrUnexpectedErrorWhileStartingTraceCommand = errors.New("unexpected error while starting trace command")
 	ErrUserDeniedEscalationPermission           = errors.New("user denied escalation permission")
+	ErrCouldNotExecuteCommand                   = errors.New("could not execute command")
+	ErrCouldNotCreateElevatedCommand            = errors.New("could not create elevated command")
 )
 
 const (
@@ -286,7 +288,25 @@ restartTraceCommand:
 		return err
 	}
 
-	cmd := exec.CommandContext(ctx, bin, device.PcapName, fmt.Sprintf("%v", device.MTU))
+	if _, err := exec.LookPath(uutils.FlatpakSpawnCmd); err == nil {
+		output, err := exec.CommandContext(
+			ctx,
+
+			uutils.FlatpakSpawnCmd,
+			"--host",
+			"flatpak",
+			"info",
+			"--show-location",
+			os.Getenv(flatpakIDEnv),
+		).CombinedOutput()
+		if err != nil {
+			return errors.Join(fmt.Errorf("could not query app location with output: %s", output), err)
+		}
+
+		bin = filepath.Join(string(output), "files", bin)
+	}
+
+	var cmd *exec.Cmd
 	cmd.Env = append(cmd.Env, TraceCommandEnv+"=true")
 
 	stdout, err := cmd.StdoutPipe()
@@ -341,27 +361,13 @@ restartTraceCommand:
 
 		switch runtime.GOOS {
 		case "linux":
-			appBinLocation := bin
-			if _, err := exec.LookPath(uutils.FlatpakSpawnCmd); err == nil {
-				output, err := exec.CommandContext(
-					ctx,
-
-					uutils.FlatpakSpawnCmd,
-					"--host",
-					"flatpak",
-					"info",
-					"--show-location",
-					os.Getenv(flatpakIDEnv),
-				).CombinedOutput()
+			setcapCommand, err := uutils.CreateElevatedCommand(ctx, "Authentication Required", "Authentication is needed to capture packets.", fmt.Sprintf(`setcap cap_net_raw,cap_net_admin=eip '%v'`, bin))
 				if err != nil {
-					return errors.Join(fmt.Errorf("could not query app location with output: %s", output), err)
-				}
-
-				appBinLocation = filepath.Join(string(output), "files", appBinLocation)
+				return errors.Join(ErrCouldNotCreateElevatedCommand, err)
 			}
 
-			if err := uutils.RunElevatedCommand(ctx, "Authentication Required", "Authentication is needed to capture packets.", fmt.Sprintf(`setcap cap_net_raw,cap_net_admin=eip '%v'`, appBinLocation)); err != nil {
-				return err
+			if output, err := setcapCommand.CombinedOutput(); err != nil {
+				return errors.Join(ErrCouldNotExecuteCommand, fmt.Errorf("could not execute command with output: %s", output), err)
 			}
 		default:
 			if err := uutils.RunElevatedCommand(ctx, "Authentication Required", "Authentication is needed to capture packets.", fmt.Sprintf("%v %v", bin, strings.Join(os.Args, " "))); err != nil {
