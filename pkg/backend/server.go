@@ -282,6 +282,7 @@ func (l *local) TraceDevice(ctx context.Context, device uutils.Device) error {
 		return err
 	}
 
+	recreateCmd := true
 restartTraceCommand:
 	bin, err := os.Executable()
 	if err != nil {
@@ -307,6 +308,9 @@ restartTraceCommand:
 	}
 
 	var cmd *exec.Cmd
+	if recreateCmd {
+		cmd = exec.CommandContext(ctx, bin, device.PcapName, fmt.Sprintf("%v", device.MTU))
+	}
 	cmd.Env = append(cmd.Env, TraceCommandEnv+"=true")
 
 	stdout, err := cmd.StdoutPipe()
@@ -362,17 +366,22 @@ restartTraceCommand:
 		switch runtime.GOOS {
 		case "linux":
 			setcapCommand, err := uutils.CreateElevatedCommand(ctx, "Authentication Required", "Authentication is needed to capture packets.", fmt.Sprintf(`setcap cap_net_raw,cap_net_admin=eip '%v'`, bin))
-				if err != nil {
+			if err != nil {
 				return errors.Join(ErrCouldNotCreateElevatedCommand, err)
 			}
 
 			if output, err := setcapCommand.CombinedOutput(); err != nil {
 				return errors.Join(ErrCouldNotExecuteCommand, fmt.Errorf("could not execute command with output: %s", output), err)
 			}
+
 		default:
-			if err := uutils.RunElevatedCommand(ctx, "Authentication Required", "Authentication is needed to capture packets.", fmt.Sprintf("%v %v", bin, strings.Join(os.Args, " "))); err != nil {
-				return err
+			cmd, err = uutils.CreateElevatedCommand(ctx, "Authentication Required", "Authentication is needed to capture packets.", fmt.Sprintf("%v %v", bin, strings.Join(cmd.Args, " ")))
+			if err != nil {
+				return errors.Join(ErrCouldNotCreateElevatedCommand, err)
 			}
+
+			// We need to run the elevated command next
+			recreateCmd = false
 		}
 
 		goto restartTraceCommand
