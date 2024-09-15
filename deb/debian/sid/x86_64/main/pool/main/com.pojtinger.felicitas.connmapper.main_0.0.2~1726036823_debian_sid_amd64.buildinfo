@@ -4,20 +4,20 @@ Binary: com.pojtinger.felicitas.connmapper.main com.pojtinger.felicitas.connmapp
 Architecture: amd64 source
 Version: 0.0.2~1726036823
 Checksums-Md5:
- c2c4e347f65fee8fcb6469d46cee93ad 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823.dsc
- 4d179bab3c04f2e359075fe36d0ed282 3833516 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.2~1726036823_amd64.deb
- a27f0fcaa080ec1bab39843940f88832 18840816 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823_amd64.deb
+ baca94daa1cf6865dba8b142ffa6c4ad 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823.dsc
+ 249dac96e67227a0b15b700b58f9ff17 4013552 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.2~1726036823_amd64.deb
+ f58f97efcbe382ef14d73b8625907576 18957716 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823_amd64.deb
 Checksums-Sha1:
- 55c2481af376e34b21b75e7e7f736d2c3dd612f2 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823.dsc
- ca8b5056000d3eaa1b2205099b98ca12b53d4e52 3833516 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.2~1726036823_amd64.deb
- b339d3e3b2a1f7d10d6bb1986731196bd3569360 18840816 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823_amd64.deb
+ e0b488bfa46196d80fd7b195ad30d652eb86b678 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823.dsc
+ 18d0fe4c469c276c49228541c75a5dd2e08121a2 4013552 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.2~1726036823_amd64.deb
+ 24eff00bad1c2d776e323f7957e018f044b78036 18957716 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823_amd64.deb
 Checksums-Sha256:
- 237676f60deaeb5837512eafcf006b1f41c16afb5deb5d54f7dd2d91ee8c6eee 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823.dsc
- 4d45670f847f0c033fa0780102c1cd28fc388d4dd15062be1bba703d2eb4ad24 3833516 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.2~1726036823_amd64.deb
- 76427f56b1a32988f3e80adff466664984c2feab916af25019a375932d5a2bf5 18840816 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823_amd64.deb
+ ab4d0c87dfa1c711748a8a0dfef26e306a8cd242c9c29a8f3d62b0b8b9a029c1 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823.dsc
+ 34d1ee962078d35d7830da67bc04a276c91ef0fb43b2231ee3e33e14bca90560 4013552 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.2~1726036823_amd64.deb
+ e0fdc2eca9303c91e25a0f73ea61f8dcb463e9bf152657ab6dfd94de79a30159 18957716 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823_amd64.deb
 Build-Origin: Debian
 Build-Architecture: amd64
-Build-Date: Wed, 11 Sep 2024 06:45:37 +0000
+Build-Date: Sun, 15 Sep 2024 00:31:57 +0000
 Build-Path: /build/com.pojtinger.felicitas.connmapper.main-0.0.2~1726036823
 Build-Tainted-By:
  merged-usr-via-aliased-dirs
@@ -29,10 +29,10 @@ Installed-Build-Depends:
  autotools-dev (= 20220109.1),
  base-files (= 13.5),
  base-passwd (= 3.6.4),
- bash (= 5.2.32-1),
- binutils (= 2.43.1-3),
- binutils-common (= 2.43.1-3),
- binutils-x86-64-linux-gnu (= 2.43.1-3),
+ bash (= 5.2.32-1+b1),
+ binutils (= 2.43.1-4),
+ binutils-common (= 2.43.1-4),
+ binutils-x86-64-linux-gnu (= 2.43.1-4),
  bsdextrautils (= 2.40.2-8),
  bsdutils (= 1:2.40.2-8),
  build-essential (= 12.10),
@@ -70,10 +70,10 @@ Installed-Build-Depends:
  gettext-base (= 0.22.5-2),
  git (= 1:2.45.2-1),
  git-man (= 1:2.45.2-1),
- golang-1.22-go (= 1.22.7-1),
- golang-1.22-src (= 1.22.7-1),
- golang-go (= 2:1.22~3),
- golang-src (= 2:1.22~3),
+ golang-1.23-go (= 1.23.1-3),
+ golang-1.23-src (= 1.23.1-3),
+ golang-go (= 2:1.23~2),
+ golang-src (= 2:1.23~2),
  grep (= 3.11-4),
  groff-base (= 1.23.0-5),
  gyp (= 0.16.2-1),
@@ -91,7 +91,7 @@ Installed-Build-Depends:
  libattr1 (= 1:2.5.2-1),
  libaudit-common (= 1:4.0.1-1),
  libaudit1 (= 1:4.0.1-1),
- libbinutils (= 2.43.1-3),
+ libbinutils (= 2.43.1-4),
  libblkid1 (= 2.40.2-8),
  libbrotli1 (= 1.1.0-2+b4),
  libbz2-1.0 (= 1.0.8-6),
@@ -106,9 +106,9 @@ Installed-Build-Depends:
  libcom-err2 (= 1.47.1-1),
  libcrypt-dev (= 1:4.4.36-5),
  libcrypt1 (= 1:4.4.36-5),
- libctf-nobfd0 (= 2.43.1-3),
- libctf0 (= 2.43.1-3),
- libcurl3t64-gnutls (= 8.9.1-2),
+ libctf-nobfd0 (= 2.43.1-4),
+ libctf0 (= 2.43.1-4),
+ libcurl3t64-gnutls (= 8.10.0-2),
  libdb5.3t64 (= 5.3.28+dfsg2-7),
  libdbus-1-3 (= 1.14.10-4+b1),
  libdbus-1-dev (= 1.14.10-4+b1),
@@ -131,7 +131,7 @@ Installed-Build-Depends:
  libgmp10 (= 2:6.3.0+dfsg-2+b1),
  libgnutls30t64 (= 3.8.6-2),
  libgomp1 (= 14.2.0-4),
- libgprofng0 (= 2.43.1-3),
+ libgprofng0 (= 2.43.1-4),
  libgssapi-krb5-2 (= 1.21.3-3),
  libhogweed6t64 (= 3.10-1),
  libhwasan0 (= 14.2.0-4),
@@ -190,7 +190,7 @@ Installed-Build-Depends:
  libpkgconf3 (= 1.8.1-3),
  libpng16-16t64 (= 1.6.43-5),
  libpsl5t64 (= 0.21.2-1.1),
- libpython3-stdlib (= 3.12.5-1),
+ libpython3-stdlib (= 3.12.5-1+b1),
  libpython3.12-minimal (= 3.12.6-1),
  libpython3.12-stdlib (= 3.12.6-1),
  libquadmath0 (= 14.2.0-4),
@@ -200,7 +200,7 @@ Installed-Build-Depends:
  libsasl2-modules-db (= 2.1.28+dfsg1-8),
  libseccomp2 (= 2.5.5-1+b1),
  libselinux1 (= 3.7-3),
- libsframe1 (= 2.43.1-3),
+ libsframe1 (= 2.43.1-4),
  libsharpyuv0 (= 1.4.0-0.1),
  libsmartcols1 (= 2.40.2-8),
  libsqlite3-0 (= 3.46.1-1),
@@ -234,7 +234,7 @@ Installed-Build-Depends:
  m4 (= 1.4.19-4),
  make (= 4.3-4.1),
  man-db (= 2.13.0-1),
- mawk (= 1.3.4.20240819-3),
+ mawk (= 1.3.4.20240905-1),
  media-types (= 10.1.0),
  ncurses-base (= 6.5-2),
  ncurses-bin (= 6.5-2),
@@ -589,12 +589,12 @@ Installed-Build-Depends:
  pkgconf (= 1.8.1-3),
  pkgconf-bin (= 1.8.1-3),
  po-debconf (= 1.0.21+nmu1),
- python3 (= 3.12.5-1),
+ python3 (= 3.12.5-1+b1),
  python3-autocommand (= 2.2.2-3),
  python3-inflect (= 7.3.1-1),
  python3-jaraco.context (= 6.0.0-1),
  python3-jaraco.functools (= 4.0.2-1),
- python3-minimal (= 3.12.5-1),
+ python3-minimal (= 3.12.5-1+b1),
  python3-more-itertools (= 10.4.0-1),
  python3-packaging (= 24.1-1),
  python3-pkg-resources (= 74.1.2-2),
@@ -608,7 +608,7 @@ Installed-Build-Depends:
  sensible-utils (= 0.0.24),
  sgml-base (= 1.31),
  shared-mime-info (= 2.4-5),
- sysvinit-utils (= 3.10-1),
+ sysvinit-utils (= 3.10-2),
  tar (= 1.35+dfsg-3),
  terser (= 5.31.3-1),
  tzdata (= 2024a-4),

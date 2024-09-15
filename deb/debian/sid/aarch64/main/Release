@@ -1,14 +1,14 @@
 Codename: sid
 Components: main
-Date: Wed, 11 Sep 2024 06:47:17 +0000
+Date: Sun, 15 Sep 2024 00:33:01 +0000
 Label: DEB packages for Connmapper (Main)
 Origin: Connmapper (Main) APT Repo
 Suite: sid
 MD5Sum:
- 631ccd6eab77560a05882359a43aee12              157 Release
+ 6e2a0895c3b19c611df30e7c5e7f071d              157 Release
 SHA1:
- beae5fac8754508fefec1172bd272e608bf1432b              157 Release
+ 2e745487a43d69d6fd6769e8d7d090c824ce2721              157 Release
 SHA256:
- d8b72e38833c66ff31633d284b9e1fc3508a12782fcfa683544ecc6da167f1e0              157 Release
+ 76eaafa3dda67e76a7879217044e97cfb13350ffbe94a74b2df662e6dbd3339a              157 Release
 SHA512:
- 65568d2a67546a75c8777ef266d829c1083da7291a3c779ebcbe9005342bd264ebd23054ee16d3df204e59657a564172f87c02e0692d2eac6e6dfa1270ef7c90              157 Release
+ e46cc5af094b6649eb39e0f2ca09b055f3d4bdcedd1ac2e6a46b1e9b0a5c422b758bca2b5b1453176f2f2f908a5615bd0b4f10edff330cb5eeaced47287277b4              157 Release
