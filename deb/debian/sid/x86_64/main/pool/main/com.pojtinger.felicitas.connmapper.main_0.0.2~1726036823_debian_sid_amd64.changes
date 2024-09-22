@@ -15,20 +15,20 @@ Changes:
  .
    * Maintenance updates to match the state of the art of hydrapp apps
 Checksums-Sha1:
- e0b488bfa46196d80fd7b195ad30d652eb86b678 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823.dsc
- 2356d684d569eee554a1a76018b0f136c757ccb1 35228500 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823.tar.xz
- 18d0fe4c469c276c49228541c75a5dd2e08121a2 4013552 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.2~1726036823_amd64.deb
- bbcfcdc1d905f798b5f7b77c281c886d195bb69e 21327 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823_amd64.buildinfo
- 24eff00bad1c2d776e323f7957e018f044b78036 18957716 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823_amd64.deb
+ 4e8d66c1715cb6457fa9f428836b150b48d55b97 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823.dsc
+ 9c39b5c5bcbc9687aefdc6f6a50ebc4f9200fbfc 35228536 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823.tar.xz
+ 9beacccdcc8b0aaaf3c73424ebe4f53f443596f1 4013556 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.2~1726036823_amd64.deb
+ 421b8aa0212bba9620c51fab7123aeeee346684e 21298 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823_amd64.buildinfo
+ b4de5179279ea95b5cc0353a04b37ac45c13fa28 18957640 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823_amd64.deb
 Checksums-Sha256:
- ab4d0c87dfa1c711748a8a0dfef26e306a8cd242c9c29a8f3d62b0b8b9a029c1 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823.dsc
- df0068d6be625da3af3b640cd542312b29b84c5950aed8cd0e454c0fa05e191d 35228500 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823.tar.xz
- 34d1ee962078d35d7830da67bc04a276c91ef0fb43b2231ee3e33e14bca90560 4013552 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.2~1726036823_amd64.deb
- 00c8af0cb8ad6957388415c52eabc0f6c0ec13b2faaffad5c4b7eaec4b983889 21327 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823_amd64.buildinfo
- e0fdc2eca9303c91e25a0f73ea61f8dcb463e9bf152657ab6dfd94de79a30159 18957716 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823_amd64.deb
+ f75d282e8c1902002167fbc802c93bab04c75f948ff1be58fd600aefe6611312 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823.dsc
+ 25a84dc42dd5a78c31f50c4489d2bba1fe2e99dae3629201d350591b584c3c4d 35228536 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823.tar.xz
+ a4ef891cdbfb6bfcb3305df97f628c3c59b1c72fdd389036252861e5fda3e913 4013556 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.2~1726036823_amd64.deb
+ 367676f4fa2323931a11285bcf17c7484bf30ae112557919c1d5947dfea8cb97 21298 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823_amd64.buildinfo
+ 5b040ac148ac4e14da4e149f72a8c7cb4fea8a0426aa412455a7a30e27e2a072 18957640 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823_amd64.deb
 Files:
- baca94daa1cf6865dba8b142ffa6c4ad 1073 utils optional com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823.dsc
- 7f27da13c0a357ac3f722219e6e542f0 35228500 utils optional com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823.tar.xz
- 249dac96e67227a0b15b700b58f9ff17 4013552 debug optional com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.2~1726036823_amd64.deb
- 4af5fb143cb5eb91290043a256ab5329 21327 utils optional com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823_amd64.buildinfo
- f58f97efcbe382ef14d73b8625907576 18957716 utils optional com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823_amd64.deb
+ 14d25ecef705b28987999ecbce3df882 1073 utils optional com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823.dsc
+ 4b65392886fdd44dba255512dfbe8481 35228536 utils optional com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823.tar.xz
+ 59c2693ac87b73c45d31cccca0fcf460 4013556 debug optional com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.2~1726036823_amd64.deb
+ a25679bd02dee7b17f6c6a7fc1d05079 21298 utils optional com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823_amd64.buildinfo
+ 12ea13f56ae9983192543f8d0e9efb98 18957640 utils optional com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823_amd64.deb

@@ -12,14 +12,14 @@ Changes:
  .
    * Maintenance updates to match the state of the art of hydrapp apps
 Checksums-Sha1:
- e5aa99850837ca60e1b5716ca70f2b25f00e3dc8 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823.dsc
- e002858e2ed4ee5ed6492112755bc792423ea2c0 35228472 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823.tar.xz
- 0c1091eb7271f3afc8f33eb98c267d260da07b2d 21306 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823_arm64.buildinfo
+ c88eb8dc747cefd9636b6e038b0825109fbea472 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823.dsc
+ cc77cfbef231d76a52f755475ae270ffae48994c 35228472 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823.tar.xz
+ 189b23e93eb1e83a1b37b00db7b2c7f6694dc180 21277 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823_arm64.buildinfo
 Checksums-Sha256:
- fb4d517d33bb70c6cef8a7ea361cde3e484e1c83f20e56c703d7b6c07308cf44 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823.dsc
- 2192926de062a2f75070cfd92b47fa873eb56c9a2797a34552150b751743cf0d 35228472 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823.tar.xz
- 3a14baeffcf963154c1e5b3b101cc0446aea03bb653f55435aa0881d8650d51f 21306 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823_arm64.buildinfo
+ fedbd9b62fb56e03026d2cc8248cc87576c2f021beb24d5709ffa97dffba7fe6 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823.dsc
+ 91006716d61d27a563a6f9b3d48ca962d77e7ae75c211bad72352b1d268a3875 35228472 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823.tar.xz
+ 738057c148c1887e6c38138e6504bb16432394d76899dba3ccdaae6efee8f200 21277 com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823_arm64.buildinfo
 Files:
- 295b08ae6678810b593243d229084b0c 1073 utils optional com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823.dsc
- f885d64770a81989c452c2782f16f0ad 35228472 utils optional com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823.tar.xz
- 59b84f34843d85a54a003205e0dc1415 21306 utils optional com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823_arm64.buildinfo
+ ea4da78fd4cdcf918dfede70c40b92f2 1073 utils optional com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823.dsc
+ 9b112be53570c1bb0a2c14ef9d225bf5 35228472 utils optional com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823.tar.xz
+ 844c101c94031bf87a0db0b3ee416188 21277 utils optional com.pojtinger.felicitas.connmapper.main_0.0.2~1726036823_arm64.buildinfo
