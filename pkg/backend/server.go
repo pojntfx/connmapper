@@ -462,7 +462,7 @@ restartTraceCommand:
 
 				connection := tracedConnection{
 					time.Now().UnixMilli(),
-					packet.Metadata().Length,
+					rawPacket.Length,
 
 					layerType,
 					nextLayerType,

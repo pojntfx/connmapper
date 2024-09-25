@@ -35,11 +35,14 @@ func TraceDevice(mtu int, device string) error {
 	for packet := range source.Packets() {
 		rawPacket := &Packet{
 			Data:          packet.Data(),
+			Length:        packet.Metadata().Length,
 			LinkType:      handle.LinkType(),
 			DecodeOptions: source.DecodeOptions,
 		}
 
 		if err := encoder.Encode(rawPacket); err != nil {
+			fmt.Print(TraceCommandHandshakeHandleUnexpectedError)
+
 			return err
 		}
 	}

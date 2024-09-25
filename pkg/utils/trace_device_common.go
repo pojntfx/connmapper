@@ -13,6 +13,7 @@ const (
 
 type Packet struct {
 	Data          []byte                 `json:"data"`
+	Length        int                    `json:"length"`
 	LinkType      layers.LinkType        `json:"linkType"`
 	DecodeOptions gopacket.DecodeOptions `json:"decodeOptions"`
 }
