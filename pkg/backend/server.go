@@ -289,6 +289,7 @@ restartTraceCommand:
 		return err
 	}
 
+	var cmd *exec.Cmd
 	if _, err := exec.LookPath(uutils.FlatpakSpawnCmd); err == nil {
 		output, err := exec.CommandContext(
 			ctx,
@@ -304,14 +305,19 @@ restartTraceCommand:
 			return errors.Join(fmt.Errorf("could not query app location with output: %s", output), err)
 		}
 
-		bin = filepath.Join(string(output), "files", bin)
-	}
+		// We need to trim the `\n` from `flatpak-spawn --show-location` and
+		// remove the `/app` prefix from the binary
+		bin = filepath.Join(strings.TrimSuffix(string(output), "\n"), "files", strings.TrimPrefix(bin, filepath.Join("/", "app")))
 
-	var cmd *exec.Cmd
-	if recreateCmd {
-		cmd = exec.CommandContext(ctx, bin, device.PcapName, fmt.Sprintf("%v", device.MTU))
+		if recreateCmd {
+			cmd = exec.CommandContext(ctx, uutils.FlatpakSpawnCmd, "--host", "--env="+TraceCommandEnv+"=true", bin, device.PcapName, fmt.Sprintf("%v", device.MTU))
+		}
+	} else {
+		if recreateCmd {
+			cmd = exec.CommandContext(ctx, bin, device.PcapName, fmt.Sprintf("%v", device.MTU))
+		}
+		cmd.Env = append(cmd.Env, TraceCommandEnv+"=true")
 	}
-	cmd.Env = append(cmd.Env, TraceCommandEnv+"=true")
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
