@@ -45,35 +45,37 @@ func CreateElevatedCommand(ctx context.Context, title, body, command string) (*e
 		)
 		if _, err := exec.LookPath(FlatpakSpawnCmd); err == nil {
 			binaryName = FlatpakSpawnCmd
-			prefix = append(prefix, "--host")
+			prefix = append(prefix, "--host", "sh", "-c")
+
+			// For Flatpak systems we asume that Polkit is available on the host
+			command = "pkexec " + command
 		} else {
 			binaryName = "sh"
 			prefix = append(prefix, "-c")
-		}
 
-		// Escalate using Polkit
-		if pkexec, err := exec.LookPath("pkexec"); err == nil {
-			command = pkexec + " " + command
-		} else {
-			// Escalate manually using using terminal emulator as a fallback
-			// This doesn't work inside Flatpak - for Flatpak systems we asume that `pkexec` is available, so this code would never be reached
-			terminal, err := exec.LookPath("xterm")
-			if err != nil {
-				return nil, errors.Join(ErrNoTerminalFound, err)
-			}
-
-			suid, err := exec.LookPath("run0")
-			if err != nil {
-				suid, err = exec.LookPath("sudo")
+			// Escalate using Polkit
+			if pkexec, err := exec.LookPath("pkexec"); err == nil {
+				command = pkexec + " " + command
+			} else {
+				// Escalate manually using using terminal emulator as a fallback
+				terminal, err := exec.LookPath("xterm")
 				if err != nil {
-					suid, err = exec.LookPath("doas")
+					return nil, errors.Join(ErrNoTerminalFound, err)
+				}
+
+				suid, err := exec.LookPath("run0")
+				if err != nil {
+					suid, err = exec.LookPath("sudo")
 					if err != nil {
-						return nil, errors.Join(ErrNoEscalationMethodFound, err)
+						suid, err = exec.LookPath("doas")
+						if err != nil {
+							return nil, errors.Join(ErrNoEscalationMethodFound, err)
+						}
 					}
 				}
-			}
 
-			command = terminal + " -T '" + title + `' -e "echo '` + body + `' && ` + suid + " " + command + `"`
+				command = terminal + " -T '" + title + `' -e "echo '` + body + `' && ` + suid + " " + command + `"`
+			}
 		}
 
 		return exec.Command(binaryName, append(prefix, []string{command}...)...), nil
