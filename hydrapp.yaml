@@ -53,12 +53,11 @@ dmg:
   path: dmg
   packages:
     - libpcap
-# Disabled due to trace permission escalation issue
-# flatpak:
-# - path: flatpak/x86_64
-#   architecture: amd64
-# - path: flatpak/aarch64
-#   architecture: arm64
+flatpak:
+  - path: flatpak/x86_64
+    architecture: amd64
+  - path: flatpak/aarch64
+    architecture: arm64
 msi:
   - path: msi/x86_64
     architecture: amd64
