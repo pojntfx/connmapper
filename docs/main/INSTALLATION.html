@@ -170,7 +170,11 @@
 <code>arm64</code></a></li>
 <li><a href="#macos"><span class="toc-section-number">1.5</span>
 macOS</a></li>
-<li><a href="#windows-on-amd64"><span class="toc-section-number">1.6</span> Windows on
+<li><a href="#linux-universal-flatpak-on-amd64"><span class="toc-section-number">1.6</span> Linux Universal (Flatpak) on
+<code>amd64</code></a></li>
+<li><a href="#linux-universal-flatpak-on-arm64"><span class="toc-section-number">1.7</span> Linux Universal (Flatpak) on
+<code>arm64</code></a></li>
+<li><a href="#windows-on-amd64"><span class="toc-section-number">1.8</span> Windows on
 <code>amd64</code></a></li>
 </ul>
 </nav>
@@ -308,8 +312,26 @@ folder</li>
 <p>Connmapper (Main) should now be installed and receive updates
 automatically.</p>
 </section>
-<section id="windows-on-amd64" data-number="0.6">
+<section id="linux-universal-flatpak-on-amd64" data-number="0.6">
 <h2 data-number="1.6"><span class="header-section-number">1.6</span>
+Linux Universal (Flatpak) on <code>amd64</code></h2>
+<p>To install the package, run the following:</p>
+<pre class="shell"><code>flatpak remote-add &#39;com.pojtinger.felicitas.connmapper.main&#39; --from &#39;https://pojntfx.github.io/connmapper//flatpak/x86_64/main/hydrapp.flatpakrepo&#39;
+flatpak install -y &#39;com.pojtinger.felicitas.connmapper.main&#39;</code></pre>
+<p>Connmapper (Main) should now be installed and receive updates
+automatically.</p>
+</section>
+<section id="linux-universal-flatpak-on-arm64" data-number="0.7">
+<h2 data-number="1.7"><span class="header-section-number">1.7</span>
+Linux Universal (Flatpak) on <code>arm64</code></h2>
+<p>To install the package, run the following:</p>
+<pre class="shell"><code>flatpak remote-add &#39;com.pojtinger.felicitas.connmapper.main&#39; --from &#39;https://pojntfx.github.io/connmapper//flatpak/aarch64/main/hydrapp.flatpakrepo&#39;
+flatpak install -y &#39;com.pojtinger.felicitas.connmapper.main&#39;</code></pre>
+<p>Connmapper (Main) should now be installed and receive updates
+automatically.</p>
+</section>
+<section id="windows-on-amd64" data-number="0.8">
+<h2 data-number="1.8"><span class="header-section-number">1.8</span>
 Windows on <code>amd64</code></h2>
 <ol type="1">
 <li>Download the Npcap installer from <a href="https://npcap.com/" class="uri">https://npcap.com/</a></li>
