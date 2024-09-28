@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+    <id>{{ .AppID }}</id>
+    <name>{{ .AppName }}</name>
+    <summary>{{ .AppSummary }}</summary>
+
+    <metadata_license>CC0-1.0</metadata_license>
+    <project_license>{{ .AppSPDX }}</project_license>
+
+    <developer id="{{ DeveloperID .AppID }}">
+        <name translatable="no">{{ (LastRelease .AppReleases).Author }}</name>
+    </developer>
+
+    <content_rating type="oars-1.1"/>
+
+    <url type="bugtracker">https://github.com/pojntfx/connmapper/issues</url>
+    <url type="homepage">{{ .AppURL }}</url>
+    <url type="donation">https://github.com/sponsors/pojntfx</url>
+    <url type="contact">https://felicitas.pojtinger.com/imprint</url>
+    <url type="faq">https://github.com/pojntfx/connmapper#tutorial</url>
+    <url type="vcs-browser">{{ .AppGit }}</url>
+
+    <launchable type="desktop-id">{{ .AppID }}.desktop</launchable>
+
+    <provides>
+        <binary>{{ .AppID }}</binary>
+    </provides>
+
+    <branding>
+      <color type="primary" scheme_preference="light">#040615</color>
+      <color type="primary" scheme_preference="dark">#000107</color>
+    </branding>
+
+    <description>
+        <p>Connmapper is an app to visualize your system's internet connections on a globe.</p>
+        <p>It enables you to:</p>
+        <ul>
+            <li><b>Do real-time analysis</b>: Thanks to <code>libpcap</code>, Connmapper can get your system's packets in near real-time, and display their properties such as protocols, packet lengths, or peer addresses.</li>
+            <li><b>Get visual insights</b>: By looking up the source and destination IPs for each connection in a local copy of the <a href="https://www.maxmind.com/en/geoip2-databases">MaxMind GeoIP2 database</a>, Connmapper can get the source and destination coordinates of every packet in your system and plot them on a globe.</li>
+            <li><b>Explore historical data</b>: Thanks to its integrated CSV export feature, Connmapper can also be used to aggregate connection data and analyze it externally.</li>
+        </ul>
+    </description>
+
+    <screenshots>
+        <screenshot type="default">
+            <image>https://raw.githubusercontent.com/pojntfx/connmapper/main/docs/screenshot-globe.png</image>
+            <caption>Visualizing internet connections on the globe</caption>
+        </screenshot>
+        <screenshot>
+            <image>https://raw.githubusercontent.com/pojntfx/connmapper/main/docs/screenshot-db-download.png</image>
+            <caption>Database download screen</caption>
+        </screenshot>
+        <screenshot>
+            <image>https://raw.githubusercontent.com/pojntfx/connmapper/main/docs/screenshot-permissions.png</image>
+            <caption>Capture device selection dialog</caption>
+        </screenshot>
+        <screenshot>
+            <image>https://raw.githubusercontent.com/pojntfx/connmapper/main/docs/screenshot-globe-info.png</image>
+            <caption>Globe showing active connections with additional information</caption>
+        </screenshot>
+        <screenshot>
+            <image>https://raw.githubusercontent.com/pojntfx/connmapper/main/docs/screenshot-traffic-inspector.png</image>
+            <caption>Traffic inspector in full-screen mode</caption>
+        </screenshot>
+        <screenshot>
+            <image>https://raw.githubusercontent.com/pojntfx/connmapper/main/docs/screenshot-traffic-inspector-summarized.png</image>
+            <caption>Traffic inspector in summarized mode</caption>
+        </screenshot>
+        <screenshot>
+            <image>https://raw.githubusercontent.com/pojntfx/connmapper/main/docs/screenshot-csv.png</image>
+            <caption>CSV export displayed in LibreOffice</caption>
+        </screenshot>
+        <screenshot>
+            <image>https://raw.githubusercontent.com/pojntfx/connmapper/main/docs/screenshot-settings.png</image>
+            <caption>Settings dialog</caption>
+        </screenshot>
+    </screenshots>
+
+    <releases>
+        {{ range $release := .AppReleases }}
+        <release version="{{ $release.Version }}" date='{{ $release.Date.Format "2006-01-02T15:04:05Z07:00" }}'>
+            <description>
+                <p>{{ $release.Description }}</p>
+            </description>
+        </release>
+        {{ end }}
+    </releases>
+</component>
