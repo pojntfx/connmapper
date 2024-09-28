@@ -40,7 +40,7 @@
       "buildsystem": "simple",
       "build-commands": [
         "git config --global --add safe.directory '*'",
-        ". /usr/lib/sdk/node20/enable.sh && npm install --prefix={{ .GoMain }}/pkg/frontend --offline && npm run --prefix={{ .GoMain }}/pkg/frontend build",
+        "GOPROXY='https://proxy.golang.org,direct' GOFLAGS=\"-x {{ .GoFlags }}\" npm_config_offline='true' npm_config_cache=\"${PWD}/flatpak-node/npm-cache\" XDG_CACHE_HOME=\"${PWD}/flatpak-node/npm-cache\" sh -c '. /usr/lib/sdk/golang/enable.sh && . /usr/lib/sdk/node20/enable.sh && {{ .GoGenerate }}'",
         "mkdir -p vendor && cp modules.txt vendor/modules.txt",
         ". /usr/lib/sdk/golang/enable.sh && export GOPROXY='https://proxy.golang.org,direct' GOFLAGS='-x {{ .GoFlags }}' && export CGO_LDFLAGS='-L/app/lib' && export CGO_ENABLED=0 && go build -tags 'flatpak' -mod=vendor -o out/{{ .AppID }} {{ .GoMain }}",
         "install -D out/{{ .AppID }} /app/bin/{{ .AppID }}",
