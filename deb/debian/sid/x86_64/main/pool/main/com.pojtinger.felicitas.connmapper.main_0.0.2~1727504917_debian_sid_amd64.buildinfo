@@ -4,20 +4,20 @@ Binary: com.pojtinger.felicitas.connmapper.main com.pojtinger.felicitas.connmapp
 Architecture: amd64 source
 Version: 0.0.2~1727504917
 Checksums-Md5:
- b2c6c15d052f3ed6e57ca96527b0039a 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1727504917.dsc
+ f4f1af8470bd73b28dfad7379a308f36 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1727504917.dsc
  5c843d1cb2c31be14ce720a40d64e278 4014168 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.2~1727504917_amd64.deb
  8ac5ca907f450938538ea0a943920c94 18958432 com.pojtinger.felicitas.connmapper.main_0.0.2~1727504917_amd64.deb
 Checksums-Sha1:
- dd30268bc14c913b0127d2c6999c1736d3d69047 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1727504917.dsc
+ 747211daf0d8e8ca0a9145bd97cf67503b737720 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1727504917.dsc
  8dbdf3f6f9bd02649ed1d68e04d83f76778ec0e7 4014168 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.2~1727504917_amd64.deb
  b3366e36efbb6a5db0602b613fc309c2975b83ed 18958432 com.pojtinger.felicitas.connmapper.main_0.0.2~1727504917_amd64.deb
 Checksums-Sha256:
- ec6a695c3d78dd7f1578473aacd7dc9395d91928e3f9e32307cf4a208964694e 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1727504917.dsc
+ 41c0d1d4c3eca4269a7c0bcd41a603831459031038f3c207209f684e03a652e7 1073 com.pojtinger.felicitas.connmapper.main_0.0.2~1727504917.dsc
  34ffb008a9c077990e65549346ea28ff6a1351b44a4eb57ca490baa01288fe58 4014168 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.2~1727504917_amd64.deb
  e11891b81939b4aaf87aff9b9fd29fb7f3983e395c4e79fe8906f7fe9cbdf5a1 18958432 com.pojtinger.felicitas.connmapper.main_0.0.2~1727504917_amd64.deb
 Build-Origin: Debian
 Build-Architecture: amd64
-Build-Date: Sat, 28 Sep 2024 06:33:48 +0000
+Build-Date: Sun, 29 Sep 2024 00:33:30 +0000
 Build-Path: /build/com.pojtinger.felicitas.connmapper.main-0.0.2~1727504917
 Build-Tainted-By:
  merged-usr-via-aliased-dirs
@@ -594,7 +594,7 @@ Installed-Build-Depends:
  python3-jaraco.context (= 6.0.0-1),
  python3-jaraco.functools (= 4.0.2-1),
  python3-minimal (= 3.12.6-1),
- python3-more-itertools (= 10.4.0-1),
+ python3-more-itertools (= 10.5.0-1),
  python3-packaging (= 24.1-1),
  python3-pkg-resources (= 74.1.2-2),
  python3-typeguard (= 4.3.0-1),
