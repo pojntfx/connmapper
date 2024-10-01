@@ -9,16 +9,16 @@ import {
   FormGroup,
   MenuToggle,
   Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
   ModalVariant,
   Select,
   SelectList,
   SelectOption,
   Spinner,
   Switch,
-  Text,
-  TextContent,
   TextInput,
-  TextVariants,
   Title,
   ToggleGroup,
   ToggleGroupItem,
@@ -143,6 +143,7 @@ class Remote {
 
   async DownloadDatabase(
     ctx: IRemoteContext,
+    accountID: string,
     licenseKey: string
   ): Promise<void> {
     return;
@@ -658,6 +659,7 @@ const App = () => {
   const [showRestartWarning, setShowRestartWarning] = useState(false);
   const [showReloadWarning, setShowReloadWarning] = useState(false);
 
+  const [accountID, setAccountID] = useState("");
   const [licenseKey, setLicenseKey] = useState("");
   const [dbIsDownloading, setDBIsDownloading] = useState(false);
 
@@ -750,16 +752,119 @@ const App = () => {
       <Modal
         isOpen={isDBDownloadRequired}
         className="pf-v6-u-mt-0 pf-v6-u-mb-0 pf-v6-c-modal-box--db-download"
-        showClose={false}
         aria-labelledby="db-download-modal-title"
-        header={
+      >
+        <ModalHeader>
           <div className="pf-v6-u-pl-lg pf-v6-u-pt-md pf-v6-u-pb-0 pf-v6-u-pr-md">
             <Title id="db-download-modal-title" headingLevel="h1">
               Database Download
             </Title>
           </div>
-        }
-        actions={[
+        </ModalHeader>
+
+        <ModalBody>
+          <div className="pf-v6-u-mb-md">
+            <p>
+              Connmapper requires the GeoLite2 City database to resolve IP
+              addresses to their physical location, which you have not
+              downloaded yet. Please grab your free account ID and license key
+              by visiting{" "}
+              <a
+                href="https://support.maxmind.com/hc/en-us/articles/4407111582235-Generate-a-License-Key"
+                target="_blank"
+                onAuxClick={handleExternalLink}
+                onClick={handleExternalLink}
+              >
+                support.maxmind.com
+              </a>{" "}
+              and enter them below:
+            </p>
+          </div>
+
+          <Form
+            id="db-download"
+            onSubmit={(e) => {
+              e.preventDefault();
+
+              if (accountID.trim().length <= 0) {
+                return;
+              }
+
+              if (licenseKey.trim().length <= 0) {
+                return;
+              }
+
+              (async () => {
+                try {
+                  setDBIsDownloading(true);
+
+                  registry.forRemotes(async (_, remote) => {
+                    try {
+                      await remote.DownloadDatabase(
+                        undefined,
+                        accountID,
+                        licenseKey
+                      );
+
+                      setDBIsDownloading(false);
+
+                      setIsDBDownloadRequired(false);
+                    } catch (e) {
+                      alert(JSON.stringify((e as Error).message));
+                    }
+                  });
+                } catch (e) {
+                  alert((e as Error).message);
+                }
+              })();
+            }}
+            noValidate={false}
+          >
+            <FormGroup label="Account ID" isRequired fieldId="account-id">
+              <TextInput
+                isRequired
+                type="text"
+                id="account-id"
+                name="account-id"
+                value={accountID}
+                onChange={(_, e) => {
+                  const v = e.trim();
+
+                  if (v.length <= 0) {
+                    console.error("Could not work with empty account ID");
+
+                    return;
+                  }
+
+                  setAccountID(v);
+                }}
+              />
+            </FormGroup>
+
+            <FormGroup label="License key" isRequired fieldId="license-id">
+              <TextInput
+                isRequired
+                type="password"
+                id="license-id"
+                name="license-id"
+                value={licenseKey}
+                onChange={(_, e) => {
+                  const v = e.trim();
+
+                  if (v.length <= 0) {
+                    console.error("Could not work with empty license key");
+
+                    return;
+                  }
+
+                  setLicenseKey(v);
+                }}
+              />
+            </FormGroup>
+          </Form>
+        </ModalBody>
+
+        <ModalFooter>
           <Button
             key={1}
             variant="primary"
@@ -775,79 +880,8 @@ const App = () => {
               />
             )}{" "}
             Download database
-          </Button>,
-        ]}
-      >
-        <TextContent className="pf-v6-u-mb-md">
-          <Text component={TextVariants.p}>
-            Connmapper requires the GeoLite2 City database to resolve IP
-            addresses to their physical location, which you have not downloaded
-            yet. Please grab your free license key by visiting{" "}
-            <Text
-              component={TextVariants.a}
-              href="https://support.maxmind.com/hc/en-us/articles/4407111582235-Generate-a-License-Key"
-              target="_blank"
-              onAuxClick={handleExternalLink}
-              onClick={handleExternalLink}
-            >
-              support.maxmind.com
-            </Text>{" "}
-            and enter it below:
-          </Text>
-        </TextContent>
-
-        <Form
-          id="db-download"
-          onSubmit={(e) => {
-            e.preventDefault();
-
-            if (licenseKey.trim().length <= 0) {
-              return;
-            }
-
-            (async () => {
-              try {
-                setDBIsDownloading(true);
-
-                registry.forRemotes(async (_, remote) => {
-                  try {
-                    await remote.DownloadDatabase(undefined, licenseKey);
-
-                    setDBIsDownloading(false);
-
-                    setIsDBDownloadRequired(false);
-                  } catch (e) {
-                    alert(JSON.stringify((e as Error).message));
-                  }
-                });
-              } catch (e) {
-                alert((e as Error).message);
-              }
-            })();
-          }}
-          noValidate={false}
-        >
-          <FormGroup label="License key" isRequired fieldId="license-id">
-            <TextInput
-              isRequired
-              type="password"
-              id="license-id"
-              name="license-id"
-              value={licenseKey}
-              onChange={(_, e) => {
-                const v = e.trim();
-
-                if (v.length <= 0) {
-                  console.error("Could not work with empty license key");
-
-                  return;
-                }
-
-                setLicenseKey(v);
-              }}
-            />
-          </FormGroup>
-        </Form>
+          </Button>
+        </ModalFooter>
       </Modal>
 
       {!isDBDownloadRequired && !isSettingsOpen && (
@@ -868,9 +902,9 @@ const App = () => {
           "pf-v6-u-mt-0 pf-v6-u-mb-0 pf-v6-c-modal-box--settings " +
           (isInspectorOpen ? "pf-v6-c-modal-box--settings--secondary" : "")
         }
-        showClose={false}
         aria-labelledby="settings-modal-title"
-        header={
+      >
+        <ModalHeader>
           <div className="pf-v6-u-pl-lg pf-v6-u-pt-md pf-v6-u-pb-0 pf-v6-u-pr-md">
             <Flex
               spaceItems={{ default: "spaceItemsMd" }}
@@ -895,8 +929,195 @@ const App = () => {
               </FlexItem>
             </Flex>
           </div>
-        }
-        actions={[
+        </ModalHeader>
+
+        <ModalBody>
+          <Form
+            id="settings"
+            onSubmit={(e) => {
+              e.preventDefault();
+
+              setIsSettingsOpen(false);
+            }}
+            noValidate={false}
+          >
+            <FormGroup
+              label="Maximum packet cache length"
+              isRequired
+              fieldId="max-packet-cache"
+            >
+              <TextInput
+                isRequired
+                type="number"
+                id="max-packet-cache"
+                name="max-packet-cache"
+                value={maxPacketCache}
+                onChange={(_, e) => {
+                  const v = parseInt(e);
+
+                  if (isNaN(v)) {
+                    console.error("Could not parse max packet cache");
+
+                    return;
+                  }
+
+                  setMaxPacketCache(v);
+                }}
+              />
+            </FormGroup>
+
+            <FormGroup
+              label="Maximum connections cache length"
+              isRequired
+              fieldId="max-connections-cache"
+            >
+              <TextInput
+                isRequired
+                type="number"
+                id="max-connections-cache"
+                name="max-connections-cache"
+                value={maxConnectionsCache}
+                onChange={(_, e) => {
+                  const v = parseInt(e);
+
+                  if (isNaN(v)) {
+                    console.error("Could not parse max connections cache");
+
+                    return;
+                  }
+
+                  setMaxConnectionsCache(v);
+                }}
+              />
+            </FormGroup>
+
+            <FormGroup label="GeoLite2 DB path" isRequired fieldId="db-path">
+              <TextInput
+                isRequired
+                type="text"
+                id="db-path"
+                name="db-path"
+                value={dbPath}
+                onChange={(_, e) => {
+                  const v = e.trim();
+
+                  if (v.length <= 0) {
+                    console.error("Could not work with empty path");
+
+                    return;
+                  }
+
+                  setDbPath(v);
+                  setShowRestartWarning(true);
+                }}
+              />
+            </FormGroup>
+
+            <FormGroup
+              label="GeoLite2 DB download URL"
+              isRequired
+              fieldId="db-download-url"
+            >
+              <TextInput
+                isRequired
+                type="text"
+                id="db-download-url"
+                name="db-download-url"
+                value={dbDownloadURL}
+                onChange={(_, e) => {
+                  const v = e.trim();
+
+                  if (v.length <= 0) {
+                    console.error("Could not work with empty download URL");
+
+                    return;
+                  }
+
+                  setDBDownloadURL(v);
+                  setShowRestartWarning(true);
+                }}
+              />
+            </FormGroup>
+
+            <FormGroup
+              label="Packet polling interval (in milliseconds)"
+              isRequired
+              fieldId="packet-polling-interval"
+            >
+              <TextInput
+                isRequired
+                type="number"
+                id="packet-polling-interval"
+                name="packet-polling-interval"
+                defaultValue={packetsInterval.current}
+                onChange={(_, e) => {
+                  const v = parseInt(e);
+
+                  if (isNaN(v)) {
+                    console.error("Could not parse packet polling interval");
+
+                    return;
+                  }
+
+                  packetsInterval.current = v;
+
+                  localStorage.setItem(PACKETS_INTERVAL_KEY, v.toString());
+
+                  setShowReloadWarning(true);
+                }}
+              />
+            </FormGroup>
+
+            <FormGroup
+              label="Connections polling interval (in milliseconds)"
+              isRequired
+              fieldId="connections-polling-interval"
+            >
+              <TextInput
+                isRequired
+                type="number"
+                id="connections-polling-interval"
+                name="connections-polling-interval"
+                defaultValue={connectionsInterval.current}
+                onChange={(_, e) => {
+                  const v = parseInt(e);
+
+                  if (isNaN(v)) {
+                    console.error(
+                      "Could not parse connections polling interval"
+                    );
+
+                    return;
+                  }
+
+                  packetsInterval.current = v;
+
+                  localStorage.setItem(CONNECTIONS_INTERVAL_KEY, v.toString());
+
+                  setShowReloadWarning(true);
+                }}
+              />
+            </FormGroup>
+
+            <FormGroup label="Visual tweaks" fieldId="cyberpunk-mode">
+              <Switch
+                id="cyberpunk-mode"
+                name="cyberpunk-mode"
+                label="Cyberpunk mode"
+                isChecked={cyberpunkMode}
+                onChange={(_, e) => {
+                  const v = e;
+
+                  setCyberpunkMode(e);
+
+                  localStorage.setItem(CYBERPUNK_MODE_KEY, v.toString());
+                }}
+              />
+            </FormGroup>
+          </Form>
+        </ModalBody>
+
+        <ModalFooter>
           <Button
             key={1}
             variant="primary"
@@ -904,190 +1125,8 @@ const App = () => {
             onClick={() => setIsSettingsOpen(false)}
           >
             OK
-          </Button>,
-        ]}
-      >
-        <Form
-          id="settings"
-          onSubmit={(e) => {
-            e.preventDefault();
-
-            setIsSettingsOpen(false);
-          }}
-          noValidate={false}
-        >
-          <FormGroup
-            label="Maximum packet cache length"
-            isRequired
-            fieldId="max-packet-cache"
-          >
-            <TextInput
-              isRequired
-              type="number"
-              id="max-packet-cache"
-              name="max-packet-cache"
-              value={maxPacketCache}
-              onChange={(_, e) => {
-                const v = parseInt(e);
-
-                if (isNaN(v)) {
-                  console.error("Could not parse max packet cache");
-
-                  return;
-                }
-
-                setMaxPacketCache(v);
-              }}
-            />
-          </FormGroup>
-
-          <FormGroup
-            label="Maximum connections cache length"
-            isRequired
-            fieldId="max-connections-cache"
-          >
-            <TextInput
-              isRequired
-              type="number"
-              id="max-connections-cache"
-              name="max-connections-cache"
-              value={maxConnectionsCache}
-              onChange={(_, e) => {
-                const v = parseInt(e);
-
-                if (isNaN(v)) {
-                  console.error("Could not parse max connections cache");
-
-                  return;
-                }
-
-                setMaxConnectionsCache(v);
-              }}
-            />
-          </FormGroup>
-
-          <FormGroup label="GeoLite2 DB path" isRequired fieldId="db-path">
-            <TextInput
-              isRequired
-              type="text"
-              id="db-path"
-              name="db-path"
-              value={dbPath}
-              onChange={(_, e) => {
-                const v = e.trim();
-
-                if (v.length <= 0) {
-                  console.error("Could not work with empty path");
-
-                  return;
-                }
-
-                setDbPath(v);
-                setShowRestartWarning(true);
-              }}
-            />
-          </FormGroup>
-
-          <FormGroup
-            label="GeoLite2 DB download URL"
-            isRequired
-            fieldId="db-download-url"
-          >
-            <TextInput
-              isRequired
-              type="text"
-              id="db-download-url"
-              name="db-download-url"
-              value={dbDownloadURL}
-              onChange={(_, e) => {
-                const v = e.trim();
-
-                if (v.length <= 0) {
-                  console.error("Could not work with empty download URL");
-
-                  return;
-                }
-
-                setDBDownloadURL(v);
-                setShowRestartWarning(true);
-              }}
-            />
-          </FormGroup>
-
-          <FormGroup
-            label="Packet polling interval (in milliseconds)"
-            isRequired
-            fieldId="packet-polling-interval"
-          >
-            <TextInput
-              isRequired
-              type="number"
-              id="packet-polling-interval"
-              name="packet-polling-interval"
-              defaultValue={packetsInterval.current}
-              onChange={(_, e) => {
-                const v = parseInt(e);
-
-                if (isNaN(v)) {
-                  console.error("Could not parse packet polling interval");
-
-                  return;
-                }
-
-                packetsInterval.current = v;
-
-                localStorage.setItem(PACKETS_INTERVAL_KEY, v.toString());
-
-                setShowReloadWarning(true);
-              }}
-            />
-          </FormGroup>
-
-          <FormGroup
-            label="Connections polling interval (in milliseconds)"
-            isRequired
-            fieldId="connections-polling-interval"
-          >
-            <TextInput
-              isRequired
-              type="number"
-              id="connections-polling-interval"
-              name="connections-polling-interval"
-              defaultValue={connectionsInterval.current}
-              onChange={(_, e) => {
-                const v = parseInt(e);
-
-                if (isNaN(v)) {
-                  console.error("Could not parse connections polling interval");
-
-                  return;
-                }
-
-                packetsInterval.current = v;
-
-                localStorage.setItem(CONNECTIONS_INTERVAL_KEY, v.toString());
-
-                setShowReloadWarning(true);
-              }}
-            />
-          </FormGroup>
-
-          <FormGroup label="Visual tweaks" fieldId="cyberpunk-mode">
-            <Switch
-              id="cyberpunk-mode"
-              name="cyberpunk-mode"
-              label="Cyberpunk mode"
-              isChecked={cyberpunkMode}
-              onChange={(_, e) => {
-                const v = e;
-
-                setCyberpunkMode(e);
-
-                localStorage.setItem(CYBERPUNK_MODE_KEY, v.toString());
-              }}
-            />
-          </FormGroup>
-        </Form>
+          </Button>
+        </ModalFooter>
       </Modal>
 
       {tracing ? (
@@ -1695,16 +1734,16 @@ const InWindowOrModal: React.FC<IInWindowOrModalProps> = ({
     <Modal
       variant={ModalVariant.large}
       isOpen={open}
-      showClose={false}
       onEscapePress={() => setOpen(false)}
       aria-labelledby="traffic-inspector-title"
-      header={header}
       className={
         (minimized ? "pf-v6-c-modal-box " : "pf-v6-c-modal-box--fullscreen ") +
         (rest?.modalClassName || "")
       }
     >
-      {children}
+      <ModalHeader>{header}</ModalHeader>
+
+      <ModalBody>{children}</ModalBody>
     </Modal>
   );
 };

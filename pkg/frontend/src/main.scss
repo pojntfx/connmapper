@@ -118,14 +118,14 @@ body {
   background: var(--pf-t--global--background--color--floating--default);
 }
 
-// We have to query for the theme class, not the color scheme, so that we get the correct color even in the detached inspector window
-.pf-v6-theme-dark .pf-v6-c-title {
-  color: #ffffff; // PatternFly V6 doesn't seem to export a constant white color yet
-}
-
 // There seems to be a bug in PatternFly V6 that renders a phantom `<ToolbarContent>`
 .pf-m-hidden {
   display: none;
+}
+
+.pf-v6-c-toolbar {
+  --pf-v6-c-toolbar--PaddingBlockStart: var(--pf-t--global--spacer--md);
+  --pf-v6-c-toolbar--PaddingInlineEnd: var(--pf-t--global--spacer--md);
 }
 
 .pf-v6-x-theme-cyberpunk {
