@@ -132,7 +132,9 @@ func (l *local) CheckDatabase(ctx context.Context) (bool, error) {
 	return false, nil
 }
 
-func (l *local) DownloadDatabase(ctx context.Context, licenseKey string) error {
+func (l *local) DownloadDatabase(ctx context.Context, accountID, licenseKey string) error {
+	log.Println("Downloading database from base URL", l.dbDownloadURL)
+
 	if err := os.MkdirAll(filepath.Dir(l.dbPath), os.ModePerm); err != nil {
 		return err
 	}
@@ -142,11 +144,7 @@ func (l *local) DownloadDatabase(ctx context.Context, licenseKey string) error {
 		return err
 	}
 
-	q := u.Query()
-	q.Set("license_key", licenseKey)
-	u.RawQuery = q.Encode()
-
-	log.Println(u.String())
+	u.User = url.UserPassword(accountID, licenseKey)
 
 	hr, err := http.Get(u.String())
 	if err != nil {
@@ -611,7 +609,7 @@ func StartServer(ctx context.Context, addr string, heartbeat time.Duration, loca
 		maxPacketCache:      100,
 		maxConnectionsCache: 1000000,
 		dbPath:              dbPath,
-		dbDownloadURL:       "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City&suffix=tar.gz",
+		dbDownloadURL:       "https://download.maxmind.com/geoip/databases/GeoLite2-City/download?suffix=tar.gz",
 	}
 
 	var clients atomic.Int64
