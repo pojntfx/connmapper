@@ -1,8 +1,10 @@
 import {
+  ActionGroup,
   Alert,
   AlertActionCloseButton,
   AlertGroup,
   Button,
+  FileUpload,
   Flex,
   FlexItem,
   Form,
@@ -752,12 +754,12 @@ const App = () => {
       <Modal
         isOpen={isDBDownloadRequired}
         className="pf-v6-u-mt-0 pf-v6-u-mb-0 pf-v6-c-modal-box--db-download"
-        aria-labelledby="db-download-modal-title"
+        aria-labelledby="db-config-modal-title"
       >
         <ModalHeader>
           <div className="pf-v6-u-pl-lg pf-v6-u-pt-md pf-v6-u-pb-0 pf-v6-u-pr-md">
-            <Title id="db-download-modal-title" headingLevel="h1">
-              Database Download
+            <Title id="db-config-modal-title" headingLevel="h1">
+              Database Configuration
             </Title>
           </div>
         </ModalHeader>
@@ -766,9 +768,16 @@ const App = () => {
           <div className="pf-v6-u-mb-md">
             <p>
               Connmapper requires the GeoLite2 City database to resolve IP
-              addresses to their physical location, which you have not
-              downloaded yet. Please grab your free account ID and license key
-              by visiting{" "}
+              addresses to their physical location.
+            </p>
+
+            <Title headingLevel="h2" className="pf-v6-u-my-md">
+              Option 1: Download the Database
+            </Title>
+
+            <p>
+              To download a new copy of the database, please register for a
+              (free) MaxMind Account ID and License Key by visiting{" "}
               <a
                 href="https://support.maxmind.com/hc/en-us/articles/4407111582235-Generate-a-License-Key"
                 target="_blank"
@@ -776,8 +785,8 @@ const App = () => {
                 onClick={handleExternalLink}
               >
                 support.maxmind.com
-              </a>{" "}
-              and enter them below:
+              </a>
+              , then enter them below:
             </p>
           </div>
 
@@ -860,10 +869,8 @@ const App = () => {
                   setLicenseKey(v);
                 }}
               />
-            </FormGroup>
-          </Form>
-        </ModalBody>
 
+              <ActionGroup>
                 <Button
                   key={1}
                   variant="secondary"
@@ -875,6 +882,45 @@ const App = () => {
                 >
                   Download database
                 </Button>
+              </ActionGroup>
+            </FormGroup>
+          </Form>
+
+          <div className="pf-v6-u-mb-md pf-v6-u-mt-lg">
+            <Title headingLevel="h2" className="pf-v6-u-my-md">
+              Option 2: Use Existing Database
+            </Title>
+
+            <p>
+              Alternatively, if you already have a copy of the GeoLite2 City
+              database, you can select it below:
+            </p>
+          </div>
+
+          <FileUpload
+            id="db-upload"
+            className="pf-v6-u-pl-0"
+            filenamePlaceholder="Drag and drop a database file (.mmdb) or upload one"
+            isClearButtonDisabled
+            hideDefaultPreview
+            dropzoneProps={{
+              accept: { "application/octet-stream": [".mmdb"] },
+              onDropRejected: () =>
+                alert("Not a valid database file, please try again"),
+            }}
+            onFileInputChange={(_, file) => {
+              setDBIsDownloading(true);
+
+              setTimeout(() => {
+                // TODO: Call upload streaming RPC for `file`
+                setDBIsDownloading(false);
+
+                setIsDBDownloadRequired(false);
+              }, 1000);
+            }}
+            browseButtonText="Upload"
+          />
+        </ModalBody>
       </Modal>
 
       {!isDBDownloadRequired && !isSettingsOpen && (
