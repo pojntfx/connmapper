@@ -103,12 +103,6 @@ body {
   color: #ffffff; // PatternFly V6 doesn't seem to export a constant white color yet
 }
 
-.pf-v6-c-spinner--button {
-  --pf-v6-c-spinner--Color: var(--pf-v6-global--Color--light-100) !important;
-  height: 10pt !important;
-  margin-left: -0.3rem !important;
-}
-
 .pf-v6-x-c-logo {
   max-width: 25rem;
 }

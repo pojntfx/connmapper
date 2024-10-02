@@ -864,24 +864,17 @@ const App = () => {
           </Form>
         </ModalBody>
 
-        <ModalFooter>
-          <Button
-            key={1}
-            variant="primary"
-            form="db-download"
-            type="submit"
-            disabled={dbIsDownloading}
-          >
-            {dbIsDownloading && (
-              <Spinner
-                size="md"
-                aria-label="Database download spinner"
-                className="pf-v6-c-spinner--button"
-              />
-            )}{" "}
-            Download database
-          </Button>
-        </ModalFooter>
+                <Button
+                  key={1}
+                  variant="secondary"
+                  form="db-download"
+                  type="submit"
+                  disabled={dbIsDownloading}
+                  isLoading={dbIsDownloading}
+                  spinnerAriaLabel="Database download spinner"
+                >
+                  Download database
+                </Button>
       </Modal>
 
       {!isDBDownloadRequired && !isSettingsOpen && (
