@@ -58,6 +58,8 @@ github.com/pojntfx/hydrapp/hydrapp v0.0.0-20240827002308-22c8dc1ea9b8 h1:RMkBO5t
 github.com/pojntfx/hydrapp/hydrapp v0.0.0-20240827002308-22c8dc1ea9b8/go.mod h1:cMqpRL/EG4CvGaYlrEosyoHwkm54vDcL5r8d6/2G1SU=
 github.com/pojntfx/panrpc/go v0.0.0-20240816011753-7169be8c89fb h1:2vU/ZbsJ1uZhR2BCjc3mIfzR9GVuAWHSIUrw8jnLK9g=
 github.com/pojntfx/panrpc/go v0.0.0-20240816011753-7169be8c89fb/go.mod h1:G9YawT9jiXDf6z7WEv7KMIca+A41mjm8KL8AfBxN37U=
+github.com/pojntfx/panrpc/go v0.0.0-20241003051136-b93809e92a15 h1:4RI9bEX39FgZo9/12015R/sPehT14oX3sffksnuNh7I=
+github.com/pojntfx/panrpc/go v0.0.0-20241003051136-b93809e92a15/go.mod h1:G9YawT9jiXDf6z7WEv7KMIca+A41mjm8KL8AfBxN37U=
 github.com/randall77/makefat v0.0.0-20210315173500-7ddd0e42c844 h1:GranzK4hv1/pqTIhMTXt2X8MmMOuH3hMeUR0o9SP5yc=
 github.com/randall77/makefat v0.0.0-20210315173500-7ddd0e42c844/go.mod h1:T1TLSfyWVBRXVGzWd0o9BI4kfoO9InEgfQe4NV3mLz8=
 github.com/rogpeppe/go-internal v1.9.0/go.mod h1:WtVeX8xhTBvf0smdhujwtBcq4Qrzq/fJaraNFVN+nFs=

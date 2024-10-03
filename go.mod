@@ -7,7 +7,7 @@ require (
 	github.com/gopacket/gopacket v1.2.0
 	github.com/oschwald/geoip2-golang v1.11.0
 	github.com/pojntfx/hydrapp/hydrapp v0.0.0-20240827002308-22c8dc1ea9b8
-	github.com/pojntfx/panrpc/go v0.0.0-20240816011753-7169be8c89fb
+	github.com/pojntfx/panrpc/go v0.0.0-20241003051136-b93809e92a15
 	nhooyr.io/websocket v1.8.17
 )
 

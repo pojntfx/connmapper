@@ -151,6 +151,13 @@ class Remote {
     return;
   }
 
+  async UploadDatabase(
+    ctx: IRemoteContext,
+    read: (ctx: ILocalContext) => Promise<number[]>
+  ): Promise<void> {
+    return;
+  }
+
   async ListDevices(ctx: IRemoteContext): Promise<IDevice[]> {
     return [];
   }
@@ -421,7 +428,8 @@ const App = () => {
   const [maxConnectionsCache, setMaxConnectionsCache] = useState(0);
   const [maxPacketCache, setMaxPacketCache] = useState(0);
   const [dbDownloadURL, setDBDownloadURL] = useState("");
-  const [isDBDownloadRequired, setIsDBDownloadRequired] = useState(false);
+  const [isDBConfigurationRequired, setIsDBConfigurationRequired] =
+    useState(false);
 
   const connectionsInterval = useRef(
     parseInt(localStorage.getItem(CONNECTIONS_INTERVAL_KEY) || "1000")
@@ -494,7 +502,7 @@ const App = () => {
           setDBDownloadURL(newDBDownloadURL);
         }
 
-        setIsDBDownloadRequired(newIsDBDownloadRequired);
+        setIsDBConfigurationRequired(newIsDBDownloadRequired);
       } catch (e) {
         alert(JSON.stringify((e as Error).message));
       }
@@ -664,6 +672,7 @@ const App = () => {
   const [accountID, setAccountID] = useState("");
   const [licenseKey, setLicenseKey] = useState("");
   const [dbIsDownloading, setDBIsDownloading] = useState(false);
+  const [dbIsUploading, setDBIsUploading] = useState(false);
 
   const handleExternalLink = useCallback(
     (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -752,7 +761,7 @@ const App = () => {
       </AlertGroup>
 
       <Modal
-        isOpen={isDBDownloadRequired}
+        isOpen={isDBConfigurationRequired}
         className="pf-v6-u-mt-0 pf-v6-u-mb-0 pf-v6-c-modal-box--db-download"
         aria-labelledby="db-config-modal-title"
       >
@@ -817,7 +826,7 @@ const App = () => {
 
                       setDBIsDownloading(false);
 
-                      setIsDBDownloadRequired(false);
+                      setIsDBConfigurationRequired(false);
                     } catch (e) {
                       alert(JSON.stringify((e as Error).message));
                     }
@@ -902,28 +911,44 @@ const App = () => {
             className="pf-v6-u-pl-0"
             filenamePlaceholder="Drag and drop a database file (.mmdb) or upload one"
             isClearButtonDisabled
-            hideDefaultPreview
+            isLoading={dbIsUploading}
             dropzoneProps={{
               accept: { "application/octet-stream": [".mmdb"] },
               onDropRejected: () =>
                 alert("Not a valid database file, please try again"),
             }}
             onFileInputChange={(_, file) => {
-              setDBIsDownloading(true);
+              try {
+                setDBIsUploading(true);
 
-              setTimeout(() => {
-                // TODO: Call upload streaming RPC for `file`
-                setDBIsDownloading(false);
+                const fileReader = file.stream().getReader();
 
-                setIsDBDownloadRequired(false);
-              }, 1000);
+                registry.forRemotes(async (_, remote) => {
+                  try {
+                    await remote.UploadDatabase(undefined, async (_) => {
+                      const { done, value } = await fileReader.read();
+                      if (done) return [];
+
+                      return Array.from(value);
+                    });
+
+                    setDBIsUploading(false);
+
+                    setIsDBConfigurationRequired(false);
+                  } catch (e) {
+                    alert(JSON.stringify((e as Error).message));
+                  }
+                });
+              } catch (e) {
+                alert((e as Error).message);
+              }
             }}
             browseButtonText="Upload"
           />
         </ModalBody>
       </Modal>
 
-      {!isDBDownloadRequired && !isSettingsOpen && (
+      {!isDBConfigurationRequired && !isSettingsOpen && (
         <Button
           variant="control"
           aria-label="Settings"
@@ -1409,7 +1434,7 @@ const App = () => {
           )}
         </>
       ) : (
-        !isDBDownloadRequired && (
+        !isDBConfigurationRequired && (
           <Flex
             className="pf-v6-u-p-lg pf-v6-u-h-100"
             spaceItems={{ default: "spaceItemsMd" }}

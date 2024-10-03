@@ -132,7 +132,10 @@ func (l *local) CheckDatabase(ctx context.Context) (bool, error) {
 	return false, nil
 }
 
-func (l *local) DownloadDatabase(ctx context.Context, accountID, licenseKey string) error {
+func (l *local) DownloadDatabase(
+	ctx context.Context,
+	accountID, licenseKey string,
+) error {
 	log.Println("Downloading database from base URL", l.dbDownloadURL)
 
 	if err := os.MkdirAll(filepath.Dir(l.dbPath), os.ModePerm); err != nil {
@@ -194,6 +197,38 @@ func (l *local) DownloadDatabase(ctx context.Context, accountID, licenseKey stri
 	}
 
 	return nil
+}
+
+func (l *local) UploadDatabase(
+	ctx context.Context,
+	read func(ctx context.Context) ([]byte, error),
+) error {
+	log.Println("Receiving database from client")
+
+	if err := os.MkdirAll(filepath.Dir(l.dbPath), os.ModePerm); err != nil {
+		return err
+	}
+
+	out, err := os.Create(l.dbPath)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+
+	for {
+		chunk, err := read(ctx)
+		if err != nil {
+			return err
+		}
+
+		if len(chunk) == 0 {
+			return nil
+		}
+
+		if _, err := out.Write(chunk); err != nil {
+			return nil
+		}
+	}
 }
 
 func (l *local) ListDevices(ctx context.Context) ([]uutils.Device, error) {
