@@ -34,10 +34,10 @@
   },
   {
     "dest": "vendor/github.com/pojntfx/panrpc/go",
-    "sha256": "9c465b17851b0766936cb7ecde1bea86a8147875fad1b6cd7ed5c9549b3eeb84",
+    "sha256": "f9b464639f0bc02e1c61bb5fd27303591752a436d8b9f0114b0e38a5c85138d2",
     "strip-components": 4,
     "type": "archive",
-    "url": "https://proxy.golang.org/github.com/pojntfx/panrpc/go/@v/v0.0.0-20240816011753-7169be8c89fb.zip"
+    "url": "https://proxy.golang.org/github.com/pojntfx/panrpc/go/@v/v0.0.0-20241003051136-b93809e92a15.zip"
   },
   {
     "dest": "vendor/nhooyr.io/websocket",

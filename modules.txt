@@ -106,7 +106,7 @@ github.com/pojntfx/hydrapp/hydrapp/pkg/renderers
 github.com/pojntfx/hydrapp/hydrapp/pkg/renderers/rpm
 github.com/pojntfx/hydrapp/hydrapp/pkg/ui
 github.com/pojntfx/hydrapp/hydrapp/pkg/utils
-# github.com/pojntfx/panrpc/go v0.0.0-20240816011753-7169be8c89fb
+# github.com/pojntfx/panrpc/go v0.0.0-20241003051136-b93809e92a15
 ## explicit; go 1.18
 github.com/pojntfx/panrpc/go/pkg/rpc
 github.com/pojntfx/panrpc/go/pkg/utils
