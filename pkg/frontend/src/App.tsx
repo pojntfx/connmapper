@@ -15,6 +15,8 @@ import {
   ModalFooter,
   ModalHeader,
   ModalVariant,
+  Progress,
+  ProgressVariant,
   Select,
   SelectList,
   SelectOption,
@@ -60,8 +62,8 @@ import { useWindowSize } from "usehooks-ts";
 import earthTexture from "./8k_earth_nightmap.jpg";
 import earthElevation from "./8k_earth_normal_map.png";
 import universeTexture from "./8k_stars_milky_way.jpg";
-import logoDark from "./logo-dark.png";
 import logoDarkCyberpunk from "./logo-dark-cyberpunk.png";
+import logoDark from "./logo-dark.png";
 import "./main.scss";
 
 const MAX_PACKET_CACHE_KEY = "latensee.maxPacketCache";
@@ -674,6 +676,8 @@ const App = () => {
   const [dbIsDownloading, setDBIsDownloading] = useState(false);
   const [dbIsUploading, setDBIsUploading] = useState(false);
 
+  const [progress, setProgress] = useState(0);
+
   const handleExternalLink = useCallback(
     (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
       e.preventDefault();
@@ -845,6 +849,7 @@ const App = () => {
                 id="account-id"
                 name="account-id"
                 value={accountID}
+                isDisabled={dbIsDownloading || dbIsUploading}
                 onChange={(_, e) => {
                   const v = e.trim();
 
@@ -866,6 +871,7 @@ const App = () => {
                 id="license-id"
                 name="license-id"
                 value={licenseKey}
+                isDisabled={dbIsDownloading || dbIsUploading}
                 onChange={(_, e) => {
                   const v = e.trim();
 
@@ -885,7 +891,8 @@ const App = () => {
                   variant="secondary"
                   form="db-download"
                   type="submit"
-                  disabled={dbIsDownloading}
+                  disabled={dbIsDownloading || dbIsUploading}
+                  isDisabled={dbIsDownloading || dbIsUploading}
                   isLoading={dbIsDownloading}
                   spinnerAriaLabel="Database download spinner"
                 >
@@ -906,45 +913,62 @@ const App = () => {
             </p>
           </div>
 
-          <FileUpload
-            id="db-upload"
-            className="pf-v6-u-pl-0"
-            filenamePlaceholder="Drag and drop a database file (.mmdb) or upload one"
-            isClearButtonDisabled
-            isLoading={dbIsUploading}
-            dropzoneProps={{
-              accept: { "application/octet-stream": [".mmdb"] },
-              onDropRejected: () =>
-                alert("Not a valid database file, please try again"),
-            }}
-            onFileInputChange={(_, file) => {
-              try {
-                setDBIsUploading(true);
+          {dbIsUploading ? (
+            <Progress
+              value={progress}
+              title="Uploading database ..."
+              variant={progress >= 100 ? ProgressVariant.success : undefined}
+            />
+          ) : (
+            <FileUpload
+              id="db-upload"
+              className="pf-v6-u-pl-0"
+              filenamePlaceholder="Drag and drop a database file (.mmdb) or upload one"
+              isClearButtonDisabled
+              hideDefaultPreview
+              disabled={dbIsDownloading || dbIsUploading}
+              isDisabled={dbIsDownloading || dbIsUploading}
+              dropzoneProps={{
+                accept: { "application/octet-stream": [".mmdb"] },
+                onDropRejected: () =>
+                  alert("Not a valid database file, please try again"),
+              }}
+              onFileInputChange={(_, file) => {
+                try {
+                  setDBIsUploading(true);
 
-                const fileReader = file.stream().getReader();
+                  const fileReader = file.stream().getReader();
 
-                registry.forRemotes(async (_, remote) => {
-                  try {
-                    await remote.UploadDatabase(undefined, async (_) => {
-                      const { done, value } = await fileReader.read();
-                      if (done) return [];
+                  registry.forRemotes(async (_, remote) => {
+                    try {
+                      let pulledChunks = 0;
 
-                      return Array.from(value);
-                    });
+                      await remote.UploadDatabase(undefined, async (_) => {
+                        const { done, value } = await fileReader.read();
+                        if (done) return [];
 
-                    setDBIsUploading(false);
+                        pulledChunks += value.length;
+                        setProgress(
+                          Math.floor((pulledChunks / file.size) * 100)
+                        );
 
-                    setIsDBConfigurationRequired(false);
-                  } catch (e) {
-                    alert(JSON.stringify((e as Error).message));
-                  }
-                });
-              } catch (e) {
-                alert((e as Error).message);
-              }
-            }}
-            browseButtonText="Upload"
-          />
+                        return Array.from(value);
+                      });
+
+                      setDBIsUploading(false);
+
+                      setIsDBConfigurationRequired(false);
+                    } catch (e) {
+                      alert(JSON.stringify((e as Error).message));
+                    }
+                  });
+                } catch (e) {
+                  alert((e as Error).message);
+                }
+              }}
+              browseButtonText="Upload"
+            />
+          )}
         </ModalBody>
       </Modal>
 
