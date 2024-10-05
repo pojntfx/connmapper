@@ -7,14 +7,14 @@
     "org.freedesktop.Sdk.Extension.node20",
     "org.freedesktop.Sdk.Extension.golang"
   ],
+  "base": "org.chromium.Chromium.BaseApp",
+  "base-version": "24.08",
   "command": "{{ .AppID }}",
   "finish-args": [
-    "--socket=session-bus",
     "--share=network",
     "--socket=fallback-x11",
     "--socket=wayland",
     "--device=dri",
-    "--filesystem=/tmp:rw",
     "--filesystem=home",
     "--talk-name=org.freedesktop.Flatpak"
   ],
