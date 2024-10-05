@@ -1220,15 +1220,29 @@ const App = () => {
       {tracing ? (
         <>
           <ReactGlobeGl
+            ringsData={arcs.flatMap((arc) =>
+              arc.coords.map(([lat, lng]) => ({
+                lat: lng,
+                lng: lat,
+                maxR: 2,
+                propagationSpeed: 2,
+                repeatPeriod: 400,
+              }))
+            )}
+            ringColor={() => "#FF643280"}
+            ringMaxRadius="maxR"
+            ringPropagationSpeed="propagationSpeed"
+            ringRepeatPeriod="repeatPeriod"
             arcsData={arcs}
             arcLabel={(d: any) => (d as IArc).label}
             arcStartLng={(d: any) => (d as IArc).coords[0][0]}
             arcStartLat={(d: any) => (d as IArc).coords[0][1]}
             arcEndLng={(d: any) => (d as IArc).coords[1][0]}
             arcEndLat={(d: any) => (d as IArc).coords[1][1]}
-            arcDashLength={0.05}
-            arcDashGap={0.1}
-            arcDashAnimateTime={10000}
+            arcDashLength={0.5}
+            arcDashGap={0.25}
+            arcDashInitialGap={1}
+            arcDashAnimateTime={4000}
             arcsTransitionDuration={500}
             arcStroke={() => 0.25}
             arcColor={(d: any) =>
