@@ -56,8 +56,14 @@ dmg:
 flatpak:
   - path: flatpak/x86_64
     architecture: amd64
+    packages:
+      - name: org.chromium.Chromium.BaseApp
+        version: "24.08"
   - path: flatpak/aarch64
     architecture: arm64
+    packages:
+      - name: org.chromium.Chromium.BaseApp
+        version: "24.08"
 msi:
   - path: msi/x86_64
     architecture: amd64
