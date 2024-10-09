@@ -7,8 +7,8 @@
     "org.freedesktop.Sdk.Extension.node20",
     "org.freedesktop.Sdk.Extension.golang"
   ],
-  "base": "org.chromium.Chromium.BaseApp",
-  "base-version": "24.08",
+  "base": "io.github.ungoogled_software.ungoogled_chromium",
+  "base-version": "stable",
   "command": "{{ .AppID }}",
   "finish-args": [
     "--share=network",
