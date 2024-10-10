@@ -265,16 +265,6 @@ func (l *local) GetMaxConnectionsCache(ctx context.Context) (int, error) {
 	return l.maxConnectionsCache, nil
 }
 
-func (l *local) SetDBPath(ctx context.Context, dbPath string) error {
-	l.dbPath = dbPath
-
-	return nil
-}
-
-func (l *local) GetDBPath(ctx context.Context) (string, error) {
-	return l.dbPath, nil
-}
-
 func (l *local) RestartApp(ctx context.Context) error {
 	bin, err := os.Executable()
 	if err != nil {

@@ -41,6 +41,7 @@ import {
   RedoIcon,
   TableIcon,
   TimesIcon,
+  TrashIcon,
 } from "@patternfly/react-icons";
 import {
   Table,
@@ -68,7 +69,6 @@ import "./main.scss";
 
 const MAX_PACKET_CACHE_KEY = "latensee.maxPacketCache";
 const MAX_CONNECTIONS_CACHE_KEY = "latensee.maxConnectionsCache";
-const DB_PATH_KEY = "latensee.dbPath";
 const DB_DOWNLOAD_URL_KEY = "latensee.dbDownloadUrl";
 const CONNECTIONS_INTERVAL_KEY = "latensee.connectionsInterval";
 const PACKETS_INTERVAL_KEY = "latensee.packetsInterval";
@@ -201,14 +201,6 @@ class Remote {
 
   async GetMaxConnectionsCache(ctx: IRemoteContext): Promise<number> {
     return 0;
-  }
-
-  async SetDBPath(ctx: IRemoteContext, dbPath: string): Promise<void> {
-    return;
-  }
-
-  async GetDBPath(ctx: IRemoteContext): Promise<string> {
-    return "";
   }
 
   async SetDBDownloadURL(
@@ -426,7 +418,6 @@ const App = () => {
   }, []);
 
   const [devices, setDevices] = useState<IDevice[]>([]);
-  const [dbPath, setDbPath] = useState("");
   const [maxConnectionsCache, setMaxConnectionsCache] = useState(0);
   const [maxPacketCache, setMaxPacketCache] = useState(0);
   const [dbDownloadURL, setDBDownloadURL] = useState("");
@@ -456,21 +447,17 @@ const App = () => {
           parseInt(localStorage.getItem(MAX_CONNECTIONS_CACHE_KEY) || "0")
         );
 
-        setDbPath(localStorage.getItem(DB_PATH_KEY) || "");
-
         setDBDownloadURL(localStorage.getItem(DB_DOWNLOAD_URL_KEY) || "");
 
         // Rehydrate from server and fetch devices
         const [
           newDevices,
-          newDBPath,
           newMaxConnectionsCache,
           newMaxPacketCache,
           newDBDownloadURL,
           newIsDBDownloadRequired,
         ] = await Promise.all([
           remote.ListDevices(undefined),
-          remote.GetDBPath(undefined),
           remote.GetMaxConnectionsCache(undefined),
           remote.GetMaxPacketCache(undefined),
           remote.GetDBDownloadURL(undefined),
@@ -484,10 +471,6 @@ const App = () => {
         }
 
         // Set local values from server if they aren't set yet
-        if ((localStorage.getItem(DB_PATH_KEY) || "").trim().length <= 0) {
-          setDbPath(newDBPath);
-        }
-
         if (
           parseInt(localStorage.getItem(MAX_CONNECTIONS_CACHE_KEY) || "0") <= 0
         ) {
@@ -545,22 +528,6 @@ const App = () => {
       }
     });
   }, [clients, maxConnectionsCache]);
-
-  useEffect(() => {
-    if (clients <= 0 || dbPath.trim().length <= 0) {
-      return;
-    }
-
-    localStorage.setItem(DB_PATH_KEY, dbPath);
-
-    registry.forRemotes(async (_, remote) => {
-      try {
-        await remote.SetDBPath(undefined, dbPath);
-      } catch (e) {
-        alert(JSON.stringify((e as Error).message));
-      }
-    });
-  }, [clients, dbPath]);
 
   useEffect(() => {
     if (clients <= 0 || dbDownloadURL.trim().length <= 0) {
@@ -1029,6 +996,10 @@ const App = () => {
             }}
             noValidate={false}
           >
+            <Title headingLevel="h2" className="pf-v6-u-mt-md">
+              Cache
+            </Title>
+
             <FormGroup
               label="Maximum packet cache length"
               isRequired
@@ -1079,53 +1050,7 @@ const App = () => {
               />
             </FormGroup>
 
-            <FormGroup label="GeoLite2 DB path" isRequired fieldId="db-path">
-              <TextInput
-                isRequired
-                type="text"
-                id="db-path"
-                name="db-path"
-                value={dbPath}
-                onChange={(_, e) => {
-                  const v = e.trim();
-
-                  if (v.length <= 0) {
-                    console.error("Could not work with empty path");
-
-                    return;
-                  }
-
-                  setDbPath(v);
-                  setShowRestartWarning(true);
-                }}
-              />
-            </FormGroup>
-
-            <FormGroup
-              label="GeoLite2 DB download URL"
-              isRequired
-              fieldId="db-download-url"
-            >
-              <TextInput
-                isRequired
-                type="text"
-                id="db-download-url"
-                name="db-download-url"
-                value={dbDownloadURL}
-                onChange={(_, e) => {
-                  const v = e.trim();
-
-                  if (v.length <= 0) {
-                    console.error("Could not work with empty download URL");
-
-                    return;
-                  }
-
-                  setDBDownloadURL(v);
-                  setShowRestartWarning(true);
-                }}
-              />
-            </FormGroup>
+            <Title headingLevel="h2">Tracing</Title>
 
             <FormGroup
               label="Packet polling interval (in milliseconds)"
@@ -1187,6 +1112,34 @@ const App = () => {
               />
             </FormGroup>
 
+            <Title headingLevel="h2">Advanced</Title>
+
+            <FormGroup
+              label="GeoLite2 DB download URL"
+              isRequired
+              fieldId="db-download-url"
+            >
+              <TextInput
+                isRequired
+                type="text"
+                id="db-download-url"
+                name="db-download-url"
+                value={dbDownloadURL}
+                onChange={(_, e) => {
+                  const v = e.trim();
+
+                  if (v.length <= 0) {
+                    console.error("Could not work with empty download URL");
+
+                    return;
+                  }
+
+                  setDBDownloadURL(v);
+                  setShowRestartWarning(true);
+                }}
+              />
+            </FormGroup>
+
             <FormGroup label="Visual tweaks" fieldId="cyberpunk-mode">
               <Switch
                 id="cyberpunk-mode"
@@ -1213,6 +1166,19 @@ const App = () => {
             onClick={() => setIsSettingsOpen(false)}
           >
             OK
+          </Button>
+
+          <Button
+            variant="secondary"
+            isDanger
+            icon={<TrashIcon />}
+            onClick={() => {
+              setIsSettingsOpen(false);
+
+              setShowRestartWarning(true);
+            }}
+          >
+            Reset and Delete Database
           </Button>
         </ModalFooter>
       </Modal>
