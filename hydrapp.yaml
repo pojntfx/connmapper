@@ -57,12 +57,12 @@ flatpak:
   - path: flatpak/x86_64
     architecture: amd64
     packages:
-      - name: io.github.ungoogled_software.ungoogled_chromium
+      - name: org.chromium.Chromium
         version: "stable"
   - path: flatpak/aarch64
     architecture: arm64
     packages:
-      - name: io.github.ungoogled_software.ungoogled_chromium
+      - name: org.chromium.Chromium
         version: "stable"
 msi:
   - path: msi/x86_64
