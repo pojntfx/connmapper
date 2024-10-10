@@ -972,7 +972,7 @@ const App = () => {
         </ModalBody>
       </Modal>
 
-      {!isDBConfigurationRequired && !isSettingsOpen && (
+      {!isSettingsOpen && (
         <Button
           variant="control"
           aria-label="Settings"
