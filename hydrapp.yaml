@@ -57,12 +57,12 @@ flatpak:
   - path: flatpak/x86_64
     architecture: amd64
     packages:
-      - name: org.chromium.Chromium
+      - name: org.gnome.Epiphany
         version: "stable"
   - path: flatpak/aarch64
     architecture: arm64
     packages:
-      - name: org.chromium.Chromium
+      - name: org.gnome.Epiphany
         version: "stable"
 msi:
   - path: msi/x86_64
