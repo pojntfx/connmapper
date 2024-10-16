@@ -160,6 +160,10 @@ class Remote {
     return;
   }
 
+  async DeleteDatabase(ctx: IRemoteContext): Promise<void> {
+    return;
+  }
+
   async ListDevices(ctx: IRemoteContext): Promise<IDevice[]> {
     return [];
   }
@@ -1173,9 +1177,23 @@ const App = () => {
             isDanger
             icon={<TrashIcon />}
             onClick={() => {
-              setIsSettingsOpen(false);
-
               setShowRestartWarning(true);
+
+              try {
+                setIsSettingsOpen(false);
+
+                registry.forRemotes(async (_, remote) => {
+                  try {
+                    await remote.DeleteDatabase(undefined);
+
+                    setShowRestartWarning(true);
+                  } catch (e) {
+                    alert(JSON.stringify((e as Error).message));
+                  }
+                });
+              } catch (e) {
+                alert((e as Error).message);
+              }
             }}
           >
             Reset and Delete Database

@@ -231,6 +231,14 @@ func (l *local) UploadDatabase(
 	}
 }
 
+func (l *local) DeleteDatabase(
+	ctx context.Context,
+) error {
+	log.Println("Deleting database")
+
+	return os.RemoveAll(l.dbPath)
+}
+
 func (l *local) ListDevices(ctx context.Context) ([]uutils.Device, error) {
 	return uutils.ListDevices(ctx)
 }
