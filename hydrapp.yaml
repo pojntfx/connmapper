@@ -63,6 +63,10 @@ flatpak:
         version: "47"
       - name: org.gnome.Sdk
         version: "47"
+      - name: org.freedesktop.Sdk.Extension.node20
+        version: "24.08"
+      - name: org.freedesktop.Sdk.Extension.golang
+        version: "24.08"
   - path: flatpak/aarch64
     architecture: arm64
     packages:
@@ -72,6 +76,10 @@ flatpak:
         version: "47"
       - name: org.gnome.Sdk
         version: "47"
+      - name: org.freedesktop.Sdk.Extension.node20
+        version: "24.08"
+      - name: org.freedesktop.Sdk.Extension.golang
+        version: "24.08"
 msi:
   - path: msi/x86_64
     architecture: amd64
