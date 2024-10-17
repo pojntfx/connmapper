@@ -8,7 +8,7 @@ require (
 	github.com/cli/browser v1.3.0
 	github.com/gopacket/gopacket v1.2.0
 	github.com/oschwald/geoip2-golang v1.11.0
-	github.com/pojntfx/hydrapp/hydrapp v0.0.0-20241016022057-0e7709c2f874
+	github.com/pojntfx/hydrapp/hydrapp v0.0.0-20241017235527-3511eb5e35cb
 	github.com/pojntfx/panrpc/go v0.0.0-20241003051136-b93809e92a15
 	nhooyr.io/websocket v1.8.17
 )

@@ -97,8 +97,8 @@ github.com/oschwald/maxminddb-golang
 github.com/pkg/errors
 # github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2
 ## explicit
-# github.com/pojntfx/hydrapp/hydrapp v0.0.0-20241016022057-0e7709c2f874
-## explicit; go 1.21.1
+# github.com/pojntfx/hydrapp/hydrapp v0.0.0-20241017235527-3511eb5e35cb
+## explicit; go 1.22.0
 github.com/pojntfx/hydrapp/hydrapp/pkg/builders
 github.com/pojntfx/hydrapp/hydrapp/pkg/config
 github.com/pojntfx/hydrapp/hydrapp/pkg/fixes
