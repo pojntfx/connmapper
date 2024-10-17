@@ -27,10 +27,10 @@
   },
   {
     "dest": "vendor/github.com/pojntfx/hydrapp/hydrapp",
-    "sha256": "454e263cb01cddaafe484c89e629d873cd5cba1084340d266a4e827c60e5ecb0",
+    "sha256": "acb190cdf26ad901899c116a302bf1810d81531091e4ca2f6868771a4775dfad",
     "strip-components": 4,
     "type": "archive",
-    "url": "https://proxy.golang.org/github.com/pojntfx/hydrapp/hydrapp/@v/v0.0.0-20241009042133-584d87204b2a.zip"
+    "url": "https://proxy.golang.org/github.com/pojntfx/hydrapp/hydrapp/@v/v0.0.0-20241016022057-0e7709c2f874.zip"
   },
   {
     "dest": "vendor/github.com/pojntfx/panrpc/go",
@@ -90,10 +90,10 @@
   },
   {
     "dest": "vendor/github.com/cloudflare/circl",
-    "sha256": "a1fd65b007bc9d1bce0cf190feb1ab6cc50a3c15b3f604a2f95982d40e9e19db",
+    "sha256": "e03e00c5bbbbbd3339fba160a44a89408946e9b4121e5b117f552749c2f53147",
     "strip-components": 3,
     "type": "archive",
-    "url": "https://proxy.golang.org/github.com/cloudflare/circl/@v/v1.4.0.zip"
+    "url": "https://proxy.golang.org/github.com/cloudflare/circl/@v/v1.5.0.zip"
   },
   {
     "dest": "vendor/github.com/davecgh/go-spew",

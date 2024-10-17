@@ -43,8 +43,8 @@ github.com/breml/rootcerts/embedded
 # github.com/cli/browser v1.3.0
 ## explicit; go 1.21
 github.com/cli/browser
-# github.com/cloudflare/circl v1.4.0
-## explicit; go 1.21
+# github.com/cloudflare/circl v1.5.0
+## explicit; go 1.22.0
 github.com/cloudflare/circl/dh/x25519
 github.com/cloudflare/circl/dh/x448
 github.com/cloudflare/circl/ecc/goldilocks
@@ -97,7 +97,7 @@ github.com/oschwald/maxminddb-golang
 github.com/pkg/errors
 # github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2
 ## explicit
-# github.com/pojntfx/hydrapp/hydrapp v0.0.0-20241009042133-584d87204b2a
+# github.com/pojntfx/hydrapp/hydrapp v0.0.0-20241016022057-0e7709c2f874
 ## explicit; go 1.21.1
 github.com/pojntfx/hydrapp/hydrapp/pkg/builders
 github.com/pojntfx/hydrapp/hydrapp/pkg/config

@@ -8,7 +8,7 @@ require (
 	github.com/cli/browser v1.3.0
 	github.com/gopacket/gopacket v1.2.0
 	github.com/oschwald/geoip2-golang v1.11.0
-	github.com/pojntfx/hydrapp/hydrapp v0.0.0-20241009042133-584d87204b2a
+	github.com/pojntfx/hydrapp/hydrapp v0.0.0-20241016022057-0e7709c2f874
 	github.com/pojntfx/panrpc/go v0.0.0-20241003051136-b93809e92a15
 	nhooyr.io/websocket v1.8.17
 )
@@ -20,7 +20,7 @@ require (
 	github.com/ProtonMail/gopenpgp/v2 v2.7.5 // indirect
 	github.com/akavel/rsrc v0.10.2 // indirect
 	github.com/breml/rootcerts v0.2.18 // indirect
-	github.com/cloudflare/circl v1.4.0 // indirect
+	github.com/cloudflare/circl v1.5.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/dchest/jsmin v0.0.0-20220218165748-59f39799265f // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
