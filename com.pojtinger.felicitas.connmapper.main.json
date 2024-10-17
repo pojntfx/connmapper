@@ -2,7 +2,7 @@
   "id": "{{ .AppID }}",
   "runtime": "org.gnome.Platform",
   "runtime-version": "47",
-  "sdk": "org.freedesktop.Sdk",
+  "sdk": "org.gnome.Sdk",
   "sdk-extensions": [
     "org.freedesktop.Sdk.Extension.node20",
     "org.freedesktop.Sdk.Extension.golang"
