@@ -59,11 +59,15 @@ flatpak:
     packages:
       - name: org.gnome.Epiphany
         version: "stable"
+      - name: org.gnome.Platform
+        version: "47"
   - path: flatpak/aarch64
     architecture: arm64
     packages:
       - name: org.gnome.Epiphany
         version: "stable"
+      - name: org.gnome.Platform
+        version: "47"
 msi:
   - path: msi/x86_64
     architecture: amd64
