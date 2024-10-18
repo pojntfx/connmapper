@@ -17,7 +17,8 @@ func TraceDevice(mtu int, device string) error {
 	handle, err := pcap.OpenLive(device, int32(mtu), true, pcap.BlockForever)
 	if err != nil {
 		// GoPacket doesn't export the permission error, so we need to compare error strings
-		if strings.HasSuffix(err.Error(), "(socket: Operation not permitted)") {
+		if strings.HasSuffix(err.Error(), "(socket: Operation not permitted)") || // Linux
+			strings.HasSuffix(err.Error(), "root privileges may be required)") { // macOS
 			fmt.Print(TraceCommandHandshakeHandlePermissionDenied)
 		} else {
 			fmt.Print(TraceCommandHandshakeHandleUnexpectedError)
