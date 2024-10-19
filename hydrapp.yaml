@@ -57,29 +57,29 @@ flatpak:
   - path: flatpak/x86_64
     architecture: amd64
     packages:
-      - name: org.gnome.Epiphany
+      - name: org.chromium.Chromium
         version: "stable"
-      - name: org.gnome.Platform
-        version: "47"
-      - name: org.gnome.Sdk
-        version: "47"
+      - name: org.freedesktop.Platform
+        version: "23.08"
+      - name: org.freedesktop.Sdk
+        version: "23.08"
       - name: org.freedesktop.Sdk.Extension.node20
-        version: "24.08"
+        version: "23.08"
       - name: org.freedesktop.Sdk.Extension.golang
-        version: "24.08"
+        version: "23.08"
   - path: flatpak/aarch64
     architecture: arm64
     packages:
-      - name: org.gnome.Epiphany
+      - name: org.chromium.Chromium
         version: "stable"
-      - name: org.gnome.Platform
-        version: "47"
-      - name: org.gnome.Sdk
-        version: "47"
+      - name: org.freedesktop.Platform
+        version: "23.08"
+      - name: org.freedesktop.Sdk
+        version: "23.08"
       - name: org.freedesktop.Sdk.Extension.node20
-        version: "24.08"
+        version: "23.08"
       - name: org.freedesktop.Sdk.Extension.golang
-        version: "24.08"
+        version: "23.08"
 msi:
   - path: msi/x86_64
     architecture: amd64

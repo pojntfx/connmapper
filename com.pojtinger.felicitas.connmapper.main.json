@@ -1,13 +1,13 @@
 {
   "id": "{{ .AppID }}",
-  "runtime": "org.gnome.Platform",
-  "runtime-version": "47",
-  "sdk": "org.gnome.Sdk",
+  "runtime": "org.freedesktop.Platform",
+  "runtime-version": "23.08",
+  "sdk": "org.freedesktop.Sdk",
   "sdk-extensions": [
     "org.freedesktop.Sdk.Extension.node20",
     "org.freedesktop.Sdk.Extension.golang"
   ],
-  "base": "org.gnome.Epiphany",
+  "base": "org.chromium.Chromium",
   "base-version": "stable",
   "command": "{{ .AppID }}",
   "finish-args": [
