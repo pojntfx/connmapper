@@ -35,9 +35,9 @@
         <p>Connmapper is an app to visualize your system's internet connections on a globe.</p>
         <p>It enables you to:</p>
         <ul>
-            <li><b>Do real-time analysis</b>: Thanks to <code>libpcap</code>, Connmapper can get your system's packets in near real-time, and display their properties such as protocols, packet lengths, or peer addresses.</li>
-            <li><b>Get visual insights</b>: By looking up the source and destination IPs for each connection in a local copy of the <a href="https://www.maxmind.com/en/geoip2-databases">MaxMind GeoIP2 database</a>, Connmapper can get the source and destination coordinates of every packet in your system and plot them on a globe.</li>
-            <li><b>Explore historical data</b>: Thanks to its integrated CSV export feature, Connmapper can also be used to aggregate connection data and analyze it externally.</li>
+            <li>Perform real-time analysis of your system's internet packets</li>
+            <li>Visualize the source and destination of connections on a globe</li>
+            <li>Export and explore historical connection data for external analysis</li>
         </ul>
     </description>
 
