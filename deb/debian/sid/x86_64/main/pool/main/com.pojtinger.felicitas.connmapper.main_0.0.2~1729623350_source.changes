@@ -1,0 +1,25 @@
+Format: 1.8
+Date: Mon, 26 Aug 2024 15:00:00 +0100
+Source: com.pojtinger.felicitas.connmapper.main
+Architecture: source
+Version: 0.0.2~1729623350
+Distribution: unstable
+Urgency: medium
+Maintainer: Felicitas Pojtinger <felicitas@pojtinger.com>
+Changed-By: Felicitas Pojtinger <felicitas@pojtinger.com>
+Changes:
+ com.pojtinger.felicitas.connmapper.main (0.0.2~1729623350) unstable; urgency=medium
+ .
+   * Maintenance updates to match the state of the art of hydrapp apps
+Checksums-Sha1:
+ 031f4e468701e656c5b4359484deea9528df1f9f 1068 com.pojtinger.felicitas.connmapper.main_0.0.2~1729623350.dsc
+ 3d9e2a0bb1b6b033df11ee4ed7171ddb420a5ca3 38214992 com.pojtinger.felicitas.connmapper.main_0.0.2~1729623350.tar.xz
+ 0d713d765a322190d0ef945e42dd95042636c05c 20924 com.pojtinger.felicitas.connmapper.main_0.0.2~1729623350_amd64.buildinfo
+Checksums-Sha256:
+ 2ac7e4fc05887e3f0984b54bb97befe8fb40644e65c45a35c6f6aadb592b3269 1068 com.pojtinger.felicitas.connmapper.main_0.0.2~1729623350.dsc
+ 9e03a2853b7d0fbcac57fd0f3d0f950c304305cd9b957b4e005a0ce0f1ef240a 38214992 com.pojtinger.felicitas.connmapper.main_0.0.2~1729623350.tar.xz
+ 87df1cfed932816d6bc6eb7eaa946f0920d7603c0e1e8467a4d7f5912a868d79 20924 com.pojtinger.felicitas.connmapper.main_0.0.2~1729623350_amd64.buildinfo
+Files:
+ 6f40ce5cca709c1de884dab7c68995c8 1068 utils optional com.pojtinger.felicitas.connmapper.main_0.0.2~1729623350.dsc
+ 52d4f231707ea9050c5c8b15273ca79e 38214992 utils optional com.pojtinger.felicitas.connmapper.main_0.0.2~1729623350.tar.xz
+ b92dbd4ca18a0a4c56c7370e917dcd19 20924 utils optional com.pojtinger.felicitas.connmapper.main_0.0.2~1729623350_amd64.buildinfo
