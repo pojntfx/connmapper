@@ -7,7 +7,7 @@
     "org.freedesktop.Sdk.Extension.node20",
     "org.freedesktop.Sdk.Extension.golang"
   ],
-  "base": "org.chromium.Chromium",
+  "base": "org.mozilla.firefox",
   "base-version": "stable",
   "command": "{{ .AppID }}",
   "finish-args": [
