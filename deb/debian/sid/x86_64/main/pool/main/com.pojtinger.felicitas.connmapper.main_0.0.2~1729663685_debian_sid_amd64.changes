@@ -1,0 +1,34 @@
+Format: 1.8
+Date: Mon, 26 Aug 2024 15:00:00 +0100
+Source: com.pojtinger.felicitas.connmapper.main
+Binary: com.pojtinger.felicitas.connmapper.main com.pojtinger.felicitas.connmapper.main-dbgsym
+Architecture: source amd64
+Version: 0.0.2~1729663685
+Distribution: unstable
+Urgency: medium
+Maintainer: Felicitas Pojtinger <felicitas@pojtinger.com>
+Changed-By: Felicitas Pojtinger <felicitas@pojtinger.com>
+Description:
+ com.pojtinger.felicitas.connmapper.main - System internet connection visualizer
+Changes:
+ com.pojtinger.felicitas.connmapper.main (0.0.2~1729663685) unstable; urgency=medium
+ .
+   * Maintenance updates to match the state of the art of hydrapp apps
+Checksums-Sha1:
+ db61688f2d56a0e31a925225e36059e8826d6497 1068 com.pojtinger.felicitas.connmapper.main_0.0.2~1729663685.dsc
+ 850629267f88ea2c1046b4a525d1bd9d6619c473 38216684 com.pojtinger.felicitas.connmapper.main_0.0.2~1729663685.tar.xz
+ c1d7dbcb50151c1f056d80a42d8b9925ff92b20a 4025356 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.2~1729663685_amd64.deb
+ 1f6902c567e76b6836e564e025da8c888f7a1173 20924 com.pojtinger.felicitas.connmapper.main_0.0.2~1729663685_amd64.buildinfo
+ ed546873fe094c0849adefa7c6f59284e8e977cb 19012468 com.pojtinger.felicitas.connmapper.main_0.0.2~1729663685_amd64.deb
+Checksums-Sha256:
+ 3aff449d6fbf23953296610de4d60cb8bac0a046b3d51c913933bbfd57737b2c 1068 com.pojtinger.felicitas.connmapper.main_0.0.2~1729663685.dsc
+ ffb5198bfe08c018063f71fa25528702410abd1a22ec40d836a3905e0fe29286 38216684 com.pojtinger.felicitas.connmapper.main_0.0.2~1729663685.tar.xz
+ 17e2607ba4dece12c1469e28a0d757e558b997be941b2da70de03309e74b74da 4025356 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.2~1729663685_amd64.deb
+ 91e8bd2540dcfdac7caa9b6f2ed310030d220b83eedb14a00e72952dbc38c75f 20924 com.pojtinger.felicitas.connmapper.main_0.0.2~1729663685_amd64.buildinfo
+ a2925dc21c2ed0d6f5792f9cbe6d65d4ccb212302cafbad9ec9e2f610044e6b3 19012468 com.pojtinger.felicitas.connmapper.main_0.0.2~1729663685_amd64.deb
+Files:
+ c62e3faa0e12d5036359f53ef566960c 1068 utils optional com.pojtinger.felicitas.connmapper.main_0.0.2~1729663685.dsc
+ 353b4137f41253e08835c1e2a8375c63 38216684 utils optional com.pojtinger.felicitas.connmapper.main_0.0.2~1729663685.tar.xz
+ cd2a8f3c60b01fb4baaf71ac3ce9b7d8 4025356 debug optional com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.2~1729663685_amd64.deb
+ 1a34a0d2839dc16967b2ff2d0f044ef8 20924 utils optional com.pojtinger.felicitas.connmapper.main_0.0.2~1729663685_amd64.buildinfo
+ 5769a0dd4b42107329176f2bf934672b 19012468 utils optional com.pojtinger.felicitas.connmapper.main_0.0.2~1729663685_amd64.deb
