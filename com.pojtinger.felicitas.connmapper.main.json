@@ -7,9 +7,9 @@
     "org.freedesktop.Sdk.Extension.node20",
     "org.freedesktop.Sdk.Extension.golang"
   ],
-  "base": "org.mozilla.firefox",
+  "base": "org.chromium.Chromium",
   "base-version": "stable",
-  "command": "{{ .AppID }}",
+  "command": "{{ .AppID }} --ozone-platform-hint=auto",
   "finish-args": [
     "--share=network",
     "--socket=fallback-x11",
