@@ -9,7 +9,7 @@
   ],
   "base": "org.chromium.Chromium",
   "base-version": "stable",
-  "command": "{{ .AppID }} --ozone-platform-hint=auto",
+  "command": "{{ .AppID }}",
   "finish-args": [
     "--share=network",
     "--socket=fallback-x11",

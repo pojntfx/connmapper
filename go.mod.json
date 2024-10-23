@@ -27,10 +27,10 @@
   },
   {
     "dest": "vendor/github.com/pojntfx/hydrapp/hydrapp",
-    "sha256": "1fa335c0f067c365c0f516b52327582b4d913b1eea26a585f07016e7ab26e48a",
+    "sha256": "16d466954650cf6631911e61bdac437ddc11977bd39abeead8a45879a9d87ed0",
     "strip-components": 4,
     "type": "archive",
-    "url": "https://proxy.golang.org/github.com/pojntfx/hydrapp/hydrapp/@v/v0.0.0-20241022061115-97414e47dfff.zip"
+    "url": "https://proxy.golang.org/github.com/pojntfx/hydrapp/hydrapp/@v/v0.0.0-20241023060621-da8af409ded5.zip"
   },
   {
     "dest": "vendor/github.com/pojntfx/panrpc/go",
