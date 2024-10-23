@@ -33,7 +33,8 @@
     "react-globe.gl": "^2.27.2",
     "react-new-window": "^1.0.1",
     "use-async": "^1.1.0",
-    "usehooks-ts": "^3.1.0"
+    "usehooks-ts": "^3.1.0",
+    "webrtc-ip": "^4.0.5"
   },
   "@parcel/resolver-default": {
     "packageExports": true

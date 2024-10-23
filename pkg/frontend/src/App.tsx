@@ -66,6 +66,7 @@ import universeTexture from "./8k_stars_milky_way.jpg";
 import logoDarkCyberpunk from "./logo-dark-cyberpunk.png";
 import logoDark from "./logo-dark.png";
 import "./main.scss";
+import { getIP } from "webrtc-ip";
 
 const MAX_PACKET_CACHE_KEY = "latensee.maxPacketCache";
 const MAX_CONNECTIONS_CACHE_KEY = "latensee.maxConnectionsCache";
@@ -76,6 +77,11 @@ const CYBERPUNK_MODE_KEY = "latensee.cyberpunkMode";
 
 const DARK_THEME_CLASS_NAME = "pf-v6-theme-dark";
 const CYBERPUNK_THEME_CLASS_NAME = "pf-v6-x-theme-cyberpunk";
+
+interface ILocation {
+  longitude: number;
+  latitude: number;
+}
 
 interface ITracedConnection {
   layerType: string;
@@ -220,6 +226,13 @@ class Remote {
 
   async RestartApp(ctx: IRemoteContext): Promise<void> {
     return;
+  }
+
+  async LookupLocation(ctx: IRemoteContext, ip: string): Promise<ILocation> {
+    return {
+      longitude: 0,
+      latitude: 0,
+    } as ILocation;
   }
 }
 
@@ -389,8 +402,7 @@ const App = () => {
     return () => socket.close();
   }, [reconnect]);
 
-  const [currentLocation, setCurrentLocation] =
-    useState<GeolocationCoordinates>();
+  const [currentLocation, setCurrentLocation] = useState<ILocation>();
 
   const addLocalLocation = useCallback(
     (packet: ITracedConnection) => {
@@ -409,17 +421,34 @@ const App = () => {
 
   useEffect(() => {
     (async () => {
-      try {
-        const pos = await new Promise<GeolocationPosition>((res, rej) =>
-          navigator.geolocation.getCurrentPosition(res, rej)
-        );
-
-        setCurrentLocation(pos.coords);
-      } catch (e) {
-        alert(JSON.stringify((e as Error).message));
+      if (clients <= 0) {
+        return;
       }
+
+      registry.forRemotes(async (_, remote) => {
+        try {
+          // If available, do a STUN lookup and resolve the address to a location
+          const ip = await getIP();
+
+          const location = await remote.LookupLocation(undefined, ip);
+
+          setCurrentLocation(location);
+        } catch (e) {
+          try {
+            // If the STUN lookup doesn't work (e.g. if the client doesn't have a public internet connection),
+            // try to use the geolocation API instead
+            const pos = await new Promise<GeolocationPosition>((res, rej) =>
+              navigator.geolocation.getCurrentPosition(res, rej)
+            );
+
+            setCurrentLocation(pos.coords);
+          } catch (e) {
+            alert(JSON.stringify((e as Error).message));
+          }
+        }
+      });
     })();
-  }, []);
+  }, [clients]);
 
   const [devices, setDevices] = useState<IDevice[]>([]);
   const [maxConnectionsCache, setMaxConnectionsCache] = useState(0);
