@@ -69,6 +69,11 @@ func lookupLocation(db *geoip2.Reader, ip net.IP) (
 	return
 }
 
+type location struct {
+	Longitude float64 `json:"longitude"`
+	Latitude  float64 `json:"latitude"`
+}
+
 type tracedConnection struct {
 	Timestamp int64 `json:"timestamp"`
 	Length    int   `json:"length"`
@@ -615,6 +620,25 @@ func (l *local) SetIsSummarized(ctx context.Context, summarized bool) error {
 	l.packetCache = []tracedConnection{}
 
 	return nil
+}
+
+func (l *local) LookupLocation(ctx context.Context, ip string) (location, error) {
+	if _, err := os.Stat(l.dbPath); err != nil {
+		return location{}, err
+	}
+
+	db, err := geoip2.Open(l.dbPath)
+	if err != nil {
+		return location{}, err
+	}
+	defer db.Close()
+
+	_, _, longitude, latitude := lookupLocation(db, net.ParseIP(ip))
+
+	return location{
+		Longitude: longitude,
+		Latitude:  latitude,
+	}, nil
 }
 
 type remote struct {
