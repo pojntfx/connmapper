@@ -650,12 +650,17 @@ func StartServer(ctx context.Context, addr string, heartbeat time.Duration, loca
 		addr = ":0"
 	}
 
-	home, err := os.UserHomeDir()
-	if err != nil {
-		return "", nil, err
+	dataHomeDir := os.Getenv("XDG_DATA_HOME")
+	if strings.TrimSpace(dataHomeDir) == "" {
+		userHomeDir, err := os.UserHomeDir()
+		if err != nil {
+			panic(err)
+		}
+
+		dataHomeDir = filepath.Join(userHomeDir, ".local", "share")
 	}
 
-	dbPath := filepath.Join(home, ".local", "share", "connmapper", "GeoLite2-City.mmdb")
+	dbPath := filepath.Join(dataHomeDir, "connmapper", "GeoLite2-City.mmdb")
 
 	service := &local{
 		connections:    map[string]tracedConnection{},
