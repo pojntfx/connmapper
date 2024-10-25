@@ -54,8 +54,8 @@ github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINE
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 h1:Jamvg5psRIccs7FGNTlIRMkT8wgtp5eCXdBlqhYGL6U=
 github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
-github.com/pojntfx/hydrapp/hydrapp v0.0.0-20241023060621-da8af409ded5 h1:zSxfwhCvDqpLDeqb1btN6Kd/7mtj6+Eozd6TyIfd7So=
-github.com/pojntfx/hydrapp/hydrapp v0.0.0-20241023060621-da8af409ded5/go.mod h1:m9HMIrC7dHef7D5YUTC0vNomaqcn1fBpMO/x33BD5Ts=
+github.com/pojntfx/hydrapp/hydrapp v0.0.0-20241024014840-e6ea4d2bc4c0 h1:TaTtniPC/KpnPEcynMxr70UEW/6/0v27TJ7eZw/SAug=
+github.com/pojntfx/hydrapp/hydrapp v0.0.0-20241024014840-e6ea4d2bc4c0/go.mod h1:m9HMIrC7dHef7D5YUTC0vNomaqcn1fBpMO/x33BD5Ts=
 github.com/pojntfx/panrpc/go v0.0.0-20241003051136-b93809e92a15 h1:4RI9bEX39FgZo9/12015R/sPehT14oX3sffksnuNh7I=
 github.com/pojntfx/panrpc/go v0.0.0-20241003051136-b93809e92a15/go.mod h1:G9YawT9jiXDf6z7WEv7KMIca+A41mjm8KL8AfBxN37U=
 github.com/randall77/makefat v0.0.0-20210315173500-7ddd0e42c844 h1:GranzK4hv1/pqTIhMTXt2X8MmMOuH3hMeUR0o9SP5yc=
