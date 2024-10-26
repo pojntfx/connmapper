@@ -27,10 +27,10 @@
   },
   {
     "dest": "vendor/github.com/pojntfx/hydrapp/hydrapp",
-    "sha256": "16d466954650cf6631911e61bdac437ddc11977bd39abeead8a45879a9d87ed0",
+    "sha256": "6640a2415cdd9f110676b2ba8967441f83b9807dd122bcc787a3151d2bb56dd0",
     "strip-components": 4,
     "type": "archive",
-    "url": "https://proxy.golang.org/github.com/pojntfx/hydrapp/hydrapp/@v/v0.0.0-20241023060621-da8af409ded5.zip"
+    "url": "https://proxy.golang.org/github.com/pojntfx/hydrapp/hydrapp/@v/v0.0.0-20241024014840-e6ea4d2bc4c0.zip"
   },
   {
     "dest": "vendor/github.com/pojntfx/panrpc/go",
@@ -38,6 +38,13 @@
     "strip-components": 4,
     "type": "archive",
     "url": "https://proxy.golang.org/github.com/pojntfx/panrpc/go/@v/v0.0.0-20241003051136-b93809e92a15.zip"
+  },
+  {
+    "dest": "vendor/golang.org/x/sys",
+    "sha256": "f44842acff792af010dcb5a24308b72272ebd57c74e00d5f530c9e5d55b86979",
+    "strip-components": 3,
+    "type": "archive",
+    "url": "https://proxy.golang.org/golang.org/x/sys/@v/v0.26.0.zip"
   },
   {
     "dest": "vendor/nhooyr.io/websocket",
@@ -206,13 +213,6 @@
     "strip-components": 3,
     "type": "archive",
     "url": "https://proxy.golang.org/golang.org/x/net/@v/v0.30.0.zip"
-  },
-  {
-    "dest": "vendor/golang.org/x/sys",
-    "sha256": "f44842acff792af010dcb5a24308b72272ebd57c74e00d5f530c9e5d55b86979",
-    "strip-components": 3,
-    "type": "archive",
-    "url": "https://proxy.golang.org/golang.org/x/sys/@v/v0.26.0.zip"
   },
   {
     "dest": "vendor/golang.org/x/text",

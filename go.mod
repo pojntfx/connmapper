@@ -10,6 +10,7 @@ require (
 	github.com/oschwald/geoip2-golang v1.11.0
 	github.com/pojntfx/hydrapp/hydrapp v0.0.0-20241024014840-e6ea4d2bc4c0
 	github.com/pojntfx/panrpc/go v0.0.0-20241003051136-b93809e92a15
+	golang.org/x/sys v0.26.0
 	nhooyr.io/websocket v1.8.17
 )
 
@@ -37,7 +38,6 @@ require (
 	golang.org/x/crypto v0.28.0 // indirect
 	golang.org/x/image v0.21.0 // indirect
 	golang.org/x/net v0.30.0 // indirect
-	golang.org/x/sys v0.26.0 // indirect
 	golang.org/x/text v0.19.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
