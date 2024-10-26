@@ -29,6 +29,7 @@ import (
 	"github.com/pojntfx/hydrapp/hydrapp/pkg/ui"
 	"github.com/pojntfx/hydrapp/hydrapp/pkg/utils"
 	"github.com/pojntfx/panrpc/go/pkg/rpc"
+	"golang.org/x/sys/unix"
 	"nhooyr.io/websocket"
 )
 
@@ -318,14 +319,19 @@ func (l *local) TraceDevice(ctx context.Context, device uutils.Device) error {
 		return err
 	}
 
-	recreateCmd := true
+	var (
+		cmd         *exec.Cmd
+		recreateCmd = true
+
+		stdoutOverwrite io.ReadCloser
+		fifoTmpDir      string
+	)
 restartTraceCommand:
 	bin, err := os.Executable()
 	if err != nil {
 		return err
 	}
 
-	var cmd *exec.Cmd
 	if _, err := exec.LookPath(uutils.FlatpakSpawnCmd); err == nil {
 		output, err := exec.CommandContext(
 			ctx,
@@ -355,9 +361,14 @@ restartTraceCommand:
 		cmd.Env = append(cmd.Env, TraceCommandEnv+"=true")
 	}
 
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		return errors.Join(err, cmd.Process.Kill())
+	var stdout io.ReadCloser
+	if stdoutOverwrite == nil {
+		stdout, err = cmd.StdoutPipe()
+		if err != nil {
+			return errors.Join(err, cmd.Process.Kill())
+		}
+	} else {
+		stdout = stdoutOverwrite
 	}
 
 	if err := cmd.Start(); err != nil {
@@ -417,10 +428,35 @@ restartTraceCommand:
 			}
 
 		default:
-			cmd, err = uutils.CreateElevatedCommand(ctx, "Authentication Required", "Authentication is needed to capture packets.", fmt.Sprintf("%v %v", bin, strings.Join(cmd.Args, " ")))
+			fifoTmpDir, err = os.MkdirTemp(os.TempDir(), "")
 			if err != nil {
 				return errors.Join(ErrCouldNotCreateElevatedCommand, err)
 			}
+
+			stdoutPath := filepath.Join(fifoTmpDir, "stdout.fifo")
+			if err := unix.Mknod(stdoutPath, unix.S_IFIFO|0666, 0); err != nil {
+				return errors.Join(ErrCouldNotCreateElevatedCommand, err)
+			}
+
+			stdout, err := os.OpenFile(stdoutPath, os.O_RDWR, os.ModePerm)
+			if err != nil {
+				return errors.Join(ErrCouldNotCreateElevatedCommand, err)
+			}
+
+			args := []string{}
+			for i, arg := range cmd.Args {
+				// The first argument is always the currently running program, so we skip it
+				if i > 0 {
+					args = append(args, arg)
+				}
+			}
+
+			cmd, err = uutils.CreateElevatedCommand(ctx, "Authentication Required", "Authentication is needed to capture packets.", fmt.Sprintf("'%v' %v 1> '%v'", bin, strings.Join(args, " "), stdoutPath))
+			if err != nil {
+				return errors.Join(ErrCouldNotCreateElevatedCommand, err)
+			}
+
+			stdoutOverwrite = stdout
 
 			// We need to run the elevated command next
 			recreateCmd = false
@@ -439,6 +475,13 @@ restartTraceCommand:
 	}
 
 	go func() {
+		defer func() {
+			if fifoTmpDir != "" {
+				_ = os.RemoveAll(fifoTmpDir)
+			}
+		}()
+		defer stdout.Close()
+
 		defer func() {
 			if cmd.Process != nil {
 				_ = cmd.Process.Kill()
