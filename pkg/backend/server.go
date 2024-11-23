@@ -29,7 +29,6 @@ import (
 	"github.com/pojntfx/hydrapp/hydrapp/pkg/ui"
 	"github.com/pojntfx/hydrapp/hydrapp/pkg/utils"
 	"github.com/pojntfx/panrpc/go/pkg/rpc"
-	"golang.org/x/sys/unix"
 	"nhooyr.io/websocket"
 )
 
@@ -434,7 +433,7 @@ restartTraceCommand:
 			}
 
 			stdoutPath := filepath.Join(fifoTmpDir, "stdout.fifo")
-			if err := unix.Mknod(stdoutPath, unix.S_IFIFO|0666, 0); err != nil {
+			if err := uutils.MknodStdout(stdoutPath); err != nil {
 				return errors.Join(ErrCouldNotCreateElevatedCommand, err)
 			}
 
