@@ -13,10 +13,10 @@
   },
   {
     "dest": "vendor/github.com/gopacket/gopacket",
-    "sha256": "4cbf3a8d2bc74959d5a9d5a3d32fd2a9343bd8c16b610a422a77094b007c1a04",
+    "sha256": "1cef65d9c52259b4ff72e9b5e5cf495cde8227d17c82e5171567d02633b2e7ff",
     "strip-components": 3,
     "type": "archive",
-    "url": "https://proxy.golang.org/github.com/gopacket/gopacket/@v/v1.2.0.zip"
+    "url": "https://proxy.golang.org/github.com/gopacket/gopacket/@v/v1.3.1.zip"
   },
   {
     "dest": "vendor/github.com/oschwald/geoip2-golang",
@@ -27,10 +27,10 @@
   },
   {
     "dest": "vendor/github.com/pojntfx/hydrapp/hydrapp",
-    "sha256": "6640a2415cdd9f110676b2ba8967441f83b9807dd122bcc787a3151d2bb56dd0",
+    "sha256": "c143058f57f46dada3910116c6bf7358fcf31895872ffa77bb484411766a7189",
     "strip-components": 4,
     "type": "archive",
-    "url": "https://proxy.golang.org/github.com/pojntfx/hydrapp/hydrapp/@v/v0.0.0-20241024014840-e6ea4d2bc4c0.zip"
+    "url": "https://proxy.golang.org/github.com/pojntfx/hydrapp/hydrapp/@v/v0.0.0-20241117024959-42c8dea80dda.zip"
   },
   {
     "dest": "vendor/github.com/pojntfx/panrpc/go",
@@ -41,10 +41,10 @@
   },
   {
     "dest": "vendor/golang.org/x/sys",
-    "sha256": "f44842acff792af010dcb5a24308b72272ebd57c74e00d5f530c9e5d55b86979",
+    "sha256": "e11dcde2289e0d45eabb06ea59aab05080870bab5753f524ed26df23ec8bddee",
     "strip-components": 3,
     "type": "archive",
-    "url": "https://proxy.golang.org/golang.org/x/sys/@v/v0.26.0.zip"
+    "url": "https://proxy.golang.org/golang.org/x/sys/@v/v0.27.0.zip"
   },
   {
     "dest": "vendor/nhooyr.io/websocket",
@@ -62,10 +62,10 @@
   },
   {
     "dest": "vendor/github.com/ProtonMail/go-crypto",
-    "sha256": "ac09254630c9e0b3ba85078fa917fea6649f415551fe35436a51efda08ec0b4e",
+    "sha256": "5ecce93873f5b9eea5dc577111ed6338651da789ab947ee565054b6af718f6c4",
     "strip-components": 3,
     "type": "archive",
-    "url": "https://proxy.golang.org/github.com/!proton!mail/go-crypto/@v/v1.0.0.zip"
+    "url": "https://proxy.golang.org/github.com/!proton!mail/go-crypto/@v/v1.1.2.zip"
   },
   {
     "dest": "vendor/github.com/ProtonMail/go-mime",
@@ -76,10 +76,10 @@
   },
   {
     "dest": "vendor/github.com/ProtonMail/gopenpgp/v2",
-    "sha256": "fe73f91dbbc8bcc360585e3a51b5f820e10c29a70c7065fcb93c2ef02cb6abc0",
+    "sha256": "7c1f1a6c379b21c8d8ca3e27d63a3cb5988e2bda540f571f9b25b7ab1accbd4e",
     "strip-components": 4,
     "type": "archive",
-    "url": "https://proxy.golang.org/github.com/!proton!mail/gopenpgp/v2/@v/v2.7.5.zip"
+    "url": "https://proxy.golang.org/github.com/!proton!mail/gopenpgp/v2/@v/v2.8.0.zip"
   },
   {
     "dest": "vendor/github.com/akavel/rsrc",
@@ -111,17 +111,17 @@
   },
   {
     "dest": "vendor/github.com/dchest/jsmin",
-    "sha256": "c38e952ffd4b08ea5965067eaf7231f1603af26d9cc36218c232214c1b4a6fdf",
+    "sha256": "c3fcff808dda01f2d2299149b2b2cd34db73288464087e02db93e87f46ff75ce",
     "strip-components": 3,
     "type": "archive",
-    "url": "https://proxy.golang.org/github.com/dchest/jsmin/@v/v0.0.0-20220218165748-59f39799265f.zip"
+    "url": "https://proxy.golang.org/github.com/dchest/jsmin/@v/v1.0.0.zip"
   },
   {
     "dest": "vendor/github.com/fsnotify/fsnotify",
-    "sha256": "f98f08a95224f2c7a77b62aa4840cefe4970f0ff00e0a027d7e457c3df752bb2",
+    "sha256": "84a12670be61c6c4bf9519955ce9046168c4835cdf99018290a57ee74dddb361",
     "strip-components": 3,
     "type": "archive",
-    "url": "https://proxy.golang.org/github.com/fsnotify/fsnotify/@v/v1.7.0.zip"
+    "url": "https://proxy.golang.org/github.com/fsnotify/fsnotify/@v/v1.8.0.zip"
   },
   {
     "dest": "vendor/github.com/google/go-cmp",
@@ -195,31 +195,31 @@
   },
   {
     "dest": "vendor/golang.org/x/crypto",
-    "sha256": "959acbe3514430c2c009dc93f27e41ddad4fee178a4c680c753bc09b5d2e77d0",
+    "sha256": "477b082749a2743a2098b28acf02a651f5f46b0dbb03b1cf580d499a3629718d",
     "strip-components": 3,
     "type": "archive",
-    "url": "https://proxy.golang.org/golang.org/x/crypto/@v/v0.28.0.zip"
+    "url": "https://proxy.golang.org/golang.org/x/crypto/@v/v0.29.0.zip"
   },
   {
     "dest": "vendor/golang.org/x/image",
-    "sha256": "7ca937a1f9501b5d0b46631a6813f833292e33a9c5070f03630f18ab8d65bba3",
+    "sha256": "4f8d0fa8cc432cb89cf98f62dd32115d77a462561ac9fff4e20604e055fddabe",
     "strip-components": 3,
     "type": "archive",
-    "url": "https://proxy.golang.org/golang.org/x/image/@v/v0.21.0.zip"
+    "url": "https://proxy.golang.org/golang.org/x/image/@v/v0.22.0.zip"
   },
   {
     "dest": "vendor/golang.org/x/net",
-    "sha256": "c357b779cdc08d0952f7bad4c45ce84223b7c6005d775822a17901ae8f65bbba",
+    "sha256": "0161750cfdd32d146852d4d7a9ac769b2ccde2e8970289d02ab155b5f02578a4",
     "strip-components": 3,
     "type": "archive",
-    "url": "https://proxy.golang.org/golang.org/x/net/@v/v0.30.0.zip"
+    "url": "https://proxy.golang.org/golang.org/x/net/@v/v0.31.0.zip"
   },
   {
     "dest": "vendor/golang.org/x/text",
-    "sha256": "37f9f40b6c3c56e079684d612439b61ce4e891c3cea32298fbab53a1cac47c35",
+    "sha256": "73b665d0df2cca11badc259586ccb0ba1101637d669d7abaafb27b90b7c028af",
     "strip-components": 3,
     "type": "archive",
-    "url": "https://proxy.golang.org/golang.org/x/text/@v/v0.19.0.zip"
+    "url": "https://proxy.golang.org/golang.org/x/text/@v/v0.20.0.zip"
   },
   {
     "dest": "vendor/gopkg.in/check.v1",
