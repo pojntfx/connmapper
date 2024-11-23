@@ -59,27 +59,11 @@ flatpak:
     packages:
       - name: org.chromium.Chromium
         version: "stable"
-      - name: org.freedesktop.Platform
-        version: "23.08"
-      - name: org.freedesktop.Sdk
-        version: "23.08"
-      - name: org.freedesktop.Sdk.Extension.node20
-        version: "23.08"
-      - name: org.freedesktop.Sdk.Extension.golang
-        version: "23.08"
   - path: flatpak/aarch64
     architecture: arm64
     packages:
       - name: org.chromium.Chromium
         version: "stable"
-      - name: org.freedesktop.Platform
-        version: "23.08"
-      - name: org.freedesktop.Sdk
-        version: "23.08"
-      - name: org.freedesktop.Sdk.Extension.node20
-        version: "23.08"
-      - name: org.freedesktop.Sdk.Extension.golang
-        version: "23.08"
 msi:
   - path: msi/x86_64
     architecture: amd64
