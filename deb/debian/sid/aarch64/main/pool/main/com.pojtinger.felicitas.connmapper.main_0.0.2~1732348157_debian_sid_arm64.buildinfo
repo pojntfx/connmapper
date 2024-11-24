@@ -4,20 +4,20 @@ Binary: com.pojtinger.felicitas.connmapper.main com.pojtinger.felicitas.connmapp
 Architecture: arm64 source
 Version: 0.0.2~1732348157
 Checksums-Md5:
- 16e4851d21f8a6d33140c6eb2c78fe30 1068 com.pojtinger.felicitas.connmapper.main_0.0.2~1732348157.dsc
+ 7724f27c464f1b8dec8def679a4cecba 1068 com.pojtinger.felicitas.connmapper.main_0.0.2~1732348157.dsc
  441f4b83d82b8ba2df1427b29f2746dd 3845820 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.2~1732348157_arm64.deb
  75b6eb6946dffc62d7f74b2d75c7d403 18514988 com.pojtinger.felicitas.connmapper.main_0.0.2~1732348157_arm64.deb
 Checksums-Sha1:
- 69131bb6c737e2658ace01f980897e5a1e1d2e73 1068 com.pojtinger.felicitas.connmapper.main_0.0.2~1732348157.dsc
+ 9cd34db6045143b8cc710625c0094fbf4e6a384f 1068 com.pojtinger.felicitas.connmapper.main_0.0.2~1732348157.dsc
  ba60bff2399eef9fa885edf0b06432378e6a0c16 3845820 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.2~1732348157_arm64.deb
  463185e313d9b768ad2ab65f04414c4b169aa1f0 18514988 com.pojtinger.felicitas.connmapper.main_0.0.2~1732348157_arm64.deb
 Checksums-Sha256:
- a2c0415e06ba1e4b4f27ed70ca725fca215247f7c82c4573e6c79bab69324c26 1068 com.pojtinger.felicitas.connmapper.main_0.0.2~1732348157.dsc
+ 7cfe5602d91a9d29f0dbbbd8996c83a5500090cbe4176c78533ac220eacec6e3 1068 com.pojtinger.felicitas.connmapper.main_0.0.2~1732348157.dsc
  6ecab93dc1dd5a176bdb70f30a0b6dba1dd4afb3738245f5380a55fe5191f569 3845820 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.2~1732348157_arm64.deb
  b82ee24ab61f5284dd29544dc5f2efafca312e3c6bf9d480670cd7e82f7e9dd7 18514988 com.pojtinger.felicitas.connmapper.main_0.0.2~1732348157_arm64.deb
 Build-Origin: Debian
 Build-Architecture: arm64
-Build-Date: Sat, 23 Nov 2024 07:55:35 +0000
+Build-Date: Sun, 24 Nov 2024 00:35:14 +0000
 Build-Path: /build/com.pojtinger.felicitas.connmapper.main-0.0.2~1732348157
 Build-Tainted-By:
  merged-usr-via-aliased-dirs
@@ -94,10 +94,10 @@ Installed-Build-Depends:
  libblkid1 (= 2.40.2-11),
  libbrotli1 (= 1.1.0-2+b6),
  libbz2-1.0 (= 1.0.8-6),
- libc-bin (= 2.40-3),
- libc-dev-bin (= 2.40-3),
- libc6 (= 2.40-3),
- libc6-dev (= 2.40-3),
+ libc-bin (= 2.40-4),
+ libc-dev-bin (= 2.40-4),
+ libc6 (= 2.40-4),
+ libc6-dev (= 2.40-4),
  libcap-ng0 (= 0.8.5-3+b1),
  libcap2 (= 1:2.66-5+b1),
  libcares2 (= 1.34.2-1),
@@ -176,7 +176,7 @@ Installed-Build-Depends:
  libpcap0.8-dev (= 1.10.5-1),
  libpcap0.8t64 (= 1.10.5-1),
  libpcre2-8-0 (= 10.44-4),
- libperl5.40 (= 5.40.0-7),
+ libperl5.40 (= 5.40.0-8),
  libpipeline1 (= 1.5.8-1),
  libpkgconf3 (= 1.8.1-4),
  libpsl5t64 (= 0.21.2-1.1+b1),
@@ -569,9 +569,9 @@ Installed-Build-Depends:
  openssl (= 3.3.2-2),
  openssl-provider-legacy (= 3.3.2-2),
  patch (= 2.7.6-7+b1),
- perl (= 5.40.0-7),
- perl-base (= 5.40.0-7),
- perl-modules-5.40 (= 5.40.0-7),
+ perl (= 5.40.0-8),
+ perl-base (= 5.40.0-8),
+ perl-modules-5.40 (= 5.40.0-8),
  pkgconf (= 1.8.1-4),
  pkgconf-bin (= 1.8.1-4),
  po-debconf (= 1.0.21+nmu1),
