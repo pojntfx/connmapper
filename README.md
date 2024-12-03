@@ -99,7 +99,7 @@ To contribute, please use the [GitHub flow](https://guides.github.com/introducti
 To build and start a development version of Connmapper locally, first install [Go](https://go.dev/) and [npm](https://www.npmjs.com/), then run the following:
 
 ```shell
-$ git clone https://github.com/pojntfx/connmapper.git
+$ git clone https://github.com/pojntfx/connmapper.git --single-branch
 $ cd connmapper
 $ go generate ./... # Also see https://github.com/dennwc/flatpak-go-mod for updating the Flatpak manifest with Go dependencies and https://github.com/flatpak/flatpak-builder-tools/tree/master/node for JS dependencies
 $ go install .
