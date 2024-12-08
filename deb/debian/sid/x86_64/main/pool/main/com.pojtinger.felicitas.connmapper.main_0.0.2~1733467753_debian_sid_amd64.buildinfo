@@ -4,20 +4,20 @@ Binary: com.pojtinger.felicitas.connmapper.main com.pojtinger.felicitas.connmapp
 Architecture: amd64 source
 Version: 0.0.2~1733467753
 Checksums-Md5:
- 6017011fc0f2935eaf4ff266469f9761 1068 com.pojtinger.felicitas.connmapper.main_0.0.2~1733467753.dsc
+ fcceec056250565b73c1bf42063fce57 1068 com.pojtinger.felicitas.connmapper.main_0.0.2~1733467753.dsc
  81c8147eedef86a992cca4562011fa1c 4101148 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.2~1733467753_amd64.deb
  75586a87afb6202410f321fdddb4e7da 19521276 com.pojtinger.felicitas.connmapper.main_0.0.2~1733467753_amd64.deb
 Checksums-Sha1:
- 7d8fe64da778844ad3bec0aae3d2255606413f52 1068 com.pojtinger.felicitas.connmapper.main_0.0.2~1733467753.dsc
+ c13815672a3ea1f199fdf2f17e80574684f0d991 1068 com.pojtinger.felicitas.connmapper.main_0.0.2~1733467753.dsc
  faea3400ba49b5e4a12778346f68dc8d7ecc053d 4101148 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.2~1733467753_amd64.deb
  43c1ca01c7e7ef11ebd32841471b7fb2e959093c 19521276 com.pojtinger.felicitas.connmapper.main_0.0.2~1733467753_amd64.deb
 Checksums-Sha256:
- d501322f1ebf7b76c7f9d19f355b162eebe006489763d57c9457d2533ac93bc9 1068 com.pojtinger.felicitas.connmapper.main_0.0.2~1733467753.dsc
+ cfd2af8f444d90c32c58ed69b922e84036cd9666687b744d40cd4b51a2cb73c2 1068 com.pojtinger.felicitas.connmapper.main_0.0.2~1733467753.dsc
  56cec5c4e2414ac2ff53dc277a2a62ede592ce9bb10d6dd96a092ef225a70574 4101148 com.pojtinger.felicitas.connmapper.main-dbgsym_0.0.2~1733467753_amd64.deb
  5e40f4921e729b2ae42435c5d99f9e6b55ff4daccdfebdeaafbd45bca1f4aaa1 19521276 com.pojtinger.felicitas.connmapper.main_0.0.2~1733467753_amd64.deb
 Build-Origin: Debian
 Build-Architecture: amd64
-Build-Date: Fri, 06 Dec 2024 06:54:38 +0000
+Build-Date: Sun, 08 Dec 2024 00:35:20 +0000
 Build-Path: /build/com.pojtinger.felicitas.connmapper.main-0.0.2~1733467753
 Build-Tainted-By:
  merged-usr-via-aliased-dirs
@@ -33,8 +33,8 @@ Installed-Build-Depends:
  binutils (= 2.43.50.20241204-2),
  binutils-common (= 2.43.50.20241204-2),
  binutils-x86-64-linux-gnu (= 2.43.50.20241204-2),
- bsdextrautils (= 2.40.2-11),
- bsdutils (= 1:2.40.2-11),
+ bsdextrautils (= 2.40.2-12),
+ bsdutils (= 1:2.40.2-12),
  build-essential (= 12.12),
  bzip2 (= 1.0.8-6),
  ca-certificates (= 20240203),
@@ -91,7 +91,7 @@ Installed-Build-Depends:
  libaudit-common (= 1:4.0.2-2),
  libaudit1 (= 1:4.0.2-2),
  libbinutils (= 2.43.50.20241204-2),
- libblkid1 (= 2.40.2-11),
+ libblkid1 (= 2.40.2-12),
  libbrotli1 (= 1.1.0-2+b6),
  libbz2-1.0 (= 1.0.8-6),
  libc-bin (= 2.40-4),
@@ -100,7 +100,7 @@ Installed-Build-Depends:
  libc6-dev (= 2.40-4),
  libcap-ng0 (= 0.8.5-4),
  libcap2 (= 1:2.66-5+b1),
- libcares2 (= 1.34.2-1),
+ libcares2 (= 1.34.3-1),
  libcc1-0 (= 14.2.0-8),
  libcom-err2 (= 1.47.2~rc1-2),
  libcrypt-dev (= 1:4.4.36-5),
@@ -109,8 +109,8 @@ Installed-Build-Depends:
  libctf0 (= 2.43.50.20241204-2),
  libcurl3t64-gnutls (= 8.11.0-1),
  libdb5.3t64 (= 5.3.28+dfsg2-9),
- libdbus-1-3 (= 1.14.10-6),
- libdbus-1-dev (= 1.14.10-6),
+ libdbus-1-3 (= 1.15.90-1),
+ libdbus-1-dev (= 1.15.90-1),
  libdebconfclient0 (= 0.274),
  libdebhelper-perl (= 13.20),
  libdpkg-perl (= 1.22.11),
@@ -155,7 +155,7 @@ Installed-Build-Depends:
  libmagic-mgc (= 1:5.45-3+b1),
  libmagic1t64 (= 1:5.45-3+b1),
  libmd0 (= 1.1.0-2+b1),
- libmount1 (= 2.40.2-11),
+ libmount1 (= 2.40.2-12),
  libmpc3 (= 1.3.1-1+b3),
  libmpfr6 (= 4.2.1-1+b2),
  libncursesw6 (= 6.5-2+b1),
@@ -191,7 +191,7 @@ Installed-Build-Depends:
  libseccomp2 (= 2.5.5-2),
  libselinux1 (= 3.7-3+b1),
  libsframe1 (= 2.43.50.20241204-2),
- libsmartcols1 (= 2.40.2-11),
+ libsmartcols1 (= 2.40.2-12),
  libsqlite3-0 (= 3.46.1-1),
  libssh2-1t64 (= 1.11.1-1),
  libssl-dev (= 3.3.2-2),
@@ -199,6 +199,7 @@ Installed-Build-Depends:
  libstdc++-14-dev (= 14.2.0-8),
  libstdc++6 (= 14.2.0-8),
  libstemmer0d (= 2.2.0-4+b2),
+ libsystemd-dev (= 257~rc3-1),
  libsystemd0 (= 257~rc3-1),
  libtasn1-6 (= 4.19.0-3+b3),
  libtinfo6 (= 6.5-2+b1),
@@ -210,14 +211,14 @@ Installed-Build-Depends:
  libuchardet0 (= 0.0.8-1+b2),
  libudev1 (= 257~rc3-1),
  libunistring5 (= 1.3-1),
- libuuid1 (= 2.40.2-11),
+ libuuid1 (= 2.40.2-12),
  libuv1-dev (= 1.48.0-7),
  libuv1t64 (= 1.48.0-7),
  libxml2 (= 2.12.7+dfsg+really2.9.14-0.2+b1),
  libxmlb2 (= 0.3.21-1),
  libyaml-0-2 (= 0.2.5-1+b2),
  libzstd1 (= 1.5.6+dfsg-1+b1),
- linux-libc-dev (= 6.11.10-1),
+ linux-libc-dev (= 6.12.3-1),
  m4 (= 1.4.19-4),
  make (= 4.3-4.1),
  man-db (= 2.13.0-1),
@@ -600,7 +601,7 @@ Installed-Build-Depends:
  terser (= 5.31.3-1),
  tzdata (= 2024b-4),
  usr-is-merged (= 39),
- util-linux (= 2.40.2-11),
+ util-linux (= 2.40.2-12),
  webpack (= 5.96.1+dfsg1+~cs11.18.26-1),
  xml-core (= 0.19),
  xz-utils (= 5.6.3-1+b1),
