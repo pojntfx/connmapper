@@ -143,6 +143,6 @@ For more information, see the [hydrapp documentation](https://github.com/pojntfx
 
 ## License
 
-Connmapper (c) 2024 Felicitas Pojtinger and contributors
+Connmapper (c) 2025 Felicitas Pojtinger and contributors
 
 SPDX-License-Identifier: AGPL-3.0-or-later
